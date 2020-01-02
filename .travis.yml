@@ -1,0 +1,18 @@
+language: java
+jdk:
+- openjdk11
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/5.0/fileHashes/fileHashes.bin
+- rm -f  $HOME/.gradle/caches/5.0/fileHashes/fileHashes.lock
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.gradle/permwrapper/"
+  - "$HOME/.gradle/gradlerio/"
+notifications:
+  email: false
+  slack:
+    secure: tbbNdl5M1P9x2BImyj5DJe3m3h7x1RPO/xuv95p+eDS/3CAQWs9fEycyupLajvZ53zXKbRVDPoBS1dVNlKRH6ClktSpDPddheXZWExr+2BQEkWGMJzYIKJFmDaB37bb3E8D89gM3jOdrAb4KpVnq+QnrovDK1tFR4vBVnVXNZqxHc2kdMJdkVVHnt/tNitgVbsOFiNK0rPVg/fvtcUkt5KmkXpDZfs9OV5gcTN1RMV7AzBcuJ+XIXZbqKVyx2z6CgHMn8ORTYemrL61lUZGvXHOYF5G5hENtm3jotU5B6xDwbQF+SCLzGhQ8BUorQAjzaAIDntn1EuchEbARmcMKwNAOcjjSK508oNyFqfDZOXcm67cSwFhelxdUbuhYG4RSkjwfTKgXR/vtY5Z6HOpwTtRXNWnAb3kkGA+4+eJ7yR/7jR+vQE9A6xGwTTahmO9lITrbPzc7DzCxRYXU78w3VRrss4OHy44+OlfuDdMojBbwYiol8y9pIP5j5aRfgn9yb7AiBmZUEpf1+UxG/CIE4LXd6wk/xd6f928AbvsPDkRZXXQTZUnH/34BqeMrRvV0GdozIjtJAbIPKsVCg9HuUdxVQ3BZcd43k3mfWLyQoZqDgS0/1VxM99EW1IbnTvIIlhHUetTTJ2An+uUIQkuv/x3dZyWPDhvtYLXb4cWuQLE=
