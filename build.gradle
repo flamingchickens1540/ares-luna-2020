@@ -33,7 +33,7 @@ deploy {
     }
 }
 
-def includeDesktopSupport = false
+def includeDesktopSupport = true
 
 repositories {
 	// other repositories
