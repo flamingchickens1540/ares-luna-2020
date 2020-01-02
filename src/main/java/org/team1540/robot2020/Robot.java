@@ -7,6 +7,7 @@
 
 package org.team1540.robot2020;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.apache.log4j.Logger;
@@ -18,8 +19,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    logger.info("Initializing FRC Team 1540 Ares/Luna Robot Code...");
+    var start = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
+
     container = new RobotContainer();
 
+    logger.info("Setting up command logging hooks...");
     CommandScheduler.getInstance().onCommandInitialize(command -> {
       logger.debug("Starting command: " + command.getName() + " " + command.getRequirements());
     });
@@ -29,6 +34,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().onCommandInterrupt(command -> {
       logger.debug("Command interrupted: " + command.getName());
     });
+
+    var end = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
+    logger.info("Robot ready. (" + (end - start) + "ms)");
   }
 
   @Override

@@ -16,10 +16,20 @@ public class RobotContainer {
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
     public RobotContainer() {
+        logger.info("Creating robot container...");
+
+        initButtonBindings();
+        initModeTransitionBindings();
+    }
+
+    private void initButtonBindings() {
+        logger.info("Initializing button bindings...");
 
     }
 
-    private void initModeTransitionTriggers() {
+    private void initModeTransitionBindings() {
+        logger.info("Initializing mode transition bindings...");
+
         var inTeleop = new Trigger(RobotState::isOperatorControl);
         var inAuto = new Trigger(RobotState::isAutonomous);
         var inTest = new Trigger(RobotState::isTest);
@@ -28,12 +38,14 @@ public class RobotContainer {
 
         enabled.whenActive(() -> {
             // enable brakes
+            logger.info("Mechanism brakes enabled");
         });
 
         disabled.whenActive(new WaitCommand(2)
-            .alongWith(new InstCommand(() -> logger.info("Disabling mechanism brakes in 2 seconds"), true))
+            .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
             .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                 // disable brakes
+                logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
     }
 }
