@@ -1,6 +1,7 @@
 package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -12,6 +13,7 @@ import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
 import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.rooster.wrappers.NavX;
 
 import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
 
@@ -21,6 +23,8 @@ public class RobotContainer {
 
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
+
+    private NavX navx = new NavX(SPI.Port.kMXP);
 
     private DriveTrain driveTrain = new DriveTrain();
 
