@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ArcadeDrive implements Command {
-    DriveTrain driveTrain;
-    ChickenXboxController driver;
+    private DriveTrain driveTrain;
+    private ChickenXboxController driver;
 
     public ArcadeDrive(DriveTrain driveTrain, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
