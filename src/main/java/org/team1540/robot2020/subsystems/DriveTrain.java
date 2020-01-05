@@ -1,6 +1,7 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.team1540.rooster.wrappers.ChickenTalon;
 import org.team1540.rooster.wrappers.ChickenVictor;
@@ -20,10 +21,23 @@ public class DriveTrain implements Subsystem {
 
         driveRightB.follow(driveRightA);
         driveRightC.follow(driveRightA);
+
+        resetEncoders();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("drive/leftEncoder", driveLeftA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("drive/rightEncoder", driveRightA.getSelectedSensorPosition());
     }
 
     public void setThrottle(double left, double right) {
         driveLeftA.set(ControlMode.PercentOutput, -left);
         driveRightA.set(ControlMode.PercentOutput, right);
+    }
+
+    public void resetEncoders() {
+        driveLeftA.setSelectedSensorPosition(0);
+        driveRightA.setSelectedSensorPosition(0);
     }
 }

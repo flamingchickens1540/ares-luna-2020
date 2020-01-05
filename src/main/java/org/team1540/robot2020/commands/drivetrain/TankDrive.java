@@ -21,10 +21,10 @@ public class TankDrive implements Command {
 
     @Override
     public void execute() {
-        double triggerThrottle = driver.getTriggerAxis(GenericHID.Hand.kRight) - driver.getTriggerAxis(GenericHID.Hand.kLeft);
+        double triggerThrottle = ControlUtils.deadzone(driver.getTriggerAxis(GenericHID.Hand.kRight) - driver.getTriggerAxis(GenericHID.Hand.kLeft), 0.1);
         driveTrain.setThrottle(
-                ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1),
-                ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.1)
+                ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1) + triggerThrottle,
+                ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.1) + triggerThrottle
         );
     }
 

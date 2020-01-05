@@ -1,14 +1,18 @@
 package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.drivetrain.ResetEncoders;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
 import org.team1540.rooster.util.ChickenXboxController;
+
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
 
 public class RobotContainer {
 
@@ -25,11 +29,13 @@ public class RobotContainer {
         initButtonBindings();
         initModeTransitionBindings();
         initDefaultCommands();
+
+//        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
+//        driver.getButton(Y).whenPressed(new ResetEncoders(driveTrain));
     }
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
-
     }
 
     private void initModeTransitionBindings() {
