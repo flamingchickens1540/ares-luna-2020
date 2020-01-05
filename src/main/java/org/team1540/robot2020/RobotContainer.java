@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
 import org.team1540.rooster.util.ChickenXboxController;
@@ -23,6 +24,7 @@ public class RobotContainer {
 
         initButtonBindings();
         initModeTransitionBindings();
+        initDefaultCommands();
     }
 
     private void initButtonBindings() {
@@ -50,5 +52,9 @@ public class RobotContainer {
                 // disable brakes
                 logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
+    }
+
+    private void initDefaultCommands() {
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
     }
 }
