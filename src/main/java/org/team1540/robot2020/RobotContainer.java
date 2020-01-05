@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.drivetrain.ArcadeDrive;
 import org.team1540.robot2020.commands.drivetrain.ResetEncoders;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
@@ -61,6 +62,6 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+        driveTrain.setDefaultCommand(new ArcadeDrive(driveTrain, driver));
     }
 }
