@@ -9,6 +9,7 @@ import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
 import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.rooster.wrappers.Limelight;
 
 public class RobotContainer {
 
@@ -16,6 +17,8 @@ public class RobotContainer {
 
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
+
+    private Limelight limelight = new Limelight("limelight-a");
 
     private DriveTrain driveTrain = new DriveTrain();
 
@@ -55,6 +58,6 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
     }
 }
