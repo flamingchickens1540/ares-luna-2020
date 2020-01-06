@@ -36,11 +36,12 @@ public class RobotContainer {
         initDefaultCommands();
 
 //        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
-//        driver.getButton(Y).whenPressed(new ResetEncoders(driveTrain));
     }
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
+
+        driver.getButton(Y).whenPressed(new ResetEncoders(driveTrain));
     }
 
     private void initModeTransitionBindings() {
