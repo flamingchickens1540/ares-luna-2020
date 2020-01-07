@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
@@ -53,7 +54,7 @@ public class DriveTrain extends SubsystemBase {
     private Encoder rightEncoder = new TalonEncoder(driveRightA);
 
     // The gyro sensor
-    private final NavX gyro = new NavX(Port.kMXP);
+    private final NavX navx = new NavX(Port.kMXP);
 
     // Odometry class for tracking robot pose
     private final DifferentialDriveOdometry odometry;
@@ -89,6 +90,12 @@ public class DriveTrain extends SubsystemBase {
 
         SmartDashboard.putNumber("drive/leftEncoderTicks", driveLeftA.getSelectedSensorPosition());
         SmartDashboard.putNumber("drive/rightEncoderTicks", driveRightA.getSelectedSensorPosition());
+
+        Pose2d poseMeters = odometry.getPoseMeters();
+        Translation2d postTranslation = poseMeters.getTranslation();
+        SmartDashboard.putNumber("drive/odometry/X", postTranslation.getX());
+        SmartDashboard.putNumber("drive/odometry/Y", postTranslation.getY());
+        SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
     /**
@@ -192,7 +199,7 @@ public class DriveTrain extends SubsystemBase {
      * Zeroes the heading of the robot.
      */
     public void zeroHeading() {
-        gyro.reset();
+        navx.reset();
     }
 
     /**
@@ -201,7 +208,7 @@ public class DriveTrain extends SubsystemBase {
      * @return the robot's heading in degrees, from 180 to 180
      */
     public double getHeading() {
-        return Math.IEEEremainder(gyro.getAngle(), 360) * (kGyroReversed ? -1.0 : 1.0);
+        return Math.IEEEremainder(navx.getAngle(), 360) * (kGyroReversed ? -1.0 : 1.0);
     }
 
     /**
@@ -210,6 +217,6 @@ public class DriveTrain extends SubsystemBase {
      * @return The turn rate of the robot, in degrees per second
      */
     public double getTurnRate() {
-        return gyro.getRate() * (kGyroReversed ? -1.0 : 1.0);
+        return navx.getRate() * (kGyroReversed ? -1.0 : 1.0);
     }
 }
