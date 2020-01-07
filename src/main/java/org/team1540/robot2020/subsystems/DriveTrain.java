@@ -64,6 +64,9 @@ public class DriveTrain extends SubsystemBase {
      * Creates a new DriveSubsystem.
      */
     public DriveTrain() {
+        leftMotors.setInverted(true);
+        rightMotors.setInverted(true);
+
         // Sets the distance per pulse for the encoders
         leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
         rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
