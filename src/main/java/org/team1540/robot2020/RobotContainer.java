@@ -5,8 +5,12 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.PointToVisionTarget;
+import org.team1540.robot2020.commands.TankDrive;
+import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
 import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.rooster.wrappers.Limelight;
 
 public class RobotContainer {
 
@@ -15,11 +19,22 @@ public class RobotContainer {
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
+    private DriveTrain driveTrain = new DriveTrain();
+    private Limelight limelight = new Limelight("limelight-a");
+
     public RobotContainer() {
         logger.info("Creating robot container...");
 
         initButtonBindings();
         initModeTransitionBindings();
+
+        driveTrain.setDefaultCommand(new TankDrive(
+                driveTrain,
+                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).inverted().withDeadzone(0.1),
+                driver.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).inverted().withDeadzone(0.1)
+        ));
+
+        driver.getButton(ChickenXboxController.XboxButton.A).whileHeld(new PointToVisionTarget(driveTrain, limelight));
     }
 
     private void initButtonBindings() {
