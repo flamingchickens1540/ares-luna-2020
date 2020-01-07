@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.ArcadeDrive;
-import org.team1540.robot2020.commands.drivetrain.ResetEncoders;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
@@ -40,7 +39,7 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        driver.getButton(Y).whenPressed(new ResetEncoders(driveTrain));
+        driver.getButton(Y).whenPressed(driveTrain::resetEncoders);
     }
 
     private void initModeTransitionBindings() {
