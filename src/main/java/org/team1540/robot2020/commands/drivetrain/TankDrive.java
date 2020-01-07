@@ -20,7 +20,7 @@ public class TankDrive extends CommandBase {
     @Override
     public void execute() {
         double triggerThrottle = ControlUtils.deadzone(driver.getTriggerAxis(GenericHID.Hand.kRight) - driver.getTriggerAxis(GenericHID.Hand.kLeft), 0.1);
-        driveTrain.setThrottle(
+        driveTrain.tankDrive(
                 ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1) + triggerThrottle,
                 ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.1) + triggerThrottle
         );

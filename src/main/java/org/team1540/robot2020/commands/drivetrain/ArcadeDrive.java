@@ -2,13 +2,9 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.util.ControlUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class ArcadeDrive extends CommandBase {
     private DriveTrain driveTrain;
@@ -43,6 +39,6 @@ public class ArcadeDrive extends CommandBase {
         double rightX = ControlUtils.deadzone(driver.getRectifiedY(GenericHID.Hand.kRight), 0.1);
         double throttleLeft = leftY - (leftY * negativePart(rightX)) + triggerThrottle;
         double throttleRight = leftY + (leftY * positivePart(rightX)) - triggerThrottle;
-        driveTrain.setThrottle(throttleLeft, throttleRight);
+        driveTrain.tankDrive(throttleLeft, throttleRight);
     }
 }

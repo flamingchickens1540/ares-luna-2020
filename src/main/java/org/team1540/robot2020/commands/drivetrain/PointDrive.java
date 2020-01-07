@@ -22,7 +22,7 @@ public class PointDrive extends PIDCommand {
                 ),
                 (double output) -> {
                     double leftY = driver.getRectifiedX(GenericHID.Hand.kLeft);
-                    driveTrain.setThrottle(-output + leftY, output + leftY);
+                    driveTrain.tankDrive(-output + leftY, output + leftY);
                 },
                 driveTrain
         );
