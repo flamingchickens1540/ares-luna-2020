@@ -17,7 +17,7 @@ public class TalonEncoder extends Encoder {
 
     @Override
     public double getRateTicksPerSecond() {
-        return talon.getSelectedSensorVelocity() / 10;
+        return (double) talon.getSelectedSensorVelocity() * 10.0;
     }
 
     @Override

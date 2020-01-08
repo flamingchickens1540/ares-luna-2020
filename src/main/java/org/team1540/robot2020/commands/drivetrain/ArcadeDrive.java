@@ -39,6 +39,7 @@ public class ArcadeDrive extends CommandBase {
         double rightX = ControlUtils.deadzone(driver.getRectifiedY(GenericHID.Hand.kRight), 0.1);
         double throttleLeft = leftY - (leftY * negativePart(rightX)) + triggerThrottle;
         double throttleRight = leftY + (leftY * positivePart(rightX)) - triggerThrottle;
-        driveTrain.tankDrive(throttleLeft, throttleRight);
+//        driveTrain.tankDrive(throttleLeft, throttleRight);
+        driveTrain.tankDriveVolts(throttleLeft*12, throttleRight*12);
     }
 }
