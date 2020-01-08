@@ -18,24 +18,29 @@ import org.team1540.robot2020.shouldbeinrooster.NavX;
 import org.team1540.robot2020.shouldbeinrooster.TalonEncoder;
 
 public class DriveTrain extends SubsystemBase {
-    private final double kS = 0.669;
-    private final double kV = 2.76;
-    private final double kA = 0.662;
-    private final double kP = 0.5;
-    private final double kI = 0;
-    private final double kD = 0;
-    private final double kRamseteB = 2;
-    private final double kRamseteZeta = 0.7;
-    private final double kMaxSpeedMetersPerSecond = 3;
-    private final double kMaxAccelerationMetersPerSecondSquared = 3;
-    private final double kPDriveVel = 19.3;
+
+    // Feed forward constants
+    public final double ksVolts = 0.669;
+    public final double kvVoltSecondsPerMeter = 2.76;
+    public final double kaVoltSecondsSquaredPerMeter = 0.662;
+
+    // ???
+    public final double kPDriveVel = 19.3;
+
     private final double kTrackwidthMeters = 0.761388065;
+    public final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
 
     private final double kWheelCircumference = 0.4863499587;
     private final double kEncoderPPR = 512;
     private final double kEncoderDistancePerPulse = kWheelCircumference / kEncoderPPR;
 
-    private final DifferentialDriveKinematics kDriveKinematics =  new DifferentialDriveKinematics(kTrackwidthMeters);
+    // Motion control
+    public final double kRamseteB = 2;
+    public final double kRamseteZeta = 0.7;
+
+    public final double kMaxSpeedMetersPerSecond = 2;
+    public final double kMaxAccelerationMetersPerSecondSquared = 1;
 
     private WPI_TalonSRX driveLeftA = new WPI_TalonSRX(13);
     private WPI_VictorSPX driveLeftB = new WPI_VictorSPX(12);
