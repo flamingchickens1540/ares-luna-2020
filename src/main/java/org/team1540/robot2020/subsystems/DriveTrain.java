@@ -72,6 +72,9 @@ public class DriveTrain extends SubsystemBase {
         leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
         rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
 
+        leftEncoder.setInverted(true);
+        rightEncoder.setInverted(false);
+
         resetEncoders();
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     }

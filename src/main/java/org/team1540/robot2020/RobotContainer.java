@@ -1,9 +1,11 @@
 package org.team1540.robot2020;
 
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
 import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -40,6 +42,7 @@ public class RobotContainer {
         logger.info("Initializing button bindings...");
 
         driver.getButton(Y).whenPressed(driveTrain::resetEncoders);
+        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
     }
 
     private void initModeTransitionBindings() {
