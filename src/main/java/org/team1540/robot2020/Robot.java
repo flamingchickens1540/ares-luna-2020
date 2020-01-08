@@ -9,12 +9,14 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.apache.log4j.Logger;
 
 public class Robot extends TimedRobot {
   private static final Logger logger = Logger.getLogger(Robot.class);
 
+  private Command m_autonomousCommand;
   private RobotContainer container;
 
   @Override
@@ -54,6 +56,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    m_autonomousCommand = container.getAutoCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
   }
 
   @Override
