@@ -1,11 +1,11 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -25,9 +25,10 @@ public class DriveTrain extends SubsystemBase {
     public final double kvVoltSecondsPerMeter = 2.76;
     public final double kaVoltSecondsSquaredPerMeter = 0.662;
 
-    // ???
+    // Ramsete PID controllers
 //    public final double kPDriveVel = 19.3;
-    public final double kPDriveVel = 0.1;
+    public final double kPDriveVel = 1;
+//    public final double kPDriveVel = 0;
 
     private final double kTrackwidthMeters = 0.761388065;
     public final DifferentialDriveKinematics kDriveKinematics =
@@ -35,7 +36,7 @@ public class DriveTrain extends SubsystemBase {
 
     private final double kWheelCircumference = 0.4863499587;
     private final double kEncoderPPR = 512;
-    private final double kEncoderDistancePerPulse = kWheelCircumference / kEncoderPPR;
+    private final double encoderMetersPerTick = kWheelCircumference / kEncoderPPR;
 
     // Motion control
     public final double kRamseteB = 2;
@@ -44,79 +45,118 @@ public class DriveTrain extends SubsystemBase {
     public final double kMaxSpeedMetersPerSecond = 2;
     public final double kMaxAccelerationMetersPerSecondSquared = 1;
 
-    private WPI_TalonSRX driveLeftA = new WPI_TalonSRX(13);
-    private WPI_VictorSPX driveLeftB = new WPI_VictorSPX(12);
-    private WPI_VictorSPX driveLeftC = new WPI_VictorSPX(11);
+    private static final int DRIVE_POSITION_SLOT_IDX = 0;
+    private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
-    private WPI_TalonSRX driveRightA = new WPI_TalonSRX(1);
-    private WPI_VictorSPX driveRightB = new WPI_VictorSPX(2);
-    private WPI_VictorSPX driveRightC = new WPI_VictorSPX(3);
+    private BaseMotorController[] driveMotorAll;
+    private TalonSRX[] driveMotorMasters;
+    private VictorSPX[] driveMotorFollowers;
+    private BaseMotorController[] driveMotorLeft;
+    private BaseMotorController[] driveMotorRight;
 
-//    private SpeedControllerGroup leftMotors = new SpeedControllerGroup(driveLeftA, driveLeftB, driveLeftC);
-//    private SpeedControllerGroup rightMotors = new SpeedControllerGroup(driveRightA, driveRightB, driveRightC);
+    private TalonSRX driveMotorLeftA = new TalonSRX(13);
+    private VictorSPX driveMotorLeftB = new VictorSPX(12);
+    private VictorSPX driveMotorLeftC = new VictorSPX(11);
 
-//    private DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
-    private DifferentialDrive drive = new DifferentialDrive(driveLeftA, driveRightA);
+    private TalonSRX driveMotorRightA = new TalonSRX(1);
+    private VictorSPX driveMotorRightC = new VictorSPX(3);
+    private VictorSPX driveMotorRightB = new VictorSPX(2);
 
-    private Encoder leftEncoder = new TalonEncoder(driveLeftA);
-    private Encoder rightEncoder = new TalonEncoder(driveRightA);
+    private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
+    private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
 
-    // The gyro sensor
+
     private final NavX navx = new NavX(Port.kMXP);
 
-    // Odometry class for tracking robot pose
-    private final DifferentialDriveOdometry odometry;
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    private int saturationVoltage = 12;
 
-    private boolean kGyroReversed = false;
-
-    /**
-     * Creates a new DriveSubsystem.
-     */
     public DriveTrain() {
-        driveLeftB.follow(driveLeftA);
-        driveLeftC.follow(driveLeftA);
-        driveRightB.follow(driveRightA);
-        driveRightC.follow(driveRightA);
+        initMotors();
+        initEncoders();
+    }
 
-        driveLeftA.setInverted(true);
-        driveLeftB.setInverted(true);
-        driveLeftC.setInverted(true);
-//        driveRightA.setInverted(true);
-//        driveRightB.setInverted(true);
-//        driveRightC.setInverted(true);
+    private void initMotors() {
+        driveMotorAll = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC, driveMotorRightA, driveMotorRightB, driveMotorRightC};
+        driveMotorMasters = new TalonSRX[]{driveMotorLeftA, driveMotorRightA};
+        driveMotorFollowers = new VictorSPX[]{driveMotorLeftB, driveMotorLeftC, driveMotorRightB, driveMotorRightC};
+        driveMotorLeft = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC};
+        driveMotorRight = new BaseMotorController[]{driveMotorRightA, driveMotorRightB, driveMotorRightC};
 
-//        leftMotors.setInverted(true);
-//        rightMotors.setInverted(true);
+        for (BaseMotorController controller : driveMotorAll) {
+            controller.setNeutralMode(NeutralMode.Brake);
 
-        drive.setRightSideInverted(false);
+            controller.configVoltageCompSaturation(saturationVoltage);
+            controller.enableVoltageCompensation(true);
+            controller.configPeakOutputForward(1);
+            controller.configPeakOutputReverse(-1);
 
-        // Sets the distance per pulse for the encoders
-        leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
-        rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
+            controller.configOpenloopRamp(0);
+            controller.configForwardSoftLimitEnable(false);
+            controller.configReverseSoftLimitEnable(false);
+            controller.overrideLimitSwitchesEnable(false);
+        }
 
-        leftEncoder.setInverted(true);
+        for (TalonSRX controller : driveMotorMasters) {
+            controller.setNeutralMode(NeutralMode.Brake);
+
+            // Position
+            controller.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
+            controller.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
+            controller.config_kD(DRIVE_POSITION_SLOT_IDX, 0);
+            controller.config_kF(DRIVE_POSITION_SLOT_IDX, 0);
+
+            // Velocity
+            controller.config_kP(DRIVE_VELOCITY_SLOT_IDX, 3);
+            controller.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
+            controller.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
+            controller.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
+
+            controller.configPeakCurrentLimit(0);
+            controller.configContinuousCurrentLimit(40);
+        }
+
+        for (BaseMotorController talon : driveMotorLeft) {
+            talon.setInverted(true);
+        }
+
+        for (BaseMotorController talon : driveMotorRight) {
+            talon.setInverted(false);
+        }
+
+        driveMotorLeftA.setSensorPhase(false);
+        driveMotorRightA.setSensorPhase(false);
+
+        driveMotorLeftB.follow(driveMotorLeftA);
+        driveMotorLeftC.follow(driveMotorLeftA);
+
+        driveMotorRightB.follow(driveMotorRightA);
+        driveMotorRightC.follow(driveMotorRightA);
+    }
+
+    private void initEncoders() {
+        leftEncoder.setDistancePerPulse(encoderMetersPerTick);
+        rightEncoder.setDistancePerPulse(encoderMetersPerTick);
+
+        leftEncoder.setInverted(false);
         rightEncoder.setInverted(false);
 
         resetEncoders();
-        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     }
 
     @Override
     public void periodic() {
-        // Update the odometry in the periodic block
         odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(),
             rightEncoder.getDistance());
 
         SmartDashboard.putNumber("drive/encoderDistanceLeft", leftEncoder.getDistance());
         SmartDashboard.putNumber("drive/encoderDistanceRight", rightEncoder.getDistance());
 
-//        SmartDashboard.putNumber("drive/encoderSpeedLeft", leftEncoder.getRate());
-//        SmartDashboard.putNumber("drive/encoderSpeedRight", rightEncoder.getRate());
-        SmartDashboard.putNumber("drive/encoderSpeedLeft", this.getWheelSpeeds().leftMetersPerSecond);
-        SmartDashboard.putNumber("drive/encoderSpeedRight", this.getWheelSpeeds().rightMetersPerSecond);
+        SmartDashboard.putNumber("drive/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("drive/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
 
-        SmartDashboard.putNumber("drive/encoderTicksLeft", driveLeftA.getSelectedSensorPosition());
-        SmartDashboard.putNumber("drive/encoderTicksRight", driveRightA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("drive/encoderTicksLeft", driveMotorLeftA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("drive/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
 
         Pose2d poseMeters = odometry.getPoseMeters();
         Translation2d postTranslation = poseMeters.getTranslation();
@@ -125,131 +165,43 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
-    /**
-     * Returns the currently-estimated pose of the robot.
-     *
-     * @return The pose.
-     */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
     }
 
-    /**
-     * Returns the current wheel speeds of the robot.
-     *
-     * @return The current wheel speeds.
-     */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-        SmartDashboard.putNumber("drive/leftSpeed", leftEncoder.getRate());
-        SmartDashboard.putNumber("drive/rightSpeed", rightEncoder.getRate());
         return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
     }
 
-    /**
-     * Resets the odometry to the specified pose.
-     *
-     * @param pose The pose to which to set the odometry.
-     */
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
         odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
-    /**
-     * Drives the robot using arcade controls.
-     *
-     * @param fwd the commanded forward movement
-     * @param rot the commanded rotation
-     */
-    public void arcadeDrive(double fwd, double rot) {
-        drive.arcadeDrive(fwd, rot);
-    }
-
-    /**
-     * Controls the left and right sides of the drive directly with voltages.
-     *
-     * @param leftVolts the commanded left output
-     * @param rightVolts the commanded right output
-     */
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-//        leftMotors.setVoltage(leftVolts);
-//        rightMotors.setVoltage(-rightVolts);
-        driveLeftA.setVoltage(leftVolts);
-        driveRightA.setVoltage(rightVolts);
+        driveMotorLeftA.set(ControlMode.PercentOutput, leftVolts / saturationVoltage);
+        driveMotorRightA.set(ControlMode.PercentOutput, rightVolts / saturationVoltage);
     }
 
-    public void tankDrive(double leftSpeed, double rightSpeed) {
-//        drive.tankDrive(leftSpeed, rightSpeed);
-        driveLeftA.set(ControlMode.PercentOutput, leftSpeed);
-        driveRightA.set(ControlMode.PercentOutput, rightSpeed);
+    public void tankDriveVelocity(double leftMetersPerSecond, double rightMetersPerSecond) {
+        driveMotorLeftA.selectProfileSlot(DRIVE_VELOCITY_SLOT_IDX, 0);
+        driveMotorRightA.selectProfileSlot(DRIVE_VELOCITY_SLOT_IDX, 0);
+
+        driveMotorLeftA.set(ControlMode.Velocity, leftMetersPerSecond / encoderMetersPerTick / 10);
+        driveMotorRightA.set(ControlMode.Velocity, rightMetersPerSecond / encoderMetersPerTick / 10);
     }
 
-    /**
-     * Resets the drive encoders to currently read a position of 0.
-     */
+    public void tankDrivePercent(double leftSpeed, double rightSpeed) {
+        driveMotorLeftA.set(ControlMode.PercentOutput, leftSpeed);
+        driveMotorRightA.set(ControlMode.PercentOutput, rightSpeed);
+    }
+
     public void resetEncoders() {
-        driveLeftA.setSelectedSensorPosition(0);
-        driveRightA.setSelectedSensorPosition(0);
+        driveMotorLeftA.setSelectedSensorPosition(0);
+        driveMotorRightA.setSelectedSensorPosition(0);
     }
 
-    /**leftMetersPerSecond
-     * Gets the average distance of the two encoders.
-     *
-     * @return the average of the two encoder readings
-     */
-    public double getAverageEncoderDistance() {
-        return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2.0;
-    }
-
-    /**
-     * Gets the left drive encoder.
-     *
-     * @return the left drive encoder
-     */
-    public Encoder getLeftEncoder() {
-        return leftEncoder;
-    }
-
-    /**
-     * Gets the right drive encoder.
-     *
-     * @return the right drive encoder
-     */
-    public Encoder getRightEncoder() {
-        return rightEncoder;
-    }
-
-    /**
-     * Sets the max output of the drive.  Useful for scaling the drive to drive more slowly.
-     *
-     * @param maxOutput the maximum output to which the drive will be constrained
-     */
-    public void setMaxOutput(double maxOutput) {
-        drive.setMaxOutput(maxOutput);
-    }
-
-    /**
-     * Zeroes the heading of the robot.
-     */
-    public void zeroHeading() {
-        navx.reset();
-    }
-
-    /**
-     * Returns the heading of the robot.
-     *
-     * @return the robot's heading in degrees, from 180 to 180
-     */
     public double getHeading() {
-        return Math.IEEEremainder(navx.getAngle(), 360) * (kGyroReversed ? -1.0 : 1.0);
-    }
-
-    /**
-     * Returns the turn rate of the robot.
-     *
-     * @return The turn rate of the robot, in degrees per second
-     */
-    public double getTurnRate() {
-        return navx.getRate() * (kGyroReversed ? -1.0 : 1.0);
+        return Math.IEEEremainder(navx.getAngle(), 360);
     }
 }

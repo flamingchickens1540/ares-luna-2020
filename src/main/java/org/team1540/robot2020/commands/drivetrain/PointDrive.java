@@ -22,7 +22,7 @@ public class PointDrive extends PIDCommand {
                 ),
                 (double output) -> {
                     double leftY = driver.getRectifiedX(GenericHID.Hand.kLeft);
-                    driveTrain.tankDrive(-output + leftY, output + leftY);
+                    driveTrain.tankDrivePercent(-output + leftY, output + leftY);
                 },
                 driveTrain
         );
