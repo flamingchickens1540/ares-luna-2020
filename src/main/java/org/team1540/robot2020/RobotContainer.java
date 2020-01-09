@@ -14,14 +14,12 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.ArcadeDrive;
+import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
@@ -131,10 +129,14 @@ public class RobotContainer {
         );
 
         // Run path following command, then stop at the end.
-        return ramseteCommand.andThen(() -> driveTrain.tankDriveVolts(0, 0));
+        return CommandGroupBase.sequence(
+                new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
+                ramseteCommand,
+                new InstantCommand(() -> driveTrain.tankDriveVolts(0, 0))
+        );
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new ArcadeDrive(driveTrain, driver));
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
     }
 }

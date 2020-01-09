@@ -20,6 +20,9 @@ public abstract class Encoder {
     public double getRate() {
         return inversionNumber * distancePerPulse * getRateTicksPerSecond();
     }
+//    public double getRate() {
+//        return inversionNumber * getRateTicksPerSecond();
+//    }
 
     public abstract double getDistanceTicks();
 

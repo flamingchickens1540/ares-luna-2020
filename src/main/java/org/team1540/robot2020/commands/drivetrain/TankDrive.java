@@ -24,6 +24,10 @@ public class TankDrive extends CommandBase {
                 ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1) + triggerThrottle,
                 ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.1) + triggerThrottle
         );
+//        driveTrain.tankDriveVolts(
+//                (ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1) + triggerThrottle) * 12,
+//                (ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.1) + triggerThrottle) * 12
+//        );
     }
 
 

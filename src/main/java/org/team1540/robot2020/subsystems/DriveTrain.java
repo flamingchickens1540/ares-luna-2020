@@ -1,5 +1,6 @@
 package org.team1540.robot2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -25,7 +26,8 @@ public class DriveTrain extends SubsystemBase {
     public final double kaVoltSecondsSquaredPerMeter = 0.662;
 
     // ???
-    public final double kPDriveVel = 19.3;
+//    public final double kPDriveVel = 19.3;
+    public final double kPDriveVel = 0.1;
 
     private final double kTrackwidthMeters = 0.761388065;
     public final DifferentialDriveKinematics kDriveKinematics =
@@ -50,10 +52,11 @@ public class DriveTrain extends SubsystemBase {
     private WPI_VictorSPX driveRightB = new WPI_VictorSPX(2);
     private WPI_VictorSPX driveRightC = new WPI_VictorSPX(3);
 
-    private SpeedControllerGroup leftMotors = new SpeedControllerGroup(driveLeftA, driveLeftB, driveLeftC);
-    private SpeedControllerGroup rightMotors = new SpeedControllerGroup(driveRightA, driveRightB, driveRightC);
+//    private SpeedControllerGroup leftMotors = new SpeedControllerGroup(driveLeftA, driveLeftB, driveLeftC);
+//    private SpeedControllerGroup rightMotors = new SpeedControllerGroup(driveRightA, driveRightB, driveRightC);
 
-    private DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
+//    private DifferentialDrive drive = new DifferentialDrive(leftMotors, rightMotors);
+    private DifferentialDrive drive = new DifferentialDrive(driveLeftA, driveRightA);
 
     private Encoder leftEncoder = new TalonEncoder(driveLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveRightA);
@@ -70,8 +73,22 @@ public class DriveTrain extends SubsystemBase {
      * Creates a new DriveSubsystem.
      */
     public DriveTrain() {
-        leftMotors.setInverted(true);
-        rightMotors.setInverted(true);
+        driveLeftB.follow(driveLeftA);
+        driveLeftC.follow(driveLeftA);
+        driveRightB.follow(driveRightA);
+        driveRightC.follow(driveRightA);
+
+        driveLeftA.setInverted(true);
+        driveLeftB.setInverted(true);
+        driveLeftC.setInverted(true);
+//        driveRightA.setInverted(true);
+//        driveRightB.setInverted(true);
+//        driveRightC.setInverted(true);
+
+//        leftMotors.setInverted(true);
+//        rightMotors.setInverted(true);
+
+        drive.setRightSideInverted(false);
 
         // Sets the distance per pulse for the encoders
         leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
@@ -90,14 +107,16 @@ public class DriveTrain extends SubsystemBase {
         odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(),
             rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/leftEncoderDistance", leftEncoder.getDistance());
-        SmartDashboard.putNumber("drive/rightEncoderDistance", rightEncoder.getDistance());
+        SmartDashboard.putNumber("drive/encoderDistanceLeft", leftEncoder.getDistance());
+        SmartDashboard.putNumber("drive/encoderDistanceRight", rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/leftEncoderSpeed", leftEncoder.getRate());
-        SmartDashboard.putNumber("drive/rightEncoderSpeed", rightEncoder.getRate());
+//        SmartDashboard.putNumber("drive/encoderSpeedLeft", leftEncoder.getRate());
+//        SmartDashboard.putNumber("drive/encoderSpeedRight", rightEncoder.getRate());
+        SmartDashboard.putNumber("drive/encoderSpeedLeft", this.getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("drive/encoderSpeedRight", this.getWheelSpeeds().rightMetersPerSecond);
 
-        SmartDashboard.putNumber("drive/leftEncoderTicks", driveLeftA.getSelectedSensorPosition());
-        SmartDashboard.putNumber("drive/rightEncoderTicks", driveRightA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("drive/encoderTicksLeft", driveLeftA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("drive/encoderTicksRight", driveRightA.getSelectedSensorPosition());
 
         Pose2d poseMeters = odometry.getPoseMeters();
         Translation2d postTranslation = poseMeters.getTranslation();
@@ -121,6 +140,8 @@ public class DriveTrain extends SubsystemBase {
      * @return The current wheel speeds.
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        SmartDashboard.putNumber("drive/leftSpeed", leftEncoder.getRate());
+        SmartDashboard.putNumber("drive/rightSpeed", rightEncoder.getRate());
         return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
     }
 
@@ -151,12 +172,16 @@ public class DriveTrain extends SubsystemBase {
      * @param rightVolts the commanded right output
      */
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        leftMotors.setVoltage(leftVolts);
-        rightMotors.setVoltage(-rightVolts);
+//        leftMotors.setVoltage(leftVolts);
+//        rightMotors.setVoltage(-rightVolts);
+        driveLeftA.setVoltage(leftVolts);
+        driveRightA.setVoltage(rightVolts);
     }
 
     public void tankDrive(double leftSpeed, double rightSpeed) {
-        drive.tankDrive(leftSpeed, rightSpeed);
+//        drive.tankDrive(leftSpeed, rightSpeed);
+        driveLeftA.set(ControlMode.PercentOutput, leftSpeed);
+        driveRightA.set(ControlMode.PercentOutput, rightSpeed);
     }
 
     /**
@@ -167,7 +192,7 @@ public class DriveTrain extends SubsystemBase {
         driveRightA.setSelectedSensorPosition(0);
     }
 
-    /**
+    /**leftMetersPerSecond
      * Gets the average distance of the two encoders.
      *
      * @return the average of the two encoder readings
