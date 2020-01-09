@@ -65,8 +65,9 @@ public class DriveTrain extends SubsystemBase {
     private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
 
-
     private final NavX navx = new NavX(Port.kMXP);
+
+    private double navxOffset = 0;
 
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
@@ -203,5 +204,13 @@ public class DriveTrain extends SubsystemBase {
 
     public double getHeading() {
         return Math.IEEEremainder(navx.getAngle(), 360);
+    }
+
+    public void zeroNavx() {
+        navxOffset = navx.getYawRadians();
+    }
+
+    public double getNavxOffset() {
+        return navxOffset;
     }
 }
