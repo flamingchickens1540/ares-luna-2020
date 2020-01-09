@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
@@ -82,64 +84,7 @@ public class RobotContainer {
     }
 
     public Command getAutoCommand() {
-
-        // Create a voltage constraint to ensure we don't accelerate too fast
-        var autoVoltageConstraint =
-            new DifferentialDriveVoltageConstraint(
-                new SimpleMotorFeedforward(driveTrain.ksVolts,
-                    driveTrain.kvVoltSecondsPerMeter,
-                    driveTrain.kaVoltSecondsSquaredPerMeter),
-                driveTrain.kDriveKinematics,
-                10);
-
-        // Create config for trajectory
-        TrajectoryConfig config =
-            new TrajectoryConfig(driveTrain.kMaxSpeedMetersPerSecond,
-                driveTrain.kMaxAccelerationMetersPerSecondSquared)
-                // Add kinematics to ensure max speed is actually obeyed
-                .setKinematics(driveTrain.kDriveKinematics)
-                // Apply the voltage constraint
-                .addConstraint(autoVoltageConstraint);
-
-        config.setReversed(true);
-
-        // An example trajectory to follow.  All units in meters.
-        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(
-//                new Translation2d(1, 1),
-//                new Translation2d(2, -1)
-            ),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(-3, 0, new Rotation2d(0)),
-            // Pass config
-            config
-        );
-
-        RamseteCommand ramseteCommand = new RamseteCommand(
-            exampleTrajectory,
-            driveTrain::getPose,
-            new RamseteController(driveTrain.kRamseteB, driveTrain.kRamseteZeta),
-            new SimpleMotorFeedforward(driveTrain.ksVolts,
-                driveTrain.kvVoltSecondsPerMeter,
-                driveTrain.kaVoltSecondsSquaredPerMeter),
-            driveTrain.kDriveKinematics,
-            driveTrain::getWheelSpeeds,
-            new PIDController(driveTrain.kPDriveVel, 0, 0),
-            new PIDController(driveTrain.kPDriveVel, 0, 0),
-            // RamseteCommand passes volts to the callback
-            driveTrain::tankDriveVolts,
-            driveTrain
-        );
-
-        // Run path following command, then stop at the end.
-        return CommandGroupBase.sequence(
-                new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
-                ramseteCommand,
-            new InstantCommand(() -> driveTrain.tankDriveVelocity(0, 0))
-        );
+        return new Autonomous(driveTrain);
     }
 
     private void initDefaultCommands() {
