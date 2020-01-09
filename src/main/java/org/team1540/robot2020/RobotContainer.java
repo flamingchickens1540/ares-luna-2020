@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
@@ -102,6 +101,8 @@ public class RobotContainer {
                 // Apply the voltage constraint
                 .addConstraint(autoVoltageConstraint);
 
+        config.setReversed(true);
+
         // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
             // Start at the origin facing the +X direction
@@ -112,7 +113,7 @@ public class RobotContainer {
 //                new Translation2d(2, -1)
             ),
             // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
+            new Pose2d(-3, 0, new Rotation2d(0)),
             // Pass config
             config
         );
@@ -142,6 +143,6 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver, navx));
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
     }
 }

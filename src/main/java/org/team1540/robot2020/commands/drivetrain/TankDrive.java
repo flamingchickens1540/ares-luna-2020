@@ -23,6 +23,6 @@ public class TankDrive extends CommandBase {
         double triggerThrottle = ControlUtils.deadzone(driver.getTriggerAxis(GenericHID.Hand.kRight) - driver.getTriggerAxis(GenericHID.Hand.kLeft), 0.1);
         double leftSpeed = ControlUtils.deadzone(driver.getRectifiedX(Hand.kLeft), 0.1) + triggerThrottle;
         double rightSpeed = ControlUtils.deadzone(driver.getRectifiedX(Hand.kRight), 0.1) + triggerThrottle;
-        driveTrain.tankDriveVolts(leftSpeed * 12, rightSpeed * 12);
+        driveTrain.tankDrivePercent(leftSpeed, rightSpeed);
     }
 }
