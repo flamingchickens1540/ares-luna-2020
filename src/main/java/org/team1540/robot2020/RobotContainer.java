@@ -5,12 +5,13 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.GoToDistance;
 import org.team1540.robot2020.commands.PointToVisionTarget;
 import org.team1540.robot2020.commands.TankDrive;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.util.InstCommand;
+import org.team1540.robot2020.wrappers.Limelight;
 import org.team1540.rooster.util.ChickenXboxController;
-import org.team1540.rooster.wrappers.Limelight;
 
 public class RobotContainer {
 
@@ -20,7 +21,8 @@ public class RobotContainer {
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
     private DriveTrain driveTrain = new DriveTrain();
-    private Limelight limelight = new Limelight("limelight-a");
+//    private Limelight limelight = new Limelight("limelight-a", , ,230);
+    public Limelight limelight = new Limelight("limelight-a",6.35 , 0,81.28);
 
     public RobotContainer() {
         logger.info("Creating robot container...");
@@ -34,8 +36,12 @@ public class RobotContainer {
                 driver.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).inverted().withDeadzone(0.1)
         ));
 
-        driver.getButton(ChickenXboxController.XboxButton.A).whileHeld(new PointToVisionTarget(driveTrain, limelight));
+        driver.getButton(ChickenXboxController.XboxButton.A).whenHeld(new PointToVisionTarget(driveTrain, limelight));
+        driver.getButton(ChickenXboxController.XboxButton.B).whenHeld(new GoToDistance(driveTrain,limelight,150));
+
     }
+
+
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
