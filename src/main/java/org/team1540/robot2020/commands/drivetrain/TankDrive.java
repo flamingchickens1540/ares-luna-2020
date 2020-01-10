@@ -1,18 +1,16 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.util.ControlUtils;
+import org.team1540.rooster.wrappers.Limelight;
 
 public class TankDrive extends CommandBase {
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
-    private final Limelight limelight;
-    private MiniPID pointController = new MiniPID(0, 0, 0);
 
     public TankDrive(DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight) {
         this.driveTrain = driveTrain;

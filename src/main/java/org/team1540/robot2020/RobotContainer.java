@@ -23,11 +23,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.drivetrain.PIDConfig;
+import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
+import org.team1540.robot2020.shouldbeinrooster.NavX;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
-import org.team1540.rooster.wrappers.NavX;
+import org.team1540.rooster.wrappers.Limelight;
 
 public class RobotContainer {
 
@@ -85,7 +87,7 @@ public class RobotContainer {
     public Command getAutoCommand() {
 
         // Create a voltage constraint to ensure we don't accelerate too fast
-        var autoVoltageConstraint =
+        DifferentialDriveVoltageConstraint autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(driveTrain.ksVolts,
                     driveTrain.kvVoltSecondsPerMeter,
@@ -142,6 +144,7 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
+        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(0, 0, 0, 0)));
+//        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
     }
 }
