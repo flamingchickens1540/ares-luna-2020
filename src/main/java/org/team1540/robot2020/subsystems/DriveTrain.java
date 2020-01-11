@@ -28,15 +28,19 @@ public class DriveTrain implements Subsystem {
     }
 
     public void initDriveTrain() {
+//        rightA = new CANSparkMax(1, MotorType.kBrushless);
+//        rightB = new CANSparkMax(2, MotorType.kBrushless);
+//        leftA = new CANSparkMax(3, MotorType.kBrushless);
+//        leftB = new CANSparkMax(4, MotorType.kBrushless);
+
         rightA = new CANSparkMax(1, MotorType.kBrushless);
-        rightB = new CANSparkMax(2, MotorType.kBrushless);
         leftA = new CANSparkMax(3, MotorType.kBrushless);
-        leftB = new CANSparkMax(4, MotorType.kBrushless);
+
 
         rightA.setInverted(true);
         leftA.setInverted(false);
-
-        leftB.follow(leftA);
-        rightB.follow(rightA);
+//
+//        leftB.follow(leftA);
+//        rightB.follow(rightA);
     }
 }

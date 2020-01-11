@@ -22,7 +22,7 @@ public class RobotContainer {
 
     private DriveTrain driveTrain = new DriveTrain();
 //    private Limelight limelight = new Limelight("limelight-a", , ,230);
-    public Limelight limelight = new Limelight("limelight-a",6.35 , 0,81.28);
+    public Limelight limelight = new Limelight("limelight-a",6.35 , 0,31.75);
 
     public RobotContainer() {
         logger.info("Creating robot container...");
@@ -37,7 +37,7 @@ public class RobotContainer {
         ));
 
         driver.getButton(ChickenXboxController.XboxButton.A).whenHeld(new PointToVisionTarget(driveTrain, limelight));
-        driver.getButton(ChickenXboxController.XboxButton.B).whenHeld(new GoToDistance(driveTrain,limelight,150));
+        driver.getButton(ChickenXboxController.XboxButton.B).whenHeld(new GoToDistance(driveTrain,limelight,200));
 
     }
 
