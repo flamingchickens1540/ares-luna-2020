@@ -5,6 +5,7 @@ import static edu.wpi.first.networktables.EntryListenerFlags.kUpdate;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -39,12 +40,20 @@ public class PointToTarget extends CommandBase {
 
     private ConstantOptimizer optimizer = new ConstantOptimizer(0, true, 0.1);
     private PIDConfig config;
+    private double m_prevTime;
+
+    private SimpleMotorFeedforward feedforward;
+    private double prevLeftMetersPerSecond;
+    private double prevRightMetersPerSecond;
 
     public PointToTarget(NavX navx, DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight, PIDConfig config) {
         this.navx = navx;
         this.driveTrain = driveTrain;
         this.driver = driver;
         this.limelight = limelight;
+        this.feedforward = new SimpleMotorFeedforward(driveTrain.ksVolts,
+            driveTrain.kvVoltSecondsPerMeter,
+            driveTrain.kaVoltSecondsSquaredPerMeter);
 
         setPID(config);
         addRequirements(driveTrain);
@@ -87,18 +96,35 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void execute() {
-        double leftMotors = driver.getRectifiedXAxis(Hand.kLeft).withDeadzone(0.2).value();
-        double rightMotors = driver.getRectifiedXAxis(Hand.kRight).withDeadzone(0.2).value();
+        double leftMetersPerSecond = driver.getRectifiedXAxis(Hand.kLeft).withDeadzone(0.2).value();
+        double rightMetersPerSecond = driver.getRectifiedXAxis(Hand.kRight).withDeadzone(0.2).value();
         double triggerValues = driver.getAxis(XboxAxis.LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(XboxAxis.RIGHT_TRIG).withDeadzone(0.2).value();
-        leftMotors += triggerValues;
-        rightMotors -= triggerValues;
+        triggerValues *= 3;
+        leftMetersPerSecond += triggerValues;
+        rightMetersPerSecond -= triggerValues;
 
         double pidOutput = pointController.getOutput(calculateError());
-        leftMotors += pidOutput;
-        rightMotors -= pidOutput;
+        leftMetersPerSecond += pidOutput;
+        rightMetersPerSecond -= pidOutput;
         SmartDashboard.putNumber("Shooter/PIDOutput", pidOutput);
 
-        driveTrain.tankDrivePercent(leftMotors, rightMotors);
+        double curTime = timeoutTimer.get();
+        double dt = curTime - m_prevTime;
+
+        double leftAcceleration = (leftMetersPerSecond - prevLeftMetersPerSecond) / dt;
+        double leftVoltage = feedforward.calculate(leftMetersPerSecond, leftAcceleration);
+        double rightAcceleration = (rightMetersPerSecond - prevRightMetersPerSecond) / dt;
+        double rightVoltage = feedforward.calculate(rightMetersPerSecond, rightAcceleration);
+        SmartDashboard.putNumber("Shooter/leftAcceleration", leftAcceleration);
+        SmartDashboard.putNumber("Shooter/leftMetersPerSecond", leftMetersPerSecond);
+        SmartDashboard.putNumber("Shooter/rightAcceleration", rightAcceleration);
+        SmartDashboard.putNumber("Shooter/rightMetersPerSecond", rightMetersPerSecond);
+
+        driveTrain.tankDriveVolts(leftVoltage, rightVoltage);
+
+        prevLeftMetersPerSecond = leftMetersPerSecond;
+        prevRightMetersPerSecond = rightMetersPerSecond;
+        m_prevTime = curTime;
     }
 
     private double calculateError() {
@@ -118,17 +144,17 @@ public class PointToTarget extends CommandBase {
         sampleCount++;
         errorAccumulator += Math.abs(error);
 
-        if (sampleCount == finishedSamples) {
-            if (hasTimedOut() || hasReachedGoal()) {
-                double newP = optimizer.computeNextGuess(hasTimedOut() ? Math.toDegrees(error) + 3 : timeoutTimer.get());
-                config.d = newP;
-//                setPID(config);
-                initialize();
-            } else {
-                sampleCount = 0;
-                errorAccumulator = 0;
-            }
-        }
+//        if (sampleCount == finishedSamples) {
+//            if (hasTimedOut() || hasReachedGoal()) {
+//                double newP = optimizer.computeNextGuess(hasTimedOut() ? Math.toDegrees(error) + 3 : timeoutTimer.get());
+//                config.d = newP;
+////                setPID(config);
+//                initialize();
+//            } else {
+//                sampleCount = 0;
+//                errorAccumulator = 0;
+//            }
+//        }
 
         return error;
     }

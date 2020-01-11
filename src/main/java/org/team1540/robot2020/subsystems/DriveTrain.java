@@ -21,9 +21,9 @@ import org.team1540.robot2020.shouldbeinrooster.TalonEncoder;
 public class DriveTrain extends SubsystemBase {
 
     // Feed forward constants
-    public final double ksVolts = 0.669;
-    public final double kvVoltSecondsPerMeter = 2.76;
-    public final double kaVoltSecondsSquaredPerMeter = 0.662;
+    public final double ksVolts = 1.33;
+    public final double kvVoltSecondsPerMeter = 7.12;
+    public final double kaVoltSecondsSquaredPerMeter = 1.11;
 
     // Ramsete PID controllers
 //    public final double kPDriveVel = 19.3;
