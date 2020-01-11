@@ -39,8 +39,8 @@ public class ConstantOptimizer {
     }
 
     public double computeNextGuess(double currentGuessWeight) {
-        if (currentGuessWeight >= lastGuessWeight) {
-            currentStepSize /= 2;
+        if (currentGuessWeight > lastGuessWeight) {
+            currentStepSize /= 1.5;
             nextStepPositive = !nextStepPositive;
         }
 
