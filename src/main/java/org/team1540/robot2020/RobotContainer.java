@@ -144,7 +144,7 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.1, 6.0, 0.06, 0.4, 0.03)));
+        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
 //        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
     }
 }

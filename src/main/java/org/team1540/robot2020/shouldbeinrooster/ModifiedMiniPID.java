@@ -296,8 +296,10 @@ public class ModifiedMiniPID {
 
         // Figure out what we're doing with the error.
         if (errorSum != 0 && Math.signum(errorSum) != Math.signum(error)) {
-            errorSum = 0;
-        } else if (minOutput != maxOutput && !bounded(output, minOutput, maxOutput)) {
+            errorSum *= 0.5;
+        }
+
+        if (minOutput != maxOutput && !bounded(output, minOutput, maxOutput)) {
             errorSum = error;
             // reset the error sum to a sane level
             // Setting to current error ensures a smooth transition when the P term
