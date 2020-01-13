@@ -37,7 +37,7 @@ public class RobotContainer {
         ));
 
         driver.getButton(ChickenXboxController.XboxButton.A).whenHeld(new PointToVisionTarget(driveTrain, limelight));
-        driver.getButton(ChickenXboxController.XboxButton.B).whenHeld(new GoToDistance(driveTrain,limelight,200));
+        driver.getButton(ChickenXboxController.XboxButton.B).whenHeld(new GoToDistance(driveTrain,limelight,150));
 
     }
 
