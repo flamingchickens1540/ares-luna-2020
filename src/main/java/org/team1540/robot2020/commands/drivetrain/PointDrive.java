@@ -9,8 +9,6 @@ import org.team1540.rooster.util.ControlUtils;
 import org.team1540.rooster.util.TrigUtils;
 import org.team1540.rooster.wrappers.NavX;
 
-import javax.naming.ldap.Control;
-
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
     private ChickenXboxController driver;

@@ -26,6 +26,7 @@ import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
+import org.team1540.robot2020.subsystems.Shooter;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.NavX;
 
@@ -42,6 +43,7 @@ public class RobotContainer {
     private NavX navx = new NavX(SPI.Port.kMXP);
 
     private DriveTrain driveTrain = new DriveTrain();
+    private Shooter shooter = new Shooter();
 
     public RobotContainer() {
         logger.info("Creating robot container...");

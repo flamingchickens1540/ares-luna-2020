@@ -1,9 +1,22 @@
 package org.team1540.robot2020.subsystems;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    private PIDController controller = new PIDController(1, 0, 0);
+    private TalonFX shooterA = new TalonFX(0);
+    private TalonFX shooterB = new TalonFX(0);
 
+    public Shooter() {
+        shooterB.follow(shooterA);
+    }
+
+    public void set(double speed) {
+        shooterA.set(TalonFXControlMode.PercentOutput, speed);
+    }
+
+    public double getSpeedRPM() {
+        return shooterA.getSelectedSensorVelocity();
+    }
 }
