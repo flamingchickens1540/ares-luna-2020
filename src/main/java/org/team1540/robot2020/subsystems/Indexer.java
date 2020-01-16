@@ -14,36 +14,4 @@ public class Indexer extends SubsystemBase {
     private DigitalInput topSensor = new DigitalInput(0);
 
     private int balls = 0;
-
-    public void setSpeed(double speed) {
-        cord.set(speed);
-    }
-
-    public Boolean getStagingSensor() {
-        return stagingSensor.get();
-    }
-
-    public Boolean getTopSensor() {
-        return topSensor.get();
-    }
-
-    public double getEncoderInches() {
-        return cordEncoder.getPosition();
-    }
-
-    public void resetEncoder() {
-        cordEncoder.setPosition(0);
-    }
-
-    public int getBalls() {
-        return balls;
-    }
-
-    public void addBall() {
-        balls++;
-    }
-
-    public void removeBall() {
-        balls--;
-    }
 }
