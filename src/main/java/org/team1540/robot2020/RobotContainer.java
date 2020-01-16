@@ -1,8 +1,5 @@
 package org.team1540.robot2020;
 
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
-
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -14,31 +11,32 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.List;
+import io.github.pseudoresonance.pixy2api.Pixy2;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.drivetrain.PIDConfig;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
+import org.team1540.robot2020.commands.vision.PixyTest;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.Limelight;
 
+import java.util.List;
+
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
+
 public class RobotContainer {
 
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
+    private final PixyTest pixyTest;
 
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
     private Limelight limelight = new Limelight("limelight-a");
+    private Pixy2 pixy = Pixy2.createInstance(Pixy2.LinkType.SPI);
 
     private NavX navx = new NavX(SPI.Port.kMXP);
 
@@ -50,6 +48,10 @@ public class RobotContainer {
         initButtonBindings();
         initModeTransitionBindings();
         initDefaultCommands();
+
+        pixy.init();
+        pixyTest = new PixyTest(pixy);
+        pixyTest.schedule();
 
 //        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
     }
@@ -144,7 +146,7 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
+//        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
 //        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
     }
 }

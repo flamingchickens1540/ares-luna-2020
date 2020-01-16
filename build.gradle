@@ -39,6 +39,7 @@ repositories {
 	// other repositories
      jcenter()
      maven { url 'https://jitpack.io' }
+     maven { url 'https://nexus.otake.pw/repository/maven-public/' }
 }
 
 dependencies {
@@ -50,8 +51,9 @@ dependencies {
     implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-    
+
     implementation "org.team1540:rooster:master-SNAPSHOT"
+    implementation "pw.otake.pseudoresonance:pixy2-java-api:1.3.5"
 
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 }

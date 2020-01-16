@@ -1,15 +1,12 @@
 package org.team1540.robot2020.shouldbeinrooster;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.SendableBase;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
-public class NavX extends SendableBase implements PIDSource, Sendable, Gyro {
+public class NavX implements Sendable, Gyro {
 
     private final AHRS navx;
 
@@ -73,22 +70,12 @@ public class NavX extends SendableBase implements PIDSource, Sendable, Gyro {
     // Sendable methods
 
     @Override
-    public void setPIDSourceType(PIDSourceType pidSource) {
-        navx.setPIDSourceType(pidSource);
-    }
-
-    @Override
-    public PIDSourceType getPIDSourceType() {
-        return navx.getPIDSourceType();
-    }
-
-    @Override
-    public double pidGet() {
-        return navx.pidGet();
-    }
-
-    @Override
     public void initSendable(SendableBuilder builder) {
         navx.initSendable(builder);
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }
