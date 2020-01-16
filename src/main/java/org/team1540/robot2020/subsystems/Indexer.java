@@ -10,8 +10,11 @@ public class Indexer extends SubsystemBase {
     private CANSparkMax cord = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder cordEncoder = cord.getEncoder();
 
-    private DigitalInput stagingSensor = new DigitalInput(0);
     private DigitalInput topSensor = new DigitalInput(0);
 
     private int balls = 0;
+
+    public Boolean isFull() {
+        return balls == 4;
+    }
 }

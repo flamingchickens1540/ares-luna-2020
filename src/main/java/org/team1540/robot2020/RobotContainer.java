@@ -43,7 +43,6 @@ public class RobotContainer {
     private NavX navx = new NavX(SPI.Port.kMXP);
 
     private DriveTrain driveTrain = new DriveTrain();
-    private Shooter shooter = new Shooter();
 
     public RobotContainer() {
         logger.info("Creating robot container...");
