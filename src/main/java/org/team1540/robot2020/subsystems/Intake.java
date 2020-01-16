@@ -20,7 +20,7 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
 //        true = isRobotLiningUp()
-        if ((isFull.getAsBoolean() || true) && getStagingAreaSensor.getAsBoolean()) {
+        if ((isFull.getAsBoolean() || false) && getStagingAreaSensor.getAsBoolean()) {
             intakeRoller.set(-100);
         } else {
             intakeRoller.set(100);
