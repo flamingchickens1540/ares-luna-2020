@@ -12,8 +12,12 @@ public class Shooter extends SubsystemBase {
         shooterB.follow(shooterA);
     }
 
-    public void set(double speed) {
+    public void setPercent(double speed) {
         shooterA.set(TalonFXControlMode.PercentOutput, speed);
+    }
+
+    public void setVelocity(double velocity) {
+        shooterA.set(TalonFXControlMode.Velocity, velocity);
     }
 
     public double getSpeedRPM() {
