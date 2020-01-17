@@ -20,6 +20,7 @@ public class Indexer extends SubsystemBase {
         cord.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
+
     public void setSpeed(double speed) {
         cord.set(speed);
     }

@@ -8,8 +8,11 @@ public class Intake extends SubsystemBase {
     private CANSparkMax outsideRoller = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax insideRollers = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    public void setSpeed(double speed) {
-        outsideRoller.set(speed);
+    public void setInsideRollers(double speed) {
         insideRollers.set(speed);
+    }
+
+    public void setOutsideRoller(double speed) {
+        outsideRoller.set(speed);
     }
 }

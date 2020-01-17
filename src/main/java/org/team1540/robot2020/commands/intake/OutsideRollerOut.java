@@ -1,18 +1,17 @@
 package org.team1540.robot2020.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.team1540.robot2020.subsystems.Intake;
 
-public class OuttakeBalls extends CommandBase {
+public class OutsideRollerOut extends InstantCommand {
     private Intake intake;
 
-    public OuttakeBalls(Intake intake) {
+    public OutsideRollerOut(Intake intake) {
         this.intake = intake;
-        addRequirements(intake);
     }
 
     @Override
     public void initialize() {
-        intake.setSpeed(-100);
+        intake.setOutsideRoller(-100);
     }
 }
