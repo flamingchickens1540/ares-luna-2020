@@ -8,12 +8,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private CANSparkMax cord = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
+
     private CANEncoder cordEncoder = cord.getEncoder();
 
     private DigitalInput stagingSensor = new DigitalInput(0);
     private DigitalInput topSensor = new DigitalInput(0);
 
     private int balls = 0;
+
+    public Indexer() {
+        cord.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
 
     public void setSpeed(double speed) {
         cord.set(speed);
