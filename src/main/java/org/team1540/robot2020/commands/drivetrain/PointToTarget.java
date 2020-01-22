@@ -18,10 +18,9 @@ import org.team1540.rooster.wrappers.Limelight;
 public class PointToTarget extends CommandBase {
 
 
-    private double lastTargetAngle = 0;
-
     private final NavX navx;
     private final Limelight limelight;
+    private double lastTargetAngle = 0;
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
 
@@ -95,6 +94,13 @@ public class PointToTarget extends CommandBase {
         if (limelight.isTargetFound()) {
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
+
+            final double limelightHeight = 49;
+            final double targetHeight = 89.5;
+
+            double distanceToTarget = (targetHeight - limelightHeight) / Math.tan(targetAngles.getY());
+
+            SmartDashboard.putNumber("distanceToTarget", distanceToTarget);
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
         }
 
