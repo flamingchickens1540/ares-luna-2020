@@ -1,5 +1,7 @@
 package org.team1540.robot2020.shouldbeinrooster.lines;
 
+import org.apache.commons.math3.linear.RealMatrix;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -7,7 +9,7 @@ public class RegressionTest {
     // https://stackoverflow.com/questions/17592139/trend-lines-regression-curve-fitting-java-library
 
     public static void main(String[] args) {
-        PolyTrendLine t = new PolyTrendLine(1);
+        PolyTrendLine t = new PolyTrendLine(5);
         Random rand = new Random();
         double[] x = new double[10 * 10];
         double[] err = new double[x.length];
@@ -27,17 +29,25 @@ public class RegressionTest {
 
         t.setValues(y, x);
 
-        for (int i = 0; i < x.length; i++) {
-            System.out.println(x[i] + ", " + y[i]);
-        }
-
-        System.out.println("\n\n\n\n\n");
 
 
-        for (int i = 0; i < 1000; i++) {
-            System.out.println(i + ", " + t.predict(i));
-        }
+//        System.out.println(coef.getRowDimension());
 
-        System.out.println(); // when x=12, y should be... , eg 143.61380202745192
+
+//        System.out.println();
+//
+//        for (int i = 0; i < x.length; i++) {
+//            System.out.println(x[i] + ", " + y[i]);
+//        }
+
+//        System.out.println("\n\n\n\n\n");
+
+//
+//        for (int i = 0; i < 1000; i++) {
+//            System.out.println(i + ", " + t.predict(i));
+//        }
+
+
+//        System.out.println(); // when x=12, y should be... , eg 143.61380202745192
     }
 }

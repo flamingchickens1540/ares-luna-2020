@@ -4,6 +4,7 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class OLSTrendLine {
@@ -39,5 +40,15 @@ public abstract class OLSTrendLine {
         double yhat = coef.preMultiply(xVector(x))[0]; // apply coefs to xVector
         if (logY()) yhat = (Math.exp(yhat)); // if we predicted ln y, we still need to get y
         return yhat;
+    }
+
+    public ArrayList<Double> getCoef() {
+        ArrayList<Double> out = new ArrayList<>();
+
+        for (double[] d : coef.getData()) {
+            out.add(d[0]);
+        }
+
+        return out;
     }
 }
