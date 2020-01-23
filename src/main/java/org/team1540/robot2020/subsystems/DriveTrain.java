@@ -204,4 +204,12 @@ public class DriveTrain extends SubsystemBase {
     public double getHeading() {
         return Math.IEEEremainder(navx.getAngle(), 360);
     }
+
+    public Encoder getLeftEncoder() {
+        return leftEncoder;
+    }
+
+    public Encoder getRightEncoder() {
+        return rightEncoder;
+    }
 }

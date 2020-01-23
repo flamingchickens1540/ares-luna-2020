@@ -1,7 +1,5 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import static edu.wpi.first.networktables.EntryListenerFlags.kUpdate;
-
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,11 +7,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.team1540.robot2020.shouldbeinrooster.ModifiedMiniPID;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
+import org.team1540.robot2020.shouldbeinrooster.lines.PolyTrendLine;
 import org.team1540.robot2020.subsystems.DriveTrain;
+import org.team1540.rooster.datastructures.utils.UnitsUtils;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.util.ChickenXboxController.XboxAxis;
 import org.team1540.rooster.util.TrigUtils;
 import org.team1540.rooster.wrappers.Limelight;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static edu.wpi.first.networktables.EntryListenerFlags.kUpdate;
 
 public class PointToTarget extends CommandBase {
 
@@ -40,6 +45,7 @@ public class PointToTarget extends CommandBase {
 
         SmartDashboard.putNumber("pointToTarget/finishedDegrees", finishedDegrees);
         SmartDashboard.putNumber("pointToTarget/finishedDegreesPerSecond", finishedDegreesPerSecond);
+        SmartDashboard.putNumber("distanceCalibration/initialDistanceMeters", 0);
 
         NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("pointToTarget").addEntryListener((table, key, entry, value, flags) -> {
             double p = SmartDashboard.getNumber("pointToTarget/P", 0);
@@ -58,6 +64,14 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
+        double leftEncoderDistance = driveTrain.getLeftEncoder().getDistance();
+        double rightEncoderDistance = driveTrain.getRightEncoder().getDistance();
+        calibrationString = "";
+        initialDistanceLeft = leftEncoderDistance;
+        initialDistanceRight = rightEncoderDistance;
+        lastTargetAngle = navx.getAngleRadians();
+        actualDistances.clear();
+        measuredDistances.clear();
     }
 
     private void setPID(PIDConfig config) {
@@ -77,30 +91,53 @@ public class PointToTarget extends CommandBase {
     public void execute() {
         double leftMotors = driver.getRectifiedXAxis(Hand.kLeft).withDeadzone(0.2).value();
         double rightMotors = driver.getRectifiedXAxis(Hand.kRight).withDeadzone(0.2).value();
-        double triggerValues = driver.getAxis(XboxAxis.LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(XboxAxis.RIGHT_TRIG).withDeadzone(0.2).value();
+        double triggerValues = driver.getAxis(XboxAxis.LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(XboxAxis.RIGHT_TRIG).withDeadzone(0.2).value() - 0.15;
         leftMotors += triggerValues;
-        rightMotors -= triggerValues;
+        rightMotors += triggerValues;
 
         double pidOutput = pointController.getOutput(calculateError());
-        leftMotors += pidOutput;
-        rightMotors -= pidOutput;
+//        leftMotors += pidOutput;
+//        rightMotors -= pidOutput;
 
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
         driveTrain.tankDrivePercent(leftMotors, rightMotors);
     }
 
+    private String calibrationString;
+    private double initialDistanceLeft;
+    private double initialDistanceRight;
+    private double counter;
+
+    private List<Double> actualDistances = new ArrayList<Double>();
+    private List<Double> measuredDistances = new ArrayList<Double>();
+
     private double calculateError() {
+        double leftEncoderDistance = driveTrain.getLeftEncoder().getDistance();
+        double rightEncoderDistance = driveTrain.getRightEncoder().getDistance();
         if (limelight.isTargetFound()) {
             Vector2D targetAngles = limelight.getTargetAngles();
-            lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
+//            lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
 
             final double limelightHeight = 49;
             final double targetHeight = 89.5;
 
-            double distanceToTarget = (targetHeight - limelightHeight) / Math.tan(targetAngles.getY());
+            double offsetAngle = Math.toRadians(6.19518316);
+            double distanceToTarget = UnitsUtils.inchesToMeters(targetHeight - limelightHeight) / Math.tan(targetAngles.getY() + offsetAngle);
 
-            SmartDashboard.putNumber("distanceToTarget", distanceToTarget);
+            double initialDistance = UnitsUtils.inchesToMeters(18);
+            double actualDistance = initialDistance + (Math.abs(initialDistanceLeft - leftEncoderDistance) + Math.abs(initialDistanceRight - rightEncoderDistance)) / 2;
+
+            counter++;
+            if (counter % 10 == 0 && actualDistance > UnitsUtils.inchesToMeters(100)) {
+                calibrationString += actualDistance + "," + distanceToTarget + "n";
+                actualDistances.add(actualDistance);
+                measuredDistances.add(distanceToTarget);
+                SmartDashboard.putString("distanceCalibration/calibrationString", calibrationString);
+            }
+
+            SmartDashboard.putNumber("distanceCalibration/distanceToTarget", distanceToTarget);
+            SmartDashboard.putNumber("distanceCalibration/actualDistance", actualDistance);
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
         }
 
@@ -120,5 +157,22 @@ public class PointToTarget extends CommandBase {
     @Override
     public boolean isFinished() {
         return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        PolyTrendLine t = new PolyTrendLine(1);
+        t.setValues(measuredDistances.toArray(new Double[0]), actualDistances.toArray(new Double[0]));
+        SmartDashboard.putString("distanceCalibration/resultsString", t.getCoef().toString());
+        SmartDashboard.putString("distanceCalibration/desmosString", coefsToLatexString(t.getCoef()));
+        SmartDashboard.putNumberArray("distanceCalibration/results", t.getCoef().toArray(new Double[0]));
+    }
+
+    private String coefsToLatexString(List<Double> coefs) {
+        String latexString = "";
+        for (int i = 0; i < coefs.size(); i++) {
+            latexString += coefs.get(i) + "x^{" + i + "}+";
+        }
+        return latexString;
     }
 }

@@ -1,8 +1,5 @@
 package org.team1540.robot2020.shouldbeinrooster.lines;
 
-import org.apache.commons.math3.linear.RealMatrix;
-
-import java.util.Arrays;
 import java.util.Random;
 
 public class RegressionTest {
@@ -28,6 +25,8 @@ public class RegressionTest {
         } // quadratic model
 
         t.setValues(y, x);
+
+        t.getCoef();
 
 
 

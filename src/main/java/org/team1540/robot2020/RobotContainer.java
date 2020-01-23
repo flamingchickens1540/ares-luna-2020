@@ -17,6 +17,7 @@ import io.github.pseudoresonance.pixy2api.Pixy2;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.PIDConfig;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
+import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.vision.PixyTest;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
@@ -26,8 +27,7 @@ import org.team1540.rooster.wrappers.Limelight;
 
 import java.util.List;
 
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.*;
 
 public class RobotContainer {
 
@@ -63,6 +63,7 @@ public class RobotContainer {
 
         driver.getButton(Y).whenPressed(driveTrain::resetEncoders);
         driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
+        driver.getButton(A).whileHeld(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
     }
 
     private void initModeTransitionBindings() {
@@ -148,7 +149,7 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
-//        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
+//        driveTrain.setDefaultCommand(new PointToTarget(navx, driveTrain, driver, limelight, new PIDConfig(1.0, 0.2, 6.6, 0.07, 0.4, 0.03)));
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver, limelight));
     }
 }

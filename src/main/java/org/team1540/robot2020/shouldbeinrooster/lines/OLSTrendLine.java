@@ -6,6 +6,7 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 public abstract class OLSTrendLine {
 
@@ -14,6 +15,14 @@ public abstract class OLSTrendLine {
     protected abstract double[] xVector(double x); // create vector of values from x
 
     protected abstract boolean logY(); // set true to predict log of y (note: y must be positive)
+
+    public void setValues(Double[] y, Double[] x) {
+        this.setValues(toPrimitive(y), toPrimitive(x));
+    }
+
+    private double[] toPrimitive(Double[] toArray) {
+        return Stream.of(toArray).mapToDouble(Double::doubleValue).toArray();
+    }
 
     public void setValues(double[] y, double[] x) {
         if (x.length != y.length) {
