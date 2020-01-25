@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.IntakeIndexSequence;
+import org.team1540.robot2020.commands.ShootSequence;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
@@ -66,6 +67,7 @@ public class RobotContainer {
         driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
         driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
         driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+        driver.getButton(RB).whileHeld(new ShootSequence(intake, indexer, shooter));
     }
 
     private void initModeTransitionBindings() {
