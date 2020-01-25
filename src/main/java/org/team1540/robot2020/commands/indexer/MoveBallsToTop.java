@@ -12,8 +12,9 @@ public class MoveBallsToTop extends CommandBase {
     public MoveBallsToTop(Indexer indexer) {
         this.indexer = indexer;
 
+//        0 is height of indexer in inches
 //        1 is height of ball in inches
-        pidController.setSetpoint(indexer.getEncoderInches() - (indexer.getBalls() * 1));
+        pidController.setSetpoint(indexer.getEncoderInches() + 0 - (indexer.getBalls() * 1));
     }
 
     @Override
