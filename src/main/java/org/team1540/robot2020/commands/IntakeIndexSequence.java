@@ -1,7 +1,7 @@
 package org.team1540.robot2020.commands;
 
 import edu.wpi.first.wpilibj2.command.*;
-import org.team1540.robot2020.commands.indexer.MoveBallsOneUp;
+import org.team1540.robot2020.commands.indexer.MoveBallsUp;
 import org.team1540.robot2020.commands.intake.IntakeIn;
 import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.subsystems.Indexer;
@@ -25,7 +25,7 @@ public class IntakeIndexSequence extends CommandBase {
             new IntakeIn(intake).schedule();
             new WaitUntilCommand(indexer::getStagingSensor).asProxy().schedule();
             new WaitCommand(0.25).asProxy().schedule();
-            new MoveBallsOneUp(indexer).asProxy().schedule();
+            new MoveBallsUp(indexer, 1).asProxy().schedule();
         }
     }
 }
