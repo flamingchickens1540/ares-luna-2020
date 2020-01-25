@@ -1,7 +1,9 @@
 package org.team1540.robot2020.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import org.team1540.robot2020.commands.indexer.MoveBallsToTop;
 import org.team1540.robot2020.commands.indexer.MoveBallsUp;
 import org.team1540.robot2020.commands.indexer.MoveIndexerDownUntilNotTripped;
 import org.team1540.robot2020.commands.indexer.MoveIndexerUpUntilTripped;
@@ -28,7 +30,10 @@ public class ShootSequence extends CommandBase {
 
     @Override
     public void initialize() {
-        new SpinUpShooter(shooter).asProxy().schedule();
+        new ParallelCommandGroup(
+                new SpinUpShooter(shooter),
+                new MoveBallsToTop(indexer)
+        ).asProxy().schedule();
     }
 
     @Override
