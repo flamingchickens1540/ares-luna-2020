@@ -4,11 +4,11 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private CANSparkMax cord = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
-
     private CANEncoder cordEncoder = cord.getEncoder();
 
     private DigitalInput stagingSensor = new DigitalInput(0);
@@ -20,8 +20,7 @@ public class Indexer extends SubsystemBase {
         cord.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
-
-    public void setSpeed(double speed) {
+    public void setPercent(double speed) {
         cord.set(speed);
     }
 

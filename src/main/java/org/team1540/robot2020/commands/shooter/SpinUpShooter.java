@@ -19,6 +19,5 @@ public class SpinUpShooter extends CommandBase {
     @Override
     public boolean isFinished() {
         return Math.abs(shooter.getSpeedRPM() - 2000) <= 50;
-
     }
 }
