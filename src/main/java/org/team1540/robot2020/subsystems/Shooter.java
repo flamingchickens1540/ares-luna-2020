@@ -20,7 +20,7 @@ public class Shooter extends SubsystemBase {
         shooterA.set(TalonFXControlMode.Velocity, velocity);
     }
 
-    public double getSpeedRPM() {
+    public double getVelocity() {
         return shooterA.getSelectedSensorVelocity();
     }
 }
