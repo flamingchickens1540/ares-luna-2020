@@ -22,10 +22,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
+import org.team1540.robot2020.commands.IntakeIndexSequence;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.subsystems.DriveTrain;
+import org.team1540.robot2020.subsystems.Indexer;
+import org.team1540.robot2020.subsystems.Intake;
 import org.team1540.robot2020.subsystems.Shooter;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.NavX;
@@ -42,6 +45,8 @@ public class RobotContainer {
     private NavX navx = new NavX(SPI.Port.kMXP);
 
     private DriveTrain driveTrain = new DriveTrain();
+    private Intake intake = new Intake();
+    private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
 
     public RobotContainer() {
@@ -92,5 +97,6 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+        indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
     }
 }
