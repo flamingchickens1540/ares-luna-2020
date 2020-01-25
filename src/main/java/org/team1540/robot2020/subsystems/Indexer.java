@@ -45,6 +45,10 @@ public class Indexer extends SubsystemBase {
         return balls;
     }
 
+    public boolean isFull() {
+        return getBalls() == 5;
+    }
+
     public void addBall() {
         balls++;
     }

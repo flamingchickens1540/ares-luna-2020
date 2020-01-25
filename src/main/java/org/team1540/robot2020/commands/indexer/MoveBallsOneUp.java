@@ -11,7 +11,7 @@ public class MoveBallsOneUp extends CommandBase {
 
     public MoveBallsOneUp(Indexer indexer) {
         this.indexer = indexer;
-        addRequirements(indexer);
+
 //        1 is diameter of ball in inches
         pidController.setSetpoint(indexer.getEncoderInches() + 1);
     }
