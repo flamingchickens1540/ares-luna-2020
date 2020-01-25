@@ -3,6 +3,7 @@ package org.team1540.robot2020.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,8 +12,8 @@ public class Indexer extends SubsystemBase {
     private CANSparkMax cord = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder cordEncoder = cord.getEncoder();
 
-    private DigitalInput stagingSensor = new DigitalInput(0);
-    private DigitalInput topSensor = new DigitalInput(0);
+    private AnalogInput stagingSensor = new AnalogInput(0);
+    private AnalogInput topSensor = new AnalogInput(0);
 
     private int balls = 0;
 
@@ -24,12 +25,12 @@ public class Indexer extends SubsystemBase {
         cord.set(speed);
     }
 
-    public Boolean getStagingSensor() {
-        return stagingSensor.get();
+    public int getStagingSensor() {
+        return stagingSensor.getValue();
     }
 
-    public Boolean getTopSensor() {
-        return topSensor.get();
+    public int getTopSensor() {
+        return topSensor.getValue();
     }
 
     public double getEncoderInches() {
