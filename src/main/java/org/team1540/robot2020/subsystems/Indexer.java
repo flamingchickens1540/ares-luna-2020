@@ -25,12 +25,12 @@ public class Indexer extends SubsystemBase {
         cord.set(speed);
     }
 
-    public int getStagingSensor() {
-        return stagingSensor.getValue();
+    public boolean getStagingSensor() {
+        return stagingSensor.getValue() >= (stagingSensor.getVoltage() / 2);
     }
 
-    public int getTopSensor() {
-        return topSensor.getValue();
+    public boolean getTopSensor() {
+        return topSensor.getValue() >= (topSensor.getVoltage() / 2);
     }
 
     public double getEncoderInches() {
