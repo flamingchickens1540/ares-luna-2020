@@ -1,6 +1,10 @@
 package org.team1540.robot2020.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import org.team1540.robot2020.commands.indexer.MoveBallsUp;
+import org.team1540.robot2020.commands.intake.IntakeIn;
+import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.commands.shooter.SpinUpShooter;
 import org.team1540.robot2020.commands.shooter.StopShooter;
 import org.team1540.robot2020.commands.shooter.WaitForShooterUpToSpeed;
@@ -27,7 +31,14 @@ public class ShootSequence extends CommandBase {
 
     @Override
     public void execute() {
+        if (indexer.isFull()) {
+            new IntakeOut(intake).schedule();
+        } else {
+            new IntakeIn(intake).schedule();
+        }
         new WaitForShooterUpToSpeed(shooter).asProxy().schedule();
+        new MoveBallsUp(indexer, 1.5).asProxy().schedule();
+        new WaitCommand(0.1).asProxy().schedule();
 
     }
 
