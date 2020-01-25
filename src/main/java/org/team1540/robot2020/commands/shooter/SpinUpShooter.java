@@ -8,7 +8,6 @@ public class SpinUpShooter extends CommandBase {
 
     public SpinUpShooter(Shooter shooter) {
         this.shooter = shooter;
-        addRequirements(shooter);
     }
 
     @Override

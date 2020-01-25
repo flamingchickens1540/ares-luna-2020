@@ -8,7 +8,6 @@ public class StopShooter extends InstantCommand {
 
     public StopShooter(Shooter shooter) {
         this.shooter = shooter;
-        addRequirements(shooter);
     }
 
     @Override
