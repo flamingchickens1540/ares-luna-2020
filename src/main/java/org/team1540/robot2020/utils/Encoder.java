@@ -5,12 +5,9 @@ public abstract class Encoder {
     private double distancePerPulse = 1;
     private double inversionNumber = 1;
 
-    public void setInverted(boolean inverted) {
+    public Encoder(double distancePerPulse, boolean inverted) {
+        this.distancePerPulse = distancePerPulse;
         this.inversionNumber = inverted ? -1 : 1;
-    }
-
-    public void setDistancePerPulse(double value) {
-        this.distancePerPulse = value;
     }
 
     public double getDistance() {
@@ -20,9 +17,6 @@ public abstract class Encoder {
     public double getRate() {
         return inversionNumber * distancePerPulse * getRateTicksPerSecond();
     }
-//    public double getRate() {
-//        return inversionNumber * getRateTicksPerSecond();
-//    }
 
     public abstract double getDistanceTicks();
 

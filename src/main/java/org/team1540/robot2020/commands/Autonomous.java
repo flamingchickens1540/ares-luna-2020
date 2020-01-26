@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -13,11 +14,25 @@ import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConst
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import java.util.List;
 import org.team1540.robot2020.subsystems.DriveTrain;
 
-import java.util.List;
-
 public class Autonomous extends SequentialCommandGroup {
+
+    // Feed forward constants
+    public static final double ksVolts = 0.669;
+    public static final double kvVoltSecondsPerMeter = 2.76;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
+    // Ramsete PID controllers
+//    public final double kPDriveVel = 19.3;
+    public static final double kPDriveVel = 1;
+    // Motion control
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
+    public static final double kMaxSpeedMetersPerSecond = 2;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(DriveTrain.trackwidthMeters);
+
     private DriveTrain driveTrain;
 
     public Autonomous(DriveTrain driveTrain) {
@@ -25,21 +40,21 @@ public class Autonomous extends SequentialCommandGroup {
 
         // Create a voltage constraint to ensure we don't accelerate too fast
         var autoVoltageConstraint =
-                new DifferentialDriveVoltageConstraint(
-                        new SimpleMotorFeedforward(driveTrain.ksVolts,
-                                driveTrain.kvVoltSecondsPerMeter,
-                                driveTrain.kaVoltSecondsSquaredPerMeter),
-                        driveTrain.kDriveKinematics,
-                        10);
+            new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(ksVolts,
+                    kvVoltSecondsPerMeter,
+                    kaVoltSecondsSquaredPerMeter),
+                kDriveKinematics,
+                10);
 
         // Create config for trajectory
         TrajectoryConfig config =
-                new TrajectoryConfig(driveTrain.kMaxSpeedMetersPerSecond,
-                        driveTrain.kMaxAccelerationMetersPerSecondSquared)
-                        // Add kinematics to ensure max speed is actually obeyed
-                        .setKinematics(driveTrain.kDriveKinematics)
-                        // Apply the voltage constraint
-                        .addConstraint(autoVoltageConstraint);
+            new TrajectoryConfig(kMaxSpeedMetersPerSecond,
+                kMaxAccelerationMetersPerSecondSquared)
+                // Add kinematics to ensure max speed is actually obeyed
+                .setKinematics(kDriveKinematics)
+                // Apply the voltage constraint
+                .addConstraint(autoVoltageConstraint);
 
 //        Follow splines backwards
 //        config.setReversed(true);
@@ -62,19 +77,19 @@ public class Autonomous extends SequentialCommandGroup {
         );
 
         RamseteCommand ramseteCommand = new RamseteCommand(
-                exampleTrajectory,
-                driveTrain::getPose,
-                new RamseteController(driveTrain.kRamseteB, driveTrain.kRamseteZeta),
-                new SimpleMotorFeedforward(driveTrain.ksVolts,
-                        driveTrain.kvVoltSecondsPerMeter,
-                        driveTrain.kaVoltSecondsSquaredPerMeter),
-                driveTrain.kDriveKinematics,
-                driveTrain::getWheelSpeeds,
-                new PIDController(driveTrain.kPDriveVel, 0, 0),
-                new PIDController(driveTrain.kPDriveVel, 0, 0),
-                // RamseteCommand passes volts to the callback
-                driveTrain::tankDriveVolts,
-                driveTrain
+            exampleTrajectory,
+            driveTrain::getPose,
+            new RamseteController(kRamseteB, kRamseteZeta),
+            new SimpleMotorFeedforward(ksVolts,
+                kvVoltSecondsPerMeter,
+                kaVoltSecondsSquaredPerMeter),
+            kDriveKinematics,
+            driveTrain::getWheelSpeeds,
+            new PIDController(kPDriveVel, 0, 0),
+            new PIDController(kPDriveVel, 0, 0),
+            // RamseteCommand passes volts to the callback
+            driveTrain::tankDriveVolts,
+            driveTrain
         );
 
         addCommands(

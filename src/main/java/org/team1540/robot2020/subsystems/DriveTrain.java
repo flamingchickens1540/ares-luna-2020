@@ -8,50 +8,30 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.CTREBaseMotorControllerEncoder;
 import org.team1540.robot2020.utils.Encoder;
 import org.team1540.robot2020.utils.NavX;
-import org.team1540.robot2020.utils.CTREMotorControllerEncoder;
 
 public class DriveTrain extends SubsystemBase {
 
-    // Feed forward constants
-    public static final double ksVolts = 0.669;
-    public static final double kvVoltSecondsPerMeter = 2.76;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
+    public static final double trackwidthMeters = 0.761388065;
 
-    // Ramsete PID controllers
-//    public final double kPDriveVel = 19.3;
-    public static final double kPDriveVel = 1;
-//    public final double kPDriveVel = 0;
+    public static final double encoderMetersPerRev = 0.4863499587;
+    public static final double encoderTicksPerRev = 512;
+    public static final double encoderMetersPerTick = encoderMetersPerRev / encoderTicksPerRev;
 
-    private final double kTrackwidthMeters = 0.761388065;
-    public final DifferentialDriveKinematics kDriveKinematics =
-        new DifferentialDriveKinematics(kTrackwidthMeters);
-
-    private final double kWheelCircumference = 0.4863499587;
-    private final double kEncoderPPR = 512;
-    private final double encoderMetersPerTick = kWheelCircumference / kEncoderPPR;
-
-    // Motion control
-    public final double kRamseteB = 2;
-    public final double kRamseteZeta = 0.7;
-
-    public final double kMaxSpeedMetersPerSecond = 2;
-    public final double kMaxAccelerationMetersPerSecondSquared = 1;
-
-    private static final int DRIVE_POSITION_SLOT_IDX = 0;
-    private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
+    public static final int DRIVE_POSITION_SLOT_IDX = 0;
+    public static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
     private TalonFX[] driveMotorAll;
     private TalonFX[] driveMotorMasters;
     private TalonFX[] driveMotorFollowers;
-    private TalonFX[] driveMotorLeft;
-    private TalonFX[] driveMotorRight;
+    private TalonFX[] driveMotorLefts;
+    private TalonFX[] driveMotorRights;
 
     private TalonFX driveMotorLeftA = new TalonFX(0);
     private TalonFX driveMotorLeftB = new TalonFX(1);
@@ -59,8 +39,8 @@ public class DriveTrain extends SubsystemBase {
     private TalonFX driveMotorRightA = new TalonFX(2);
     private TalonFX driveMotorRightB = new TalonFX(3);
 
-    private Encoder leftEncoder = new CTREMotorControllerEncoder(driveMotorLeftA);
-    private Encoder rightEncoder = new CTREMotorControllerEncoder(driveMotorRightA);
+    private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, false);
+    private Encoder rightEncoder = new CTREBaseMotorControllerEncoder(driveMotorRightA, encoderMetersPerTick, false);
 
     private final NavX navx = new NavX(Port.kMXP);
 
@@ -78,8 +58,8 @@ public class DriveTrain extends SubsystemBase {
         driveMotorAll = new TalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
         driveMotorMasters = new TalonFX[]{driveMotorLeftA, driveMotorRightA};
         driveMotorFollowers = new TalonFX[]{driveMotorLeftB, driveMotorRightB};
-        driveMotorLeft = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
-        driveMotorRight = new TalonFX[]{driveMotorRightA, driveMotorRightB};
+        driveMotorLefts = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
+        driveMotorRights = new TalonFX[]{driveMotorRightA, driveMotorRightB};
 
         // TODO: Use TalonFXConfiguration instead
 
@@ -113,11 +93,11 @@ public class DriveTrain extends SubsystemBase {
             controller.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
         }
 
-        for (BaseMotorController talon : driveMotorLeft) {
+        for (BaseMotorController talon : driveMotorLefts) {
             talon.setInverted(true);
         }
 
-        for (BaseMotorController talon : driveMotorRight) {
+        for (BaseMotorController talon : driveMotorRights) {
             talon.setInverted(false);
         }
 
@@ -130,12 +110,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initEncoders() {
-        leftEncoder.setDistancePerPulse(encoderMetersPerTick);
-        rightEncoder.setDistancePerPulse(encoderMetersPerTick);
-
-        leftEncoder.setInverted(false);
-        rightEncoder.setInverted(false);
-
         resetEncoders();
     }
 
@@ -192,8 +166,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        driveMotorLeftA.setSelectedSensorPosition(0);
-        driveMotorRightA.setSelectedSensorPosition(0);
+        leftEncoder.reset();
+        rightEncoder.reset();
     }
 
     public double getHeading() {
