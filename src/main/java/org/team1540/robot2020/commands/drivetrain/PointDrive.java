@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
-import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.robot2020.utils.ChickenXboxController;
+import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.ControlUtils;
 import org.team1540.rooster.util.TrigUtils;
-import org.team1540.rooster.wrappers.NavX;
 
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;

@@ -1,10 +1,9 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
-import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.rooster.util.ControlUtils;
 
 public class TankDrive extends CommandBase {
@@ -20,7 +19,7 @@ public class TankDrive extends CommandBase {
 
     @Override
     public void execute() {
-        double triggerThrottle = ControlUtils.deadzone(driver.getTriggerAxis(GenericHID.Hand.kRight) - driver.getTriggerAxis(GenericHID.Hand.kLeft), 0.1);
+        double triggerThrottle = ControlUtils.deadzone(driver.getAxis(ChickenXboxController.XboxAxis.RIGHT_TRIG).value() - driver.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG).value(), 0.1);
         double leftSpeed = ControlUtils.deadzone(driver.getRectifiedX(Hand.kLeft), 0.1) + triggerThrottle;
         double rightSpeed = ControlUtils.deadzone(driver.getRectifiedX(Hand.kRight), 0.1) + triggerThrottle;
         driveTrain.tankDrivePercent(leftSpeed, rightSpeed);
