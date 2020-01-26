@@ -46,7 +46,7 @@ public class ShootSequence extends CommandBase {
         new WaitForShooterUpToSpeed(shooter).asProxy().schedule();
         new MoveBallsUp(indexer, 1.5).asProxy().schedule();
         new WaitCommand(0.1).asProxy().schedule();
-        if (indexer.getTopSensor()) {
+        if (indexer.getShooterStaged()) {
             new MoveIndexerDownUntilNotTripped(indexer).asProxy().schedule();
         } else {
             new MoveIndexerUpUntilTripped(indexer).asProxy().schedule();

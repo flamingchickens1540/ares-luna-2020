@@ -23,7 +23,7 @@ public class IntakeIndexSequence extends CommandBase {
             new IntakeOut(intake).schedule();
         } else {
             new IntakeIn(intake).schedule();
-            new WaitUntilCommand(indexer::getStagingSensor).asProxy().schedule();
+            new WaitUntilCommand(indexer::getIndexerStaged).asProxy().schedule();
             new WaitCommand(0.25).asProxy().schedule();
             new MoveBallsUp(indexer, 1).asProxy().schedule();
         }

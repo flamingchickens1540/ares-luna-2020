@@ -17,6 +17,6 @@ public class MoveIndexerDownUntilNotTripped extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return !indexer.getTopSensor();
+        return !indexer.getShooterStaged();
     }
 }
