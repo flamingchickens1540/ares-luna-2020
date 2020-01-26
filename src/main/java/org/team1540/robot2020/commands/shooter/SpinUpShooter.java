@@ -4,19 +4,24 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Shooter;
 
 public class SpinUpShooter extends CommandBase {
+
+    private final int targetVelocityTicksPerDecisecond;
     private Shooter shooter;
 
-    public SpinUpShooter(Shooter shooter) {
+    public SpinUpShooter(Shooter shooter, int targetVelocityTicksPerDecisecond) {
         this.shooter = shooter;
+        this.targetVelocityTicksPerDecisecond = targetVelocityTicksPerDecisecond;
     }
 
     @Override
     public void initialize() {
-        shooter.setVelocity(2000);
+        shooter.setVelocityTicksPerDecisecond(targetVelocityTicksPerDecisecond);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getVelocity() - 2000) <= 50;
+        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= 50;
     }
 }
+
+// TODO: keep motor spinning while actually shooting

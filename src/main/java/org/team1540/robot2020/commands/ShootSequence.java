@@ -31,7 +31,7 @@ public class ShootSequence extends CommandBase {
     @Override
     public void initialize() {
         new ParallelCommandGroup(
-                new SpinUpShooter(shooter),
+                new SpinUpShooter(shooter, 2000),
                 new MoveBallsToTop(indexer)
         ).asProxy().schedule();
     }

@@ -4,9 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -16,9 +13,9 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.team1540.robot2020.shouldbeinrooster.Encoder;
-import org.team1540.robot2020.shouldbeinrooster.NavX;
-import org.team1540.robot2020.shouldbeinrooster.CTREMotorControllerEncoder;
+import org.team1540.robot2020.utils.Encoder;
+import org.team1540.robot2020.utils.NavX;
+import org.team1540.robot2020.utils.CTREMotorControllerEncoder;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -69,7 +66,7 @@ public class DriveTrain extends SubsystemBase {
 
     private double navxOffset = 0;
 
-    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
     private int saturationVoltage = 12;
 
     public DriveTrain() {
@@ -87,6 +84,8 @@ public class DriveTrain extends SubsystemBase {
         // TODO: Use TalonFXConfiguration instead
 
         for (BaseMotorController controller : driveMotorAll) {
+            controller.configFactoryDefault();
+
             controller.setNeutralMode(NeutralMode.Brake);
 
             controller.configVoltageCompSaturation(saturationVoltage);
@@ -101,8 +100,6 @@ public class DriveTrain extends SubsystemBase {
         }
 
         for (TalonFX controller : driveMotorMasters) {
-            controller.setNeutralMode(NeutralMode.Brake);
-
             // Position
             controller.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
             controller.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
@@ -144,7 +141,7 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(),
+        odometry.update(new Rotation2d(getHeading()), leftEncoder.getDistance(),
             rightEncoder.getDistance());
 
         SmartDashboard.putNumber("drive/encoderDistanceLeft", leftEncoder.getDistance());
@@ -173,7 +170,7 @@ public class DriveTrain extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+        odometry.resetPosition(pose, new Rotation2d(getHeading()));
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -200,7 +197,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(navx.getAngle(), 360);
+        return navx.getAngleRadians();
     }
 
     public void zeroNavx() {

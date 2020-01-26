@@ -12,6 +12,6 @@ public class WaitForShooterUpToSpeed extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getVelocity() - 2000) <= 50;
+        return Math.abs(shooter.getVelocityTicksPerDecisecond() - 2000) <= 50;
     }
 }
