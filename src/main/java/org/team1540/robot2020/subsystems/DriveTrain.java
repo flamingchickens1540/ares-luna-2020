@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -82,6 +83,8 @@ public class DriveTrain extends SubsystemBase {
         driveMotorFollowers = new TalonFX[]{driveMotorLeftB, driveMotorRightB};
         driveMotorLeft = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
         driveMotorRight = new TalonFX[]{driveMotorRightA, driveMotorRightB};
+
+        // TODO: Use TalonFXConfiguration instead
 
         for (BaseMotorController controller : driveMotorAll) {
             controller.setNeutralMode(NeutralMode.Brake);
