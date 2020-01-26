@@ -1,14 +1,15 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.NavX;
-import org.team1540.rooster.util.ControlUtils;
 import org.team1540.rooster.util.TrigUtils;
 
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
+
+// TODO: Rewrite with features from 2019
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
@@ -27,13 +28,10 @@ public class PointDrive extends CommandBase {
     @Override
     public void execute() {
         double currentAngle = -navx.getYawRadians() + driveTrain.getNavxOffset();
-        double destAngle = Math.atan2(
-                ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.5),
-                ControlUtils.deadzone(driver.getRectifiedY(GenericHID.Hand.kRight), 0.5)
-        );
+        double destAngle = driver.getAxis2D(ChickenXboxController.Hand.RIGHT).angle().value();
         double error = TrigUtils.signedAngleError(destAngle, currentAngle);
         double pidValue = controller.calculate(error);
-        double forward = ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kLeft), 0.1);
+        double forward = driver.getAxis(LEFT_X).withDeadzone(0.1).value();
         driveTrain.tankDrivePercent(-pidValue + forward, pidValue + forward);
     }
 
