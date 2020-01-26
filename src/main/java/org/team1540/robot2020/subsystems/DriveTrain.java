@@ -3,6 +3,7 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -16,18 +17,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.shouldbeinrooster.Encoder;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
-import org.team1540.robot2020.shouldbeinrooster.TalonEncoder;
+import org.team1540.robot2020.shouldbeinrooster.CTREMotorControllerEncoder;
 
 public class DriveTrain extends SubsystemBase {
 
     // Feed forward constants
-    public final double ksVolts = 0.669;
-    public final double kvVoltSecondsPerMeter = 2.76;
-    public final double kaVoltSecondsSquaredPerMeter = 0.662;
+    public static final double ksVolts = 0.669;
+    public static final double kvVoltSecondsPerMeter = 2.76;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
 
     // Ramsete PID controllers
 //    public final double kPDriveVel = 19.3;
-    public final double kPDriveVel = 1;
+    public static final double kPDriveVel = 1;
 //    public final double kPDriveVel = 0;
 
     private final double kTrackwidthMeters = 0.761388065;
@@ -48,22 +49,20 @@ public class DriveTrain extends SubsystemBase {
     private static final int DRIVE_POSITION_SLOT_IDX = 0;
     private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
-    private BaseMotorController[] driveMotorAll;
-    private TalonSRX[] driveMotorMasters;
-    private VictorSPX[] driveMotorFollowers;
-    private BaseMotorController[] driveMotorLeft;
-    private BaseMotorController[] driveMotorRight;
+    private TalonFX[] driveMotorAll;
+    private TalonFX[] driveMotorMasters;
+    private TalonFX[] driveMotorFollowers;
+    private TalonFX[] driveMotorLeft;
+    private TalonFX[] driveMotorRight;
 
-    private TalonSRX driveMotorLeftA = new TalonSRX(13);
-    private VictorSPX driveMotorLeftB = new VictorSPX(12);
-    private VictorSPX driveMotorLeftC = new VictorSPX(11);
+    private TalonFX driveMotorLeftA = new TalonFX(0);
+    private TalonFX driveMotorLeftB = new TalonFX(1);
 
-    private TalonSRX driveMotorRightA = new TalonSRX(1);
-    private VictorSPX driveMotorRightC = new VictorSPX(3);
-    private VictorSPX driveMotorRightB = new VictorSPX(2);
+    private TalonFX driveMotorRightA = new TalonFX(2);
+    private TalonFX driveMotorRightB = new TalonFX(3);
 
-    private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
-    private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
+    private Encoder leftEncoder = new CTREMotorControllerEncoder(driveMotorLeftA);
+    private Encoder rightEncoder = new CTREMotorControllerEncoder(driveMotorRightA);
 
     private final NavX navx = new NavX(Port.kMXP);
 
@@ -78,11 +77,11 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initMotors() {
-        driveMotorAll = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC, driveMotorRightA, driveMotorRightB, driveMotorRightC};
-        driveMotorMasters = new TalonSRX[]{driveMotorLeftA, driveMotorRightA};
-        driveMotorFollowers = new VictorSPX[]{driveMotorLeftB, driveMotorLeftC, driveMotorRightB, driveMotorRightC};
-        driveMotorLeft = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC};
-        driveMotorRight = new BaseMotorController[]{driveMotorRightA, driveMotorRightB, driveMotorRightC};
+        driveMotorAll = new TalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
+        driveMotorMasters = new TalonFX[]{driveMotorLeftA, driveMotorRightA};
+        driveMotorFollowers = new TalonFX[]{driveMotorLeftB, driveMotorRightB};
+        driveMotorLeft = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
+        driveMotorRight = new TalonFX[]{driveMotorRightA, driveMotorRightB};
 
         for (BaseMotorController controller : driveMotorAll) {
             controller.setNeutralMode(NeutralMode.Brake);
@@ -98,7 +97,7 @@ public class DriveTrain extends SubsystemBase {
             controller.overrideLimitSwitchesEnable(false);
         }
 
-        for (TalonSRX controller : driveMotorMasters) {
+        for (TalonFX controller : driveMotorMasters) {
             controller.setNeutralMode(NeutralMode.Brake);
 
             // Position
@@ -112,9 +111,6 @@ public class DriveTrain extends SubsystemBase {
             controller.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
             controller.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
             controller.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
-
-            controller.configPeakCurrentLimit(0);
-            controller.configContinuousCurrentLimit(40);
         }
 
         for (BaseMotorController talon : driveMotorLeft) {
@@ -129,10 +125,8 @@ public class DriveTrain extends SubsystemBase {
         driveMotorRightA.setSensorPhase(false);
 
         driveMotorLeftB.follow(driveMotorLeftA);
-        driveMotorLeftC.follow(driveMotorLeftA);
 
         driveMotorRightB.follow(driveMotorRightA);
-        driveMotorRightC.follow(driveMotorRightA);
     }
 
     private void initEncoders() {
