@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import static edu.wpi.first.wpilibj.GenericHID.Hand;
 import static org.team1540.rooster.util.ControlUtils.deadzone;
 import static org.team1540.rooster.util.MathUtils.preserveSignRaiseToPower;
 
@@ -31,21 +30,50 @@ public class ChickenXboxController {
         this.controller = new XboxController(port);
     }
 
-    public enum XboxAxis {
-        LEFT_X(0),
-        LEFT_Y(1),
-        LEFT_TRIG(2),
-        RIGHT_TRIG(3),
-        RIGHT_X(4),
-        RIGHT_Y(5);
+    public enum Hand {
+        LEFT(0),
+        RIGHT(1);
+
 
         @SuppressWarnings("MemberName")
         public final int value;
         @SuppressWarnings("PMD.UseConcurrentHashMap")
+        private static final Map<Integer, Hand> map = new HashMap<>();
+
+        Hand(int value) {
+            this.value = value;
+        }
+
+        static {
+            for (Hand axisId : Hand.values()) {
+                map.put(axisId.value, axisId);
+            }
+        }
+
+        public static Hand of(int value) {
+            return map.get(value);
+        }
+    }
+
+    public enum XboxAxis {
+        LEFT_X(0, 1, true),
+        LEFT_Y(1, 0, true),
+        LEFT_TRIG(2, 2, false),
+        RIGHT_TRIG(3, 3, false),
+        RIGHT_X(4, 5, true),
+        RIGHT_Y(5, 4, true);
+
+        @SuppressWarnings("MemberName")
+        public final int value;
+        public final int remappedTo;
+        public final boolean inverted;
+        @SuppressWarnings("PMD.UseConcurrentHashMap")
         private static final Map<Integer, XboxAxis> map = new HashMap<>();
 
-        XboxAxis(int value) {
+        XboxAxis(int value, int remappedTo, boolean inverted) {
             this.value = value;
+            this.remappedTo = remappedTo;
+            this.inverted = inverted;
         }
 
         static {
@@ -57,15 +85,27 @@ public class ChickenXboxController {
         public static XboxAxis of(int value) {
             return map.get(value);
         }
+
+        public static XboxAxis handX(Hand hand) {
+            return hand == Hand.LEFT ? LEFT_X : RIGHT_X;
+        }
+
+        public static XboxAxis handY(Hand hand) {
+            return hand == Hand.LEFT ? LEFT_Y : RIGHT_Y;
+        }
+
+        public static XboxAxis handTrig(Hand hand) {
+            return hand == Hand.LEFT ? LEFT_TRIG : RIGHT_TRIG;
+        }
     }
 
-    public enum XboxButton { // Hmm, I know about XboxController.Button but like...
+    public enum XboxButton {
         A(1),
         B(2),
         X(3),
         Y(4),
-        LB(5),
-        RB(6),
+        LEFT_BUMPER(5),
+        RIGHT_BUMPER(6),
         BACK(7),
         START(8),
         LEFT_PRESS(9),
@@ -89,48 +129,14 @@ public class ChickenXboxController {
         public static XboxButton of(int value) {
             return map.get(value);
         }
-    }
 
-    public double getRawAxis(XboxAxis axis) {
-        return controller.getRawAxis(axis.value);
-    }
+        public static XboxButton handBumper(Hand hand) {
+            return hand == Hand.LEFT ? LEFT_BUMPER : RIGHT_BUMPER;
+        }
 
-    /**
-     * Get the X axis value of the controller in the official 1540 coordinate system
-     *
-     * @param hand Side of controller whose value should be returned.
-     * @return The X axis value of the controller in the official 1540 coordinate system
-     */
-    public double getRectifiedX(Hand hand) {
-        return -controller.getY(hand);
-    }
-
-    /**
-     * Get the Y axis value of the controller in the official 1540 coordinate system
-     *
-     * @param hand Side of controller whose value should be returned.
-     * @return The Y axis value of the controller in the official 1540 coordinate system
-     */
-    public double getRectifiedY(Hand hand) {
-        return -controller.getX(hand);
-    }
-
-    public Vector2D get2DJoystickVector(Hand hand) {
-        return new Vector2D(getRectifiedX(hand), getRectifiedY(hand));
-    }
-
-    /**
-     * Gets angle from a 2D joystick
-     *
-     * @param hand Left vs right joystick of the xbox this
-     * @return Angle in radians counter-clockwise from 12 o'clock
-     */
-    public double get2DJoystickAngle(Hand hand) {
-        return Math.atan2(getRectifiedY(hand), getRectifiedX(hand));
-    }
-
-    public double get2DJoystickMagnitude(Hand hand) {
-        return Vector2D.ZERO.distance(get2DJoystickVector(hand));
+        public static XboxButton handPress(Hand hand) {
+            return hand == Hand.LEFT ? LEFT_PRESS : RIGHT_PRESS;
+        }
     }
 
     public StrictDPadButton getButton(DPadAxis button) {
@@ -141,44 +147,24 @@ public class ChickenXboxController {
         return new JoystickButton(controller, button.value);
     }
 
-    public AxisButton getButton(XboxAxis axis, double threshold) {
-        return new AxisButton(controller, threshold, axis.value);
+    public AxisButton getButton(double threshold, XboxAxis axis) {
+        return new AxisButton(controller, threshold, axis.remappedTo);
     }
 
     public MultiAxisButton getButton(double threshold, XboxAxis... axes) {
         int[] axesIds = new int[axes.length];
         for (int i = 0; i < axes.length; i++) {
-            axesIds[i] = axes[i].value;
+            axesIds[i] = axes[i].remappedTo;
         }
         return new MultiAxisButton(controller, threshold, axesIds);
     }
 
     public Axis getAxis(XboxAxis axis) {
-        return () -> getRawAxis(axis);
+        return ((Axis) () -> controller.getRawAxis(axis.remappedTo)).inverted(axis.inverted);
     }
 
-    public Axis getAxis(int axis) {
-        return () -> controller.getRawAxis(axis);
-    }
-
-    public Axis getXAxis(Hand hand) {
-        return () -> controller.getX(hand);
-    }
-
-    public Axis getYAxis(Hand hand) {
-        return () -> controller.getY(hand);
-    }
-
-    public Axis getRectifiedXAxis(Hand hand) {
-        return getYAxis(hand).inverted();
-    }
-
-    public Axis getRectifiedYAxis(Hand hand) {
-        return getXAxis(hand).inverted();
-    }
-
-    public Axis2D getJoystick(Hand hand) {
-        return () -> get2DJoystickVector(hand);
+    public Axis2D getAxis2D(Hand hand) {
+        return () -> new Vector2D(getAxis(XboxAxis.handX(hand)).value(), getAxis(XboxAxis.handY(hand)).value());
     }
 
     public interface Axis extends DoubleSupplier {
@@ -192,15 +178,11 @@ public class ChickenXboxController {
         }
 
         default Axis inverted() {
-            return () -> -value();
+            return inverted(true);
         }
 
-        default Axis2D withYAxis(Axis axis) {
-            return () -> new Vector2D(value(), axis.value());
-        }
-
-        default Axis2D withXAxis(Axis axis) {
-            return () -> new Vector2D(axis.value(), value());
+        default Axis inverted(boolean invert) {
+            return invert ? () -> -value() : this::value;
         }
 
         default double value() {

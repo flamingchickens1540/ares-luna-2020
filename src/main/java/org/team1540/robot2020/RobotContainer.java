@@ -55,7 +55,7 @@ public class RobotContainer {
         driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
         driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
         driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
-        driver.getButton(RB).whileHeld(new ShootSequence(intake, indexer, shooter));
+        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
     }
 
     private void initModeTransitionBindings() {
