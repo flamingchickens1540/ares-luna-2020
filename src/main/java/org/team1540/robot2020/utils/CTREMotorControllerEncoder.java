@@ -1,8 +1,6 @@
-package org.team1540.robot2020.shouldbeinrooster;
+package org.team1540.robot2020.utils;
 
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class CTREMotorControllerEncoder extends Encoder {
 
