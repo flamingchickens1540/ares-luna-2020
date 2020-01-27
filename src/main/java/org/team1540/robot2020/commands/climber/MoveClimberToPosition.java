@@ -10,6 +10,7 @@ public class MoveClimberToPosition extends CommandBase {
 
     public MoveClimberToPosition(Climber climber, double position) {
         this.climber = climber;
+        addRequirements(climber);
         pidController.setSetpoint(position);
     }
 
