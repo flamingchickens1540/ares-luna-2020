@@ -159,9 +159,9 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("drive/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
 
         Pose2d poseMeters = odometry.getPoseMeters();
-        Translation2d postTranslation = poseMeters.getTranslation();
-        SmartDashboard.putNumber("drive/odometry/X", postTranslation.getX());
-        SmartDashboard.putNumber("drive/odometry/Y", postTranslation.getY());
+        Translation2d poseTranslation = poseMeters.getTranslation();
+        SmartDashboard.putNumber("drive/odometry/X", poseTranslation.getX());
+        SmartDashboard.putNumber("drive/odometry/Y", poseTranslation.getY());
         SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
