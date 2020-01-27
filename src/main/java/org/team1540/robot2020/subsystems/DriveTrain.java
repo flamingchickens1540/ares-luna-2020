@@ -57,10 +57,10 @@ public class DriveTrain extends SubsystemBase {
     private TalonFX[] driveMotorRight;
 
     private TalonFX driveMotorLeftA = new TalonFX(0);
-    private TalonFX driveMotorLeftB = new TalonFX(2);
+    private TalonFX driveMotorLeftB = new TalonFX(1);
 
-    private TalonFX driveMotorRightA = new TalonFX(3);
-    private TalonFX driveMotorRightB = new TalonFX(4);
+    private TalonFX driveMotorRightA = new TalonFX(2);
+    private TalonFX driveMotorRightB = new TalonFX(3);
 
     private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
