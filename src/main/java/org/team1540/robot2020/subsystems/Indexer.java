@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
-    private CANSparkMax cord = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax cord = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder cordEncoder = cord.getEncoder();
 
     private AnalogInput stagingSensor = new AnalogInput(0);
