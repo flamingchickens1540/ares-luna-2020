@@ -12,6 +12,7 @@ public class IntakeOut extends InstantCommand {
 
     @Override
     public void initialize() {
-        intake.setRollerFunnelSpeed(-100);
+        intake.setRollerSpeed(-100);
+        intake.setFunnelSpeed(-100);
     }
 }
