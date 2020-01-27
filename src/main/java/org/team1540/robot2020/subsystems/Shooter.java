@@ -5,8 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    private TalonFX shooterA = new TalonFX(7);
-    private TalonFX shooterB = new TalonFX(8);
+    private TalonFX shooterA = new TalonFX(8);
+    private TalonFX shooterB = new TalonFX(9);
 
     public Shooter() {
         shooterB.follow(shooterA);
