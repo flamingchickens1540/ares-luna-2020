@@ -12,13 +12,11 @@ import org.team1540.rooster.wrappers.NavX;
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
-    private NavX navx;
     private PIDController controller;
 
-    public PointDrive(DriveTrain driveTrain, ChickenXboxController driver, NavX navx) {
+    public PointDrive(DriveTrain driveTrain, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
         this.driver = driver;
-        this.navx = navx;
         controller = new PIDController(0.4,0, 0);
         controller.setSetpoint(0);
         addRequirements(driveTrain);
@@ -26,7 +24,7 @@ public class PointDrive extends CommandBase {
 
     @Override
     public void execute() {
-        double currentAngle = -navx.getYawRadians() + driveTrain.getNavxOffset();
+        double currentAngle = driveTrain.getHeading();
         double destAngle = Math.atan2(
                 ControlUtils.deadzone(driver.getRectifiedX(GenericHID.Hand.kRight), 0.5),
                 ControlUtils.deadzone(driver.getRectifiedY(GenericHID.Hand.kRight), 0.5)
