@@ -3,9 +3,11 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -48,19 +50,17 @@ public class DriveTrain extends SubsystemBase {
     private static final int DRIVE_POSITION_SLOT_IDX = 0;
     private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
-    private BaseMotorController[] driveMotorAll;
-    private TalonSRX[] driveMotorMasters;
-    private VictorSPX[] driveMotorFollowers;
-    private BaseMotorController[] driveMotorLeft;
-    private BaseMotorController[] driveMotorRight;
+    private TalonFX[] driveMotorAll;
+    private TalonFX[] driveMotorMasters;
+    private TalonFX[] driveMotorFollowers;
+    private TalonFX[] driveMotorLeft;
+    private TalonFX[] driveMotorRight;
 
-    private TalonSRX driveMotorLeftA = new TalonSRX(13);
-    private VictorSPX driveMotorLeftB = new VictorSPX(12);
-    private VictorSPX driveMotorLeftC = new VictorSPX(11);
+    private TalonFX driveMotorLeftA = new TalonFX(0);
+    private TalonFX driveMotorLeftB = new TalonFX(2);
 
-    private TalonSRX driveMotorRightA = new TalonSRX(1);
-    private VictorSPX driveMotorRightC = new VictorSPX(3);
-    private VictorSPX driveMotorRightB = new VictorSPX(2);
+    private TalonFX driveMotorRightA = new TalonFX(3);
+    private TalonFX driveMotorRightB = new TalonFX(4);
 
     private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
@@ -78,61 +78,60 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initMotors() {
-        driveMotorAll = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC, driveMotorRightA, driveMotorRightB, driveMotorRightC};
-        driveMotorMasters = new TalonSRX[]{driveMotorLeftA, driveMotorRightA};
-        driveMotorFollowers = new VictorSPX[]{driveMotorLeftB, driveMotorLeftC, driveMotorRightB, driveMotorRightC};
-        driveMotorLeft = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC};
-        driveMotorRight = new BaseMotorController[]{driveMotorRightA, driveMotorRightB, driveMotorRightC};
+        driveMotorAll = new TalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
+        driveMotorMasters = new TalonFX[]{driveMotorLeftA, driveMotorRightA};
+        driveMotorFollowers = new TalonFX[]{driveMotorLeftB, driveMotorRightB};
+        driveMotorLeft = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
+        driveMotorRight = new TalonFX[]{driveMotorRightA, driveMotorRightB};
 
-        for (BaseMotorController controller : driveMotorAll) {
-            controller.setNeutralMode(NeutralMode.Brake);
+        for (TalonFX talon : driveMotorAll) {
+            talon.setNeutralMode(NeutralMode.Brake);
 
-            controller.configVoltageCompSaturation(saturationVoltage);
-            controller.enableVoltageCompensation(true);
-            controller.configPeakOutputForward(1);
-            controller.configPeakOutputReverse(-1);
+            talon.configVoltageCompSaturation(saturationVoltage);
+            talon.enableVoltageCompensation(true);
+            talon.configPeakOutputForward(1);
+            talon.configPeakOutputReverse(-1);
 
-            controller.configOpenloopRamp(0);
-            controller.configForwardSoftLimitEnable(false);
-            controller.configReverseSoftLimitEnable(false);
-            controller.overrideLimitSwitchesEnable(false);
+            talon.configOpenloopRamp(0);
+            talon.configForwardSoftLimitEnable(false);
+            talon.configReverseSoftLimitEnable(false);
+            talon.overrideLimitSwitchesEnable(false);
         }
 
-        for (TalonSRX controller : driveMotorMasters) {
-            controller.setNeutralMode(NeutralMode.Brake);
+        for (TalonFX talon : driveMotorMasters) {
+            talon.setNeutralMode(NeutralMode.Brake);
 
             // Position
-            controller.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kD(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kF(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kD(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kF(DRIVE_POSITION_SLOT_IDX, 0);
 
             // Velocity
-            controller.config_kP(DRIVE_VELOCITY_SLOT_IDX, 3);
-            controller.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
-            controller.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
-            controller.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
+            talon.config_kP(DRIVE_VELOCITY_SLOT_IDX, 3);
+            talon.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
+            talon.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
+            talon.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
 
-            controller.configPeakCurrentLimit(0);
-            controller.configContinuousCurrentLimit(40);
+            driveMotorLeftA.setSensorPhase(false);
+            driveMotorRightA.setSensorPhase(false);
+
+//            talon.configPeakCurrentLimit(0);
+//            talon.configContinuousCurrentLimit(40);
         }
 
-        for (BaseMotorController talon : driveMotorLeft) {
+        for (TalonFX talon : driveMotorLeft) {
             talon.setInverted(true);
         }
 
-        for (BaseMotorController talon : driveMotorRight) {
+        for (TalonFX talon : driveMotorRight) {
             talon.setInverted(false);
         }
 
-        driveMotorLeftA.setSensorPhase(false);
-        driveMotorRightA.setSensorPhase(false);
 
         driveMotorLeftB.follow(driveMotorLeftA);
-        driveMotorLeftC.follow(driveMotorLeftA);
 
         driveMotorRightB.follow(driveMotorRightA);
-        driveMotorRightC.follow(driveMotorRightA);
     }
 
     private void initEncoders() {

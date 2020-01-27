@@ -1,12 +1,12 @@
 package org.team1540.robot2020.shouldbeinrooster;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class TalonEncoder extends Encoder {
 
-    private final TalonSRX talon;
+    private final TalonFX talon;
 
-    public TalonEncoder(TalonSRX talon) {
+    public TalonEncoder(TalonFX talon) {
         this.talon = talon;
     }
 
