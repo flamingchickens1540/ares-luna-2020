@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private CANSparkMax rollers = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax rollers = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     public void setRollerSpeed(double speed) {
         rollers.set(speed);
