@@ -1,13 +1,16 @@
 package org.team1540.robot2020.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private CANSparkMax indexerMotor = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANEncoder indexerMotorEncoder = indexerMotor.getEncoder()
 
     private DigitalInput indexerStaged = new DigitalInput(0);
     private DigitalInput shooterStaged = new DigitalInput(1);
@@ -31,11 +34,11 @@ public class Indexer extends SubsystemBase {
     }
 
     public double getEncoderInches() {
-        return indexerMotor.getEncoder().getPosition();
+        return indexerMotorEncoder.getPosition();
     }
 
     public void resetEncoder() {
-        indexerMotor.getEncoder().setPosition(0);
+        indexerMotorEncoder.setPosition(0);
     }
 
     public int getBalls() {

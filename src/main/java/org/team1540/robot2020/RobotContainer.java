@@ -53,7 +53,7 @@ public class RobotContainer {
 
         driver.getButton(A).whenPressed(driveTrain::resetEncoders);
         driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
-        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
+        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
         driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
         driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
     }
@@ -87,6 +87,7 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
         indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
     }
 }
