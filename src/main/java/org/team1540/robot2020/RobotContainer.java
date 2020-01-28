@@ -13,6 +13,7 @@ import org.team1540.robot2020.commands.IntakeIndexSequence;
 import org.team1540.robot2020.commands.ShootSequence;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.subsystems.Indexer;
 import org.team1540.robot2020.subsystems.Intake;
@@ -51,11 +52,11 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
-        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
-        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
-        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
-        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
+//        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
+//        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
+//        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
+//        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+//        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
     }
 
     private void initModeTransitionBindings() {
@@ -88,6 +89,7 @@ public class RobotContainer {
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
         driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
+//        indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
+        indexer.setDefaultCommand(new IndexerJoystickControl(indexer, copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
     }
 }
