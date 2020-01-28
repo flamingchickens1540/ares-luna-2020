@@ -26,6 +26,7 @@ public class IntakeIndexSequence extends CommandBase {
             new WaitUntilCommand(indexer::getIndexerStaged).asProxy().schedule();
             new WaitCommand(0.25).asProxy().schedule();
             new MoveBallsUp(indexer, 1).asProxy().schedule();
+            indexer.ballAdded();
         }
     }
 }
