@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -19,6 +20,13 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("indexer/indexerStaged", indexerStaged.get());
+        SmartDashboard.putBoolean("indexer/shooterStaged", shooterStaged.get());
+        SmartDashboard.putNumber("indexer/balls", balls);
     }
 
     public void setPercent(double speed) {
