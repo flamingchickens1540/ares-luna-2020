@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private CANSparkMax indexerMotor = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANEncoder indexerMotorEncoder = indexerMotor.getEncoder()
+    private CANEncoder indexerMotorEncoder = indexerMotor.getEncoder();
 
     private DigitalInput indexerStaged = new DigitalInput(0);
     private DigitalInput shooterStaged = new DigitalInput(1);
