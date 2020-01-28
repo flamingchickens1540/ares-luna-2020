@@ -14,10 +14,7 @@ import org.team1540.robot2020.commands.ShootSequence;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
-import org.team1540.robot2020.subsystems.DriveTrain;
-import org.team1540.robot2020.subsystems.Indexer;
-import org.team1540.robot2020.subsystems.Intake;
-import org.team1540.robot2020.subsystems.Shooter;
+import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NavX;
@@ -38,6 +35,7 @@ public class RobotContainer {
     private Intake intake = new Intake();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
+    private Climber climber = new Climber();
 
     public RobotContainer() {
         logger.info("Creating robot container...");
