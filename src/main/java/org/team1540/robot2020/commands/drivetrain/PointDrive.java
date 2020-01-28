@@ -1,13 +1,10 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.utils.ChickenXboxController;
-import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.TrigUtils;
-import org.team1540.rooster.wrappers.NavX;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
 
@@ -15,7 +12,7 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
-    private PIDController controller;
+    private PIDController pidController;
 
     public PointDrive(DriveTrain driveTrain, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
