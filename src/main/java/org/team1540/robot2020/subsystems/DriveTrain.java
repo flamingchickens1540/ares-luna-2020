@@ -22,16 +22,16 @@ import org.team1540.robot2020.utils.CTREBaseMotorControllerEncoder;
 public class DriveTrain extends SubsystemBase {
 
     // Feed forward constants
-    public final double ksVolts = 0.669;
-    public final double kvVoltSecondsPerMeter = 2.76;
-    public final double kaVoltSecondsSquaredPerMeter = 0.662;
+    public static final double ksVolts = 0.669;
+    public static final double kvVoltSecondsPerMeter = 2.76;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
 
     // Ramsete PID controllers
-//    public final double kPDriveVel = 19.3;
-    public final double kPDriveVel = 1;
-//    public final double kPDriveVel = 0;
+//    public static final double kPDriveVel = 19.3;
+    public static final double kPDriveVel = 1;
+//    public static final double kPDriveVel = 0;
 
-    private final double kTrackwidthMeters = 0.761388065;
+    public static final double kTrackwidthMeters = 0.761388065;
     public final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
@@ -40,11 +40,11 @@ public class DriveTrain extends SubsystemBase {
     private final double encoderMetersPerTick = kWheelCircumference / kEncoderPPR;
 
     // Motion control
-    public final double kRamseteB = 2;
-    public final double kRamseteZeta = 0.7;
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
 
-    public final double kMaxSpeedMetersPerSecond = 2;
-    public final double kMaxAccelerationMetersPerSecondSquared = 1;
+    public static final double kMaxSpeedMetersPerSecond = 2;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
 
     private static final int DRIVE_POSITION_SLOT_IDX = 0;
     private static final int DRIVE_VELOCITY_SLOT_IDX = 1;

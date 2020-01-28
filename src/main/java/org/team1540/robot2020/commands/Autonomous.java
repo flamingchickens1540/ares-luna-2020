@@ -31,7 +31,7 @@ public class Autonomous extends SequentialCommandGroup {
     public static final double kRamseteZeta = 0.7;
     public static final double kMaxSpeedMetersPerSecond = 2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1;
-    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(DriveTrain.trackwidthMeters);
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(DriveTrain.kTrackwidthMeters);
 
     private DriveTrain driveTrain;
 
