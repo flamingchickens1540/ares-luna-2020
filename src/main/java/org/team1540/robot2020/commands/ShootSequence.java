@@ -46,6 +46,7 @@ public class ShootSequence extends CommandBase {
         new WaitForShooterUpToSpeed(shooter).asProxy().schedule();
         new MoveBallsUp(indexer, 1.5).asProxy().schedule();
         new WaitCommand(0.1).asProxy().schedule();
+        indexer.ballRemoved();
         if (indexer.getShooterStaged()) {
             new MoveIndexerDownUntilNotTripped(indexer).asProxy().schedule();
         } else {
