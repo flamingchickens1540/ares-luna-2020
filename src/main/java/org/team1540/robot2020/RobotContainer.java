@@ -2,17 +2,13 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
-import org.team1540.robot2020.commands.IntakeIndexSequence;
-import org.team1540.robot2020.commands.ShootSequence;
 import org.team1540.robot2020.commands.climber.ClimberJoystickControl;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
 import org.team1540.robot2020.commands.intake.IntakeIn;
@@ -24,9 +20,6 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
-
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
-
 
 public class RobotContainer {
 
