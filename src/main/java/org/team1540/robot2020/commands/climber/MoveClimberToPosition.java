@@ -21,7 +21,9 @@ public class MoveClimberToPosition extends CommandBase {
     @Override
     public void initialize() {
 //        20 is half the climber's height
+        // TODO: Shouldn't the climber always disable the ratchet before moving upwards? Like if the new pos is greater than the old pos?
         if (position >= 20) {
+            // TODO: Wait for a sec after disabling the ratchet to start moving
             climber.setRatchet(false);
         }
     }

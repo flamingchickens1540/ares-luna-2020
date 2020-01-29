@@ -12,6 +12,8 @@ public class StopShooter extends InstantCommand {
 
     @Override
     public void initialize() {
+        // TODO: Would be better to have a stopshooter method in the shooter class
+        // TODO: This should set percent instead, we don't want to PID to a value of zero, it can be in coast mode also (extra energy is nice)
         shooter.setVelocityTicksPerDecisecond(0);
     }
 }

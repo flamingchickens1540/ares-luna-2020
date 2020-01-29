@@ -3,6 +3,7 @@ package org.team1540.robot2020.commands.indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Indexer;
 
+// TODO: This class looks the same as MoveBallsToTop
 public class MoveIndexerUpUntilTripped extends CommandBase {
     Indexer indexer;
 

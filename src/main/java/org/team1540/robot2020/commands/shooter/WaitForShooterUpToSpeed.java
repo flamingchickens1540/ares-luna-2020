@@ -12,6 +12,7 @@ public class WaitForShooterUpToSpeed extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        // TODO: The tolerance should be a tuning constant, the 2000 should be read from the shooter (method or field)
         return Math.abs(shooter.getVelocityTicksPerDecisecond() - 2000) <= 50;
     }
 }

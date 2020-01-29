@@ -12,6 +12,7 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public void initialize() {
+        // TODO: If the indexer sensor is already triggered, move the balls the other way
         indexer.setPercent(1);
     }
 
