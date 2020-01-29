@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.commands.indexer.MoveBallsToTop;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
-import org.team1540.robot2020.commands.indexer.MoveIndexerDownUntilNotTripped;
-import org.team1540.robot2020.commands.indexer.MoveIndexerUpUntilTripped;
 import org.team1540.robot2020.commands.intake.IntakeIn;
 import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.commands.shooter.SpinUpShooter;
@@ -49,12 +47,7 @@ public class ShootSequence extends CommandBase {
         new MoveBallsUpOne(indexer, 1.5).asProxy().schedule();
         new WaitCommand(0.1).asProxy().schedule();
         indexer.ballRemoved();
-        if (indexer.getShooterStaged()) {
-            // TODO: These could be combined into one regular command, since they both line up the balls in preparation for shooting
-            new MoveIndexerDownUntilNotTripped(indexer).asProxy().schedule();
-        } else {
-            new MoveIndexerUpUntilTripped(indexer).asProxy().schedule();
-        }
+        new MoveBallsToTop(indexer).schedule();
     }
 
     @Override
