@@ -5,6 +5,7 @@ import org.team1540.robot2020.subsystems.Indexer;
 
 public class MoveBallsToTop extends CommandBase {
     private Indexer indexer;
+    private boolean up = true;
 
     public MoveBallsToTop(Indexer indexer) {
         this.indexer = indexer;
@@ -12,12 +13,16 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public void initialize() {
-        // TODO: If the indexer sensor is already triggered, move the balls the other way
-        indexer.setPercent(1);
+        if (indexer.getShooterStaged()) {
+            indexer.setPercent(-1);
+            up = false;
+        } else {
+            indexer.setPercent(1);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return indexer.getShooterStaged();
+        return up == indexer.getShooterStaged();
     }
 }
