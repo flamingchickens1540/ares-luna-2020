@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.commands.indexer.MoveBallsToTop;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
-import org.team1540.robot2020.commands.intake.IntakeIn;
-import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.commands.shooter.SpinUpShooter;
 import org.team1540.robot2020.commands.shooter.WaitForShooterUpToSpeed;
 import org.team1540.robot2020.subsystems.Indexer;

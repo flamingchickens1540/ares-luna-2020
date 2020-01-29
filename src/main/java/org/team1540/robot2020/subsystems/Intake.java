@@ -26,4 +26,9 @@ public class Intake extends SubsystemBase {
         setFunnelASpeed(speed);
         setFunnelBSpeed(speed);
     }
+
+    public void setSpeed(double speed) {
+        setRollerSpeed(speed);
+        setFunnelSpeed(speed);
+    }
 }
