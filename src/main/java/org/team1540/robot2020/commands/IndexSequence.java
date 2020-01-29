@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
 import org.team1540.robot2020.subsystems.Indexer;
 
-public class IntakeIndexSequence extends SequentialCommandGroup {
-    public IntakeIndexSequence(Indexer indexer) {
+public class IndexSequence extends SequentialCommandGroup {
+    public IndexSequence(Indexer indexer) {
         addRequirements(indexer);
         addCommands(
                 new WaitUntilCommand(indexer::getIndexerStaged),

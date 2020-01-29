@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
+import org.team1540.robot2020.commands.IndexSequence;
 import org.team1540.robot2020.commands.climber.ClimberJoystickControl;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
@@ -92,7 +93,7 @@ public class RobotContainer {
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
-//        indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
-//        intake.setDefaultCommand(new RunIntake(intake, indexer));
+        indexer.setDefaultCommand(new IndexSequence(indexer));
+        intake.setDefaultCommand(new RunIntake(intake, indexer));
     }
 }
