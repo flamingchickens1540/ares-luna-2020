@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void stop() {
-        setVelocityTicksPerDecisecond(0);
+        shooterA.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public double getVelocityTicksPerDecisecond() {

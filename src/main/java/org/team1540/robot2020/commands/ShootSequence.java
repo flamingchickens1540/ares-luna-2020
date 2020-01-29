@@ -10,7 +10,6 @@ import org.team1540.robot2020.commands.indexer.MoveIndexerUpUntilTripped;
 import org.team1540.robot2020.commands.intake.IntakeIn;
 import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.commands.shooter.SpinUpShooter;
-import org.team1540.robot2020.commands.shooter.StopShooter;
 import org.team1540.robot2020.commands.shooter.WaitForShooterUpToSpeed;
 import org.team1540.robot2020.subsystems.Indexer;
 import org.team1540.robot2020.subsystems.Intake;
@@ -61,6 +60,6 @@ public class ShootSequence extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         // TODO: Would be better to have a stopshooter method in the shooter class
-        new StopShooter(shooter).schedule();
+        shooter.stop();
     }
 }

@@ -14,7 +14,6 @@ import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
 import org.team1540.robot2020.commands.intake.IntakeIn;
 import org.team1540.robot2020.commands.intake.IntakeOut;
 import org.team1540.robot2020.commands.shooter.SpinUpShooter;
-import org.team1540.robot2020.commands.shooter.StopShooter;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -57,7 +56,7 @@ public class RobotContainer {
         copilot.getButton(DPadAxis.UP).whileHeld(new IntakeIn(intake));
         copilot.getButton(DPadAxis.DOWN).whileHeld(new IntakeOut(intake));
         copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new SpinUpShooter(shooter, 100));
-        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(new StopShooter(shooter));
+        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::stop);
     }
 
     private void initModeTransitionBindings() {
