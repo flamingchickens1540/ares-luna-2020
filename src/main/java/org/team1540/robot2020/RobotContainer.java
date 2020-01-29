@@ -80,7 +80,6 @@ public class RobotContainer {
                 // disable brakes
                 logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
-
     }
 
     public Command getAutoCommand() {
