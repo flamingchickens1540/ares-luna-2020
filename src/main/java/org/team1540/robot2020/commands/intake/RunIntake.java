@@ -11,6 +11,7 @@ public class RunIntake extends CommandBase {
     public RunIntake(Intake intake, Indexer indexer) {
         this.intake = intake;
         this.indexer = indexer;
+        addRequirements(intake);
     }
 
     @Override

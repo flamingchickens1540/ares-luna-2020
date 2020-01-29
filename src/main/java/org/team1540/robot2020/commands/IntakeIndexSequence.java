@@ -14,7 +14,7 @@ public class IntakeIndexSequence extends CommandBase {
     public IntakeIndexSequence(Intake intake, Indexer indexer) {
         this.intake = intake;
         this.indexer = indexer;
-        addRequirements(intake, indexer);
+        addRequirements(indexer);
     }
 
     @Override
