@@ -1,10 +1,9 @@
-package org.team1540.robot2020.commands;
+package org.team1540.robot2020.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
 import org.team1540.robot2020.subsystems.Indexer;
 
 public class IndexSequence extends SequentialCommandGroup {
