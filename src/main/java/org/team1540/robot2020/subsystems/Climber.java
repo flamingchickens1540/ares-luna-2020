@@ -18,6 +18,10 @@ public class Climber extends SubsystemBase {
         climber.set(ControlMode.PercentOutput, percent);
     }
 
+    public void setPosition(double position) {
+        climber.set(ControlMode.Position, position);
+    }
+
     public double getPosition() {
         return climber.getSelectedSensorPosition();
     }

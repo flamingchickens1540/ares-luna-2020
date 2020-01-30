@@ -2,37 +2,27 @@ package org.team1540.robot2020.commands.climber;
 
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2020.subsystems.Climber;
+import org.team1540.robot2020.utils.InstCommand;
 
-public class MoveClimberToPosition extends CommandBase {
-    private Climber climber;
-    private ProfiledPIDController pidController = new ProfiledPIDController(1, 0, 0,
-            new TrapezoidProfile.Constraints(10, 20));
-    private double position;
+public class MoveClimberToPosition extends SequentialCommandGroup {
 
     public MoveClimberToPosition(Climber climber, double position) {
-        this.climber = climber;
-        this.position = position;
         addRequirements(climber);
-        pidController.setGoal(position);
-    }
-
-    @Override
-    public void initialize() {
-        if (position >= climber.getPosition()) {
-            // TODO: Wait for a sec after disabling the ratchet to start moving
-            climber.setRatchet(false);
-        }
-    }
-
-    @Override
-    public void execute() {
-        climber.setPercent(pidController.calculate(climber.getPosition()));
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        climber.setRatchet(true);
+        addCommands(
+                new ConditionalCommand(
+                        new InstCommand(() -> climber.setRatchet(true)),
+                        new InstCommand(),
+                        () -> position >= climber.getPosition()
+                ),
+                new WaitCommand(0.25),
+                new FunctionalCommand(
+                        () -> climber.setPosition(position),
+                        () -> {},
+                        (Boolean interrupted) -> climber.setRatchet(false),
+                        () -> Math.abs(climber.getPosition() - position) <= 50
+                )
+        );
     }
 }
