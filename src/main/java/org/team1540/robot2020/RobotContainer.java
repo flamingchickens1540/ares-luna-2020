@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.IndexSequence;
 import org.team1540.robot2020.commands.climber.ClimberJoystickControl;
+import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
 import org.team1540.robot2020.commands.intake.RunIntake;
@@ -94,6 +95,6 @@ public class RobotContainer {
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
         indexer.setDefaultCommand(new IndexSequence(indexer));
-        intake.setDefaultCommand(new RunIntake(intake, indexer));
+//        intake.setDefaultCommand(new RunIntake(intake, indexer));
     }
 }

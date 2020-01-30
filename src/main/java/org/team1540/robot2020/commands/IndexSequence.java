@@ -17,4 +17,11 @@ public class IndexSequence extends SequentialCommandGroup {
                 new InstantCommand(indexer::ballAdded)
         );
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (!interrupted) {
+            this.schedule();
+        }
+    }
 }
