@@ -94,7 +94,7 @@ public class RobotContainer {
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IndexSequence(indexer));
+//        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
     }
 }
