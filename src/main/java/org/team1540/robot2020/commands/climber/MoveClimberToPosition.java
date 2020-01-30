@@ -1,7 +1,5 @@
 package org.team1540.robot2020.commands.climber;
 
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2020.subsystems.Climber;
 import org.team1540.robot2020.utils.InstCommand;
