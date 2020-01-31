@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    // TODO this should restoreFactoryDefaults() on all motors
     private TalonFX climber = new TalonFX(12);
 
     private Servo ratchet = new Servo(0);
@@ -14,6 +13,7 @@ public class Climber extends SubsystemBase {
     public Climber() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
+        climber.configFactoryDefault();
 
         setRatchet(true);
     }
