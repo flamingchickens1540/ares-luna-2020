@@ -51,8 +51,8 @@ public class RobotContainer {
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
-        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setSpeed(1));
-        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setSpeed(-1));
+        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerSpeed(1));
+        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerSpeed(-1));
         copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new SpinUpShooter(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::stop);
     }
