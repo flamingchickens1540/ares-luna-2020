@@ -17,9 +17,9 @@ public class Indexer extends SubsystemBase {
     private int balls = 0;
 
     public Indexer() {
-        // TODO this should restoreFactoryDefaults() on all motors
-        // TODO brake mode to true on all motors
         // TODO figure out current limit on all motors
+        indexerMotor.restoreFactoryDefaults();
+
         indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
