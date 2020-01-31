@@ -20,7 +20,6 @@ public class ShootSequence extends SequentialCommandGroup {
                         new SpinUpShooter(shooter, 2000),
                         new MoveBallsToTop(indexer)
                 ),
-                // todo ball widths should be a tuning value
                 new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),
                 new InstantCommand(indexer::ballRemoved),
                 new WaitCommand(0.1)
