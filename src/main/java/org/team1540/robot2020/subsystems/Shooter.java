@@ -1,5 +1,6 @@
 package org.team1540.robot2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,10 +14,13 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupMotors() {
-        // TODO this should restoreFactoryDefaults() on all motors
-
-        // TODO set brake mode on all motors to coast
         // TODO figure out current limit
+        shooterA.configFactoryDefault();
+        shooterB.configFactoryDefault();
+
+        shooterA.setNeutralMode(NeutralMode.Coast);
+        shooterB.setNeutralMode(NeutralMode.Coast);
+
         shooterB.follow(shooterA);
     }
 
