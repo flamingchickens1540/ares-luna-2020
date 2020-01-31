@@ -13,7 +13,6 @@ public class MoveBallsUpOne extends CommandBase {
     public MoveBallsUpOne(Indexer indexer, double balls) {
         this.indexer = indexer;
 
-//        1 is diameter of ball in inches
         // TODO remove PID controller
 
         pidController.setSetpoint(indexer.getEncoderInches() + balls);

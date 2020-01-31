@@ -16,6 +16,8 @@ public class Indexer extends SubsystemBase {
 
     private int balls = 0;
 
+    public static final double ballLengthsToIndexAfterShoot = 1.5;
+
     public Indexer() {
         // TODO figure out current limit on all motors
         indexerMotor.restoreFactoryDefaults();

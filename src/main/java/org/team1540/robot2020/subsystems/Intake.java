@@ -12,6 +12,8 @@ public class Intake extends SubsystemBase {
     private CANSparkMax funnelA = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+    public static final double intakeSpeed = 1;
+
     public Intake() {
         rollers.restoreFactoryDefaults();
 

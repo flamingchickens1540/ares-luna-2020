@@ -17,10 +17,9 @@ public class RunIntake extends CommandBase {
     @Override
     public void initialize() {
         if (indexer.isFull()) {
-            // TODO this should be a tuning value
-            intake.setFunnelAndRollerSpeed(-1);
+            intake.setFunnelAndRollerSpeed(-Intake.intakeSpeed);
         } else {
-            intake.setFunnelAndRollerSpeed(1);
+            intake.setFunnelAndRollerSpeed(Intake.intakeSpeed);
         }
     }
 }

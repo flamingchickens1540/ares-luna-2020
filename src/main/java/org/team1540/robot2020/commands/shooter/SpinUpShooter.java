@@ -20,8 +20,7 @@ public class SpinUpShooter extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // TODO: the 50 should be a tuning value
-        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= 50;
+        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= Shooter.shooterSpeedTolerance;
     }
 }
 

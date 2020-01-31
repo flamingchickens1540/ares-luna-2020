@@ -21,7 +21,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         new MoveBallsToTop(indexer)
                 ),
                 // todo ball widths should be a tuning value
-                new MoveBallsUpOne(indexer, 1.5),
+                new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),
                 new WaitCommand(0.1),
                 // todo this should go before the waitcommand:
                 new InstantCommand(indexer::ballRemoved)

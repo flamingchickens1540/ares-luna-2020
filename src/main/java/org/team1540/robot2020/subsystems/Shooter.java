@@ -9,6 +9,8 @@ public class Shooter extends SubsystemBase {
     private TalonFX shooterA = new TalonFX(8);
     private TalonFX shooterB = new TalonFX(9);
 
+    public static final double shooterSpeedTolerance = 50;
+
     public Shooter() {
         setupMotors();
     }
