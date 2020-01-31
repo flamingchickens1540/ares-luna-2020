@@ -30,7 +30,12 @@ public class Climber extends SubsystemBase {
         return climber.getSelectedSensorPosition();
     }
 
+    public boolean atPosition(double position) {
+        return Math.abs(getPosition() - position) <= 50;
+    }
+
     public void setRatchet(Boolean on) {
         ratchet.set(on ? 1 : 0);
     }
+
 }
