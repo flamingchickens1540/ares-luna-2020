@@ -5,13 +5,19 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    // TODO this should restoreFactoryDefaults() on all motors
     // TODO figure out brake mode on all motors
     // TODO figure out current limit on all motors
     private CANSparkMax rollers = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     private CANSparkMax funnelA = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    public Intake() {
+        rollers.restoreFactoryDefaults();
+
+        funnelA.restoreFactoryDefaults();
+        funnelB.restoreFactoryDefaults();
+    }
 
     public void setRollerSpeed(double speed) {
         rollers.set(speed);
