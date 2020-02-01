@@ -3,9 +3,7 @@ package org.team1540.robot2020.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,6 +17,9 @@ public class Indexer extends SubsystemBase {
     private int balls = 0;
 
     public Indexer() {
+        // TODO this should restoreFactoryDefaults() on all motors
+        // TODO brake mode to true on all motors
+        // TODO figure out current limit on all motors
         indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
@@ -54,6 +55,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public boolean isFull() {
+        // TODO this should be tunable
         return getBalls() == 5;
     }
 

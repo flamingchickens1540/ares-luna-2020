@@ -13,6 +13,10 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupMotors() {
+        // TODO this should restoreFactoryDefaults() on all motors
+
+        // TODO set brake mode on all motors to coast
+        // TODO figure out current limit
         shooterB.follow(shooterA);
     }
 

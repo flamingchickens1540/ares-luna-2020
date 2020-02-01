@@ -10,6 +10,7 @@ public class IndexSequence extends SequentialCommandGroup {
     public IndexSequence(Indexer indexer) {
         addRequirements(indexer);
         addCommands(
+                // TODO indexer should have a max number of balls to intake
                 new WaitUntilCommand(indexer::getIndexerStaged),
                 new WaitCommand(0.25),
                 new MoveBallsUpOne(indexer, 1),
@@ -20,6 +21,7 @@ public class IndexSequence extends SequentialCommandGroup {
     @Override
     public void end(boolean interrupted) {
         if (!interrupted) {
+            // TODO test if this works with Phineas
             this.schedule();
         }
     }

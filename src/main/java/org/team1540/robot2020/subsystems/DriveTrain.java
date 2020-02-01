@@ -2,10 +2,7 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -15,9 +12,9 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.CTREBaseMotorControllerEncoder;
 import org.team1540.robot2020.utils.Encoder;
 import org.team1540.robot2020.utils.NavX;
-import org.team1540.robot2020.utils.CTREBaseMotorControllerEncoder;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -86,6 +83,8 @@ public class DriveTrain extends SubsystemBase {
         // TODO: Use TalonFXConfiguration instead
 
         for (TalonFX talon : driveMotorAll) {
+            // TODO this should restoreFactoryDefaults() on all motors
+
             talon.setNeutralMode(NeutralMode.Brake);
 
             talon.configVoltageCompSaturation(saturationVoltage);
