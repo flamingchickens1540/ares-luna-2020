@@ -61,7 +61,7 @@ public class DriveTrain extends SubsystemBase {
     private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, true);
     private Encoder rightEncoder = new CTREBaseMotorControllerEncoder(driveMotorRightA, encoderMetersPerTick, false);
 
-    private final NavX navx = new NavX(Port.kMXP);
+    public final NavX navx = new NavX(Port.kMXP);
 
     private double navxOffset = 0;
 
