@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2020.subsystems.Indexer;
 
-public class IndexSequence extends SequentialCommandGroup {
-    public IndexSequence(Indexer indexer) {
+public class BallQueueSequence extends SequentialCommandGroup {
+    public BallQueueSequence(Indexer indexer) {
         addRequirements(indexer);
         addCommands(
                 // TODO indexer should have a max number of balls to intake

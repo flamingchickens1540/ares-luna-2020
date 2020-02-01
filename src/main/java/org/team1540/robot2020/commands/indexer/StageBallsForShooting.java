@@ -3,11 +3,11 @@ package org.team1540.robot2020.commands.indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Indexer;
 
-public class MoveBallsToTop extends CommandBase {
+public class StageBallsForShooting extends CommandBase {
     private Indexer indexer;
     private boolean shooterInitiallyStaged;
 
-    public MoveBallsToTop(Indexer indexer) {
+    public StageBallsForShooting(Indexer indexer) {
         this.indexer = indexer;
     }
 

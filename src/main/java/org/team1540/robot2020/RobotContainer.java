@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
-import org.team1540.robot2020.commands.indexer.IndexeManualControl;
+import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -19,6 +19,8 @@ import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
 
 public class RobotContainer {
+
+    // TODO add networktables logging for all mechanism state (positions, velocities, current draw)
 
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
@@ -85,7 +87,7 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IndexeManualControl(indexer,
+        indexer.setDefaultCommand(new IndexerManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
         climber.setDefaultCommand(new ClimberManualControl(climber,
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
