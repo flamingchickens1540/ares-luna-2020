@@ -5,39 +5,45 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    // TODO figure out brake mode on all motors
-    // TODO figure out current limit on all motors
-    private CANSparkMax rollers = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    private CANSparkMax funnelA = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANSparkMax funnelB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    // todo Should intake rollers and funnel be separate subsystems?
+    private CANSparkMax rollerMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    public static final double intakeSpeed = 1;
+    private CANSparkMax funnelLeftMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax funnelRightMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    public static final double defaultRollerPercent = 1;
+    public static final double defaultFunnelLeftPercent = 1;
+    public static final double defaultFunnelRightPercent = 1;
 
     public Intake() {
-        rollers.restoreFactoryDefaults();
+        // TODO figure out brake mode on all motors
+        // TODO figure out current limit on all motors
+        rollerMotor.restoreFactoryDefaults();
 
-        funnelA.restoreFactoryDefaults();
-        funnelB.restoreFactoryDefaults();
+        funnelLeftMotor.restoreFactoryDefaults();
+        funnelRightMotor.restoreFactoryDefaults();
     }
 
-    public void setRollerSpeed(double speed) {
-        rollers.set(speed);
+    public void setRollerPercent(double percent) {
+        rollerMotor.set(percent);
     }
 
-    public void setFunnelSpeed(double speed) {
-        setFunnelSpeed(speed, speed);
+    public void setFunnelPercent(double percentLeft, double percentRight) {
+        funnelLeftMotor.set(percentLeft);
+        funnelRightMotor.set(percentRight);
     }
 
-    public void setFunnelSpeed(double speedA, double speedB) {
-        funnelA.set(speedA);
-        funnelB.set(speedB);
+    public void setFunnelAndRollerPercent(double rollerPercent, int percentLeft, int percentRight) {
+        setRollerPercent(rollerPercent);
+        setFunnelPercent(percentLeft, percentRight);
     }
 
-    public void setFunnelAndRollerSpeed(double speed) {
-        setRollerSpeed(speed);
-        setFunnelSpeed(speed);
+    public void setFunnelAndRollerPercent(boolean intake) {
+        int inversion = intake ? 1 : -1;
+        setRollerPercent(inversion * Intake.defaultRollerPercent);
+        setFunnelPercent(inversion * Intake.defaultFunnelLeftPercent, inversion * Intake.defaultFunnelRightPercent);
     }
 
-    // TODO add stop
+    // TODO add stop method
 }

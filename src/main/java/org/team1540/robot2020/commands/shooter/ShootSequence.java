@@ -17,7 +17,7 @@ public class ShootSequence extends SequentialCommandGroup {
         addRequirements(indexer);
         addCommands(
                 new ParallelCommandGroup(
-                        new SpinUpShooter(shooter, 2000),
+                        new ShooterSpinUp(shooter, 2000),
                         new MoveBallsToTop(indexer)
                 ),
                 new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),

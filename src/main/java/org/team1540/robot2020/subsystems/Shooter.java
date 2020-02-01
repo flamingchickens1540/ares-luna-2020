@@ -6,10 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-    private TalonFX shooterA = new TalonFX(8);
-    private TalonFX shooterB = new TalonFX(9);
-
-    public static final double shooterSpeedTolerance = 50;
+    private TalonFX shooterMotorA = new TalonFX(8);
+    private TalonFX shooterMotorB = new TalonFX(9);
 
     public Shooter() {
         setupMotors();
@@ -17,25 +15,25 @@ public class Shooter extends SubsystemBase {
 
     private void setupMotors() {
         // TODO figure out current limit
-        shooterA.configFactoryDefault();
-        shooterB.configFactoryDefault();
+        shooterMotorA.configFactoryDefault();
+        shooterMotorB.configFactoryDefault();
 
-        shooterA.setNeutralMode(NeutralMode.Coast);
-        shooterB.setNeutralMode(NeutralMode.Coast);
+        shooterMotorA.setNeutralMode(NeutralMode.Coast);
+        shooterMotorB.setNeutralMode(NeutralMode.Coast);
 
-        shooterB.follow(shooterA);
+        shooterMotorB.follow(shooterMotorA);
     }
 
     public void setVelocityTicksPerDecisecond(double velocity) {
-        shooterA.set(TalonFXControlMode.Velocity, velocity);
+        shooterMotorA.set(TalonFXControlMode.Velocity, velocity);
     }
 
     public void stop() {
-        shooterA.set(TalonFXControlMode.PercentOutput, 0);
+        shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
 
     public double getVelocityTicksPerDecisecond() {
-        return shooterA.getSelectedSensorVelocity();
+        return shooterMotorA.getSelectedSensorVelocity();
     }
 
 }

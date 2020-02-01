@@ -7,16 +7,17 @@ import org.team1540.robot2020.utils.InstCommand;
 
 public class MoveClimberToPosition extends SequentialCommandGroup {
 
-    public MoveClimberToPosition(Climber climber, double position) {
+    public MoveClimberToPosition(Climber climber, double positionMeters) {
         addRequirements(climber);
         addCommands(
                 new InstCommand(() -> {
-                    if (position >= climber.getPosition()) {
-                        climber.setRatchet(true);
+                    if (positionMeters >= climber.getPositionTicks()) {
+                        climber.setRatchetServo(true);
                     }
                 }),
                 new WaitCommand(0.25),
-                new MoveClimberToPositionUnsafe(climber, position)
+                new MoveClimberToPositionUnsafe(climber, positionMeters),
+                new InstCommand(() -> climber.setRatchetServo(false))
         );
     }
 }

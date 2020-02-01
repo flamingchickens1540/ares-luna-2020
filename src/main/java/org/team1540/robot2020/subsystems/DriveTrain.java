@@ -184,9 +184,9 @@ public class DriveTrain extends SubsystemBase {
         driveMotorRightA.set(ControlMode.Velocity, rightMetersPerSecond / encoderMetersPerTick / 10);
     }
 
-    public void tankDrivePercent(double leftSpeed, double rightSpeed) {
-        driveMotorLeftA.set(ControlMode.PercentOutput, leftSpeed);
-        driveMotorRightA.set(ControlMode.PercentOutput, rightSpeed);
+    public void tankDrivePercent(double leftPercent, double rightPercent) {
+        driveMotorLeftA.set(ControlMode.PercentOutput, leftPercent);
+        driveMotorRightA.set(ControlMode.PercentOutput, rightPercent);
     }
 
     public void resetEncoders() {

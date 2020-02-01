@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
-import org.team1540.robot2020.commands.climber.ClimberJoystickControl;
+import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
-import org.team1540.robot2020.commands.indexer.IndexerJoystickControl;
-import org.team1540.robot2020.commands.shooter.SpinUpShooter;
+import org.team1540.robot2020.commands.indexer.IndexeManualControl;
+import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -51,9 +51,9 @@ public class RobotContainer {
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
-        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerSpeed(1));
-        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerSpeed(-1));
-        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new SpinUpShooter(shooter, 100));
+        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
+        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
+        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::stop);
     }
 
@@ -85,9 +85,9 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IndexerJoystickControl(indexer,
+        indexer.setDefaultCommand(new IndexeManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
-        climber.setDefaultCommand(new ClimberJoystickControl(climber,
+        climber.setDefaultCommand(new ClimberManualControl(climber,
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));

@@ -6,36 +6,42 @@ import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-    private TalonFX climber = new TalonFX(12);
+    private TalonFX climberMotor = new TalonFX(12);
 
-    private Servo ratchet = new Servo(0);
+    private Servo ratchetServo = new Servo(0);
 
     public Climber() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
-        climber.configFactoryDefault();
+        climberMotor.configFactoryDefault();
 
-        setRatchet(true);
+        setRatchetServo(true);
     }
 
     public void setPercent(double percent) {
-        climber.set(ControlMode.PercentOutput, percent);
+        climberMotor.set(ControlMode.PercentOutput, percent);
     }
 
-    public void setPosition(double position) {
-        climber.set(ControlMode.Position, position);
+    // TODO these methods need to set and get climber position in meters, not ticks
+    // todo ticks to climber pos meters method
+    public void setPositionTicks(double position) {
+        climberMotor.set(ControlMode.Position, position);
     }
 
-    public double getPosition() {
-        return climber.getSelectedSensorPosition();
+    public double getPositionTicks() {
+        return climberMotor.getSelectedSensorPosition();
     }
 
-    public boolean atPosition(double position) {
-        return Math.abs(getPosition() - position) <= 50;
+    // todo this method should not deal with ticks, use meters instead
+    // todo this should take the tolerance in meters
+    public boolean isAtPositionTicks(double position) {
+        return Math.abs(getPositionTicks() - position) <= 50;
     }
 
-    public void setRatchet(Boolean on) {
-        ratchet.set(on ? 1 : 0);
+    public void setRatchetServo(boolean on) {
+        ratchetServo.set(on ? 1 : 0);
     }
+
+    // todo disableMotors method to set percent to zero
 
 }

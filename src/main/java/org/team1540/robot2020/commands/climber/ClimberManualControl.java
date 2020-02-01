@@ -5,21 +5,21 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.team1540.robot2020.subsystems.Climber;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
-public class ClimberJoystickControl extends CommandBase {
+public class ClimberManualControl extends CommandBase {
     private Climber climber;
     private ChickenXboxController.Axis joystickAxis;
-    private JoystickButton ratchetbutton;
+    private JoystickButton ratchetButton;
 
-    public ClimberJoystickControl(Climber climber, ChickenXboxController.Axis joystickAxis, JoystickButton ratchetbutton) {
+    public ClimberManualControl(Climber climber, ChickenXboxController.Axis joystickAxis, JoystickButton ratchetButton) {
         this.climber = climber;
         this.joystickAxis = joystickAxis;
-        this.ratchetbutton = ratchetbutton;
+        this.ratchetButton = ratchetButton;
         addRequirements(climber);
     }
 
     @Override
     public void execute() {
         climber.setPercent(joystickAxis.value());
-        climber.setRatchet(ratchetbutton.get());
+        climber.setRatchetServo(ratchetButton.get());
     }
 }

@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
     private CANSparkMax indexerMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANEncoder indexerMotorEncoder = indexerMotor.getEncoder();
+    private CANEncoder indexerEncoder = indexerMotor.getEncoder();
 
-    private DigitalInput indexerStaged = new DigitalInput(0);
-    private DigitalInput shooterStaged = new DigitalInput(1);
+    private DigitalInput indexerStagedSensor = new DigitalInput(0);
+    private DigitalInput shooterStagedSensor = new DigitalInput(1);
 
     private int balls = 0;
 
@@ -27,29 +27,31 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("indexer/indexerStaged", indexerStaged.get());
-        SmartDashboard.putBoolean("indexer/shooterStaged", shooterStaged.get());
+        SmartDashboard.putBoolean("indexer/indexerStaged", indexerStagedSensor.get());
+        SmartDashboard.putBoolean("indexer/shooterStaged", shooterStagedSensor.get());
         SmartDashboard.putNumber("indexer/balls", balls);
     }
 
-    public void setPercent(double speed) {
-        indexerMotor.set(speed);
+    public void setPercent(double percent) {
+        indexerMotor.set(percent);
     }
 
-    public boolean getIndexerStaged() {
-        return indexerStaged.get();
+    public boolean getIndexerStagedSensor() {
+        return indexerStagedSensor.get();
     }
 
-    public boolean getShooterStaged() {
-        return shooterStaged.get();
+    public boolean getShooterStagedSensor() {
+        return shooterStagedSensor.get();
     }
 
+    // TODO this should use meters instead of inches
     public double getEncoderInches() {
-        return indexerMotorEncoder.getPosition();
+        // TODO this needs tuning constant to convert from ticks
+        return indexerEncoder.getPosition();
     }
 
-    public void resetEncoder() {
-        indexerMotorEncoder.setPosition(0);
+    private void resetEncoder() {
+        indexerEncoder.setPosition(0);
     }
 
     public int getBalls() {

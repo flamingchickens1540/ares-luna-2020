@@ -13,8 +13,9 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public void initialize() {
-        shooterInitiallyStaged = indexer.getShooterStaged();
+        shooterInitiallyStaged = indexer.getShooterStagedSensor();
         if (shooterInitiallyStaged) {
+            // todo indexer percent tuning constant
             indexer.setPercent(-1);
         } else {
             indexer.setPercent(1);
@@ -23,6 +24,6 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return shooterInitiallyStaged != indexer.getShooterStaged();
+        return shooterInitiallyStaged != indexer.getShooterStagedSensor();
     }
 }

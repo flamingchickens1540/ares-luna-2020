@@ -16,10 +16,6 @@ public class RunIntake extends CommandBase {
 
     @Override
     public void initialize() {
-        if (indexer.isFull()) {
-            intake.setFunnelAndRollerSpeed(-Intake.intakeSpeed);
-        } else {
-            intake.setFunnelAndRollerSpeed(Intake.intakeSpeed);
-        }
+        intake.setFunnelAndRollerPercent(!indexer.isFull());
     }
 }

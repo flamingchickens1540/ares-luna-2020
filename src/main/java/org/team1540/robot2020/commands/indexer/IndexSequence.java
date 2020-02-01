@@ -11,7 +11,7 @@ public class IndexSequence extends SequentialCommandGroup {
         addRequirements(indexer);
         addCommands(
                 // TODO indexer should have a max number of balls to intake
-                new WaitUntilCommand(indexer::getIndexerStaged),
+                new WaitUntilCommand(indexer::getIndexerStagedSensor),
                 new WaitCommand(0.25),
                 new MoveBallsUpOne(indexer, 1),
                 new InstantCommand(indexer::ballAdded)
