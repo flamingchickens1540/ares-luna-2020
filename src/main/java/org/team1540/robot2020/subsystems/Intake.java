@@ -17,21 +17,19 @@ public class Intake extends SubsystemBase {
         rollers.set(speed);
     }
 
-    public void setFunnelASpeed(double speed) {
-        funnelA.set(speed);
-    }
-
-    public void setFunnelBSpeed(double speed) {
-        funnelB.set(speed);
-    }
-
     public void setFunnelSpeed(double speed) {
-        setFunnelASpeed(speed);
-        setFunnelBSpeed(speed);
+        setFunnelSpeed(speed, speed);
     }
 
-    public void setSpeed(double speed) {
+    public void setFunnelSpeed(double speedA, double speedB) {
+        funnelA.set(speedA);
+        funnelB.set(speedB);
+    }
+
+    public void setFunnelAndRollerSpeed(double speed) {
         setRollerSpeed(speed);
         setFunnelSpeed(speed);
     }
+
+    // TODO add stop
 }
