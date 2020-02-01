@@ -61,10 +61,14 @@ public class DriveTrain extends SubsystemBase {
     private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, true);
     private Encoder rightEncoder = new CTREBaseMotorControllerEncoder(driveMotorRightA, encoderMetersPerTick, false);
 
+    // TODO drivetrain should not be in charge of the navx
     public final NavX navx = new NavX(Port.kMXP);
+
+    // TODO individual subsystems or commands that use the navx are in charge of keeping their own offset, and are not allowed to just reset the navx yaw
 
     private double navxOffset = 0;
 
+    // TODO need a wrapper for the odometry class that allows us to not reset the encoders-  should store its own relative offsets
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
 

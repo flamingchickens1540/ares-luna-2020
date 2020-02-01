@@ -28,7 +28,7 @@ public class Shooter extends SubsystemBase {
         shooterMotorA.set(TalonFXControlMode.Velocity, velocity);
     }
 
-    public void stop() {
+    public void disableMotors() {
         shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
 

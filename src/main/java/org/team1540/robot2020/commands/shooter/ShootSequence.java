@@ -20,6 +20,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         new ShooterSpinUp(shooter, 2000),
                         new StageBallsForShooting(indexer)
                 ),
+                // TODO the meters moved up here should be independent from the ball width tuning constant
                 new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),
                 new InstantCommand(indexer::ballRemoved),
                 new WaitCommand(0.1)
@@ -28,6 +29,6 @@ public class ShootSequence extends SequentialCommandGroup {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.stop();
+        shooter.disableMotors();
     }
 }

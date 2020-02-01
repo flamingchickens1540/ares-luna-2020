@@ -56,7 +56,7 @@ public class RobotContainer {
         copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
         copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
         copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
-        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::stop);
+        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
     }
 
     private void initModeTransitionBindings() {
