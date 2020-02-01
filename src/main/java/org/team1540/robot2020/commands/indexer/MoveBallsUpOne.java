@@ -7,6 +7,7 @@ import org.team1540.robot2020.subsystems.Indexer;
 public class MoveBallsUpOne extends CommandBase {
     private Indexer indexer;
 
+    // TODO remove PID controller
     private PIDController pidController = new PIDController(1, 0, 0);
 
     public MoveBallsUpOne(Indexer indexer, double balls) {

@@ -5,7 +5,7 @@ import org.team1540.robot2020.subsystems.Indexer;
 
 public class MoveBallsToTop extends CommandBase {
     private Indexer indexer;
-    private boolean up = true;
+    private boolean shooterInitiallyStaged;
 
     public MoveBallsToTop(Indexer indexer) {
         this.indexer = indexer;
@@ -13,9 +13,9 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public void initialize() {
-        if (indexer.getShooterStaged()) {
+        shooterInitiallyStaged = indexer.getShooterStaged();
+        if (shooterInitiallyStaged) {
             indexer.setPercent(-1);
-            up = false;
         } else {
             indexer.setPercent(1);
         }
@@ -23,6 +23,6 @@ public class MoveBallsToTop extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return up == indexer.getShooterStaged();
+        return shooterInitiallyStaged != indexer.getShooterStaged();
     }
 }
