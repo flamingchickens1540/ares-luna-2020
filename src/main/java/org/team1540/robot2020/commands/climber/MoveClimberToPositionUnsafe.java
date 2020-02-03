@@ -17,7 +17,6 @@ public class MoveClimberToPositionUnsafe extends CommandBase {
 
     @Override
     public void initialize() {
-        // todo write setPositionMeters
         climber.setPositionMeters(position);
     }
 
