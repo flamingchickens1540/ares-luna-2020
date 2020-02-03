@@ -18,7 +18,7 @@ public class Indexer extends SubsystemBase {
 
     public static final double ballLengthsToIndexAfterShoot = 1.5;
     public static final double ballSizeMeters = 0.2;
-    public static final double speed = 1;
+    public static final double indexingSpeed = 1;
     public static final double ballHeightThresholdMeters = 0.05;
 
     public Indexer() {

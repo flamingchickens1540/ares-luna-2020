@@ -14,7 +14,7 @@ public class MoveBallsUpOne extends CommandBase {
 
     @Override
     public void initialize() {
-        indexer.setPercent(Indexer.speed);
+        indexer.setPercent(Indexer.indexingSpeed);
     }
 
     @Override

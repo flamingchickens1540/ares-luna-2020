@@ -15,10 +15,9 @@ public class StageBallsForShooting extends CommandBase {
     public void initialize() {
         shooterInitiallyStaged = indexer.getShooterStagedSensor();
         if (shooterInitiallyStaged) {
-            // todo indexer percent tuning constant
-            indexer.setPercent(-1);
+            indexer.setPercent(-Indexer.indexingSpeed);
         } else {
-            indexer.setPercent(1);
+            indexer.setPercent(Indexer.indexingSpeed);
         }
     }
 
