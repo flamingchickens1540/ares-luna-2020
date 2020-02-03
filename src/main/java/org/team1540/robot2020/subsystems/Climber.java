@@ -10,6 +10,8 @@ public class Climber extends SubsystemBase {
 
     private Servo ratchetServo = new Servo(0);
 
+    public static final double positionThresholdMeters = 0.05;
+
     public Climber() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
@@ -26,14 +28,18 @@ public class Climber extends SubsystemBase {
         setPercent(0);
     }
 
-    // TODO these methods need to set and get climber position in meters, not ticks
-    // todo ticks to climber pos meters method
-    public void setPositionTicks(double position) {
-        climberMotor.set(ControlMode.Position, position);
+    public double ticksToMeters(double ticks) {
+        return ticks;
     }
 
-    public void setPositionMeters(double position) {
-        climberMotor.set(ControlMode.Position, position);
+    // TODO these methods need to set and get climber position in meters, not ticks
+    // todo ticks to climber pos meters method
+    public void setPositionTicks(double ticks) {
+        climberMotor.set(ControlMode.Position, ticks);
+    }
+
+    public void setPositionMeters(double meters) {
+        setPositionTicks(ticksToMeters(meters));
     }
 
     public double getPositionTicks() {
@@ -41,17 +47,11 @@ public class Climber extends SubsystemBase {
     }
 
     public double getPositionMeters() {
-        return climberMotor.getSelectedSensorPosition();
+        return ticksToMeters(getPositionTicks());
     }
 
-    // todo this method should not deal with ticks, use meters instead
-    // todo this should take the tolerance in meters
-    public boolean isAtPositionTicks(double position) {
-        return Math.abs(getPositionTicks() - position) <= 50;
-    }
-
-    public boolean isAtPositionMeters(double position) {
-        return Math.abs(getPositionTicks() - position) <= 50;
+    public boolean isAtPositionMeters(double meters) {
+        return Math.abs(getPositionMeters() - meters) <= positionThresholdMeters;
     }
 
     public void setRatchetServo(boolean on) {
