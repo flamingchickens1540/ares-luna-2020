@@ -20,8 +20,6 @@ import org.team1540.rooster.triggers.DPadAxis;
 
 public class RobotContainer {
 
-    // TODO add networktables logging for all mechanism state (positions, velocities, current draw)
-
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
     private ChickenXboxController driver = new ChickenXboxController(0);

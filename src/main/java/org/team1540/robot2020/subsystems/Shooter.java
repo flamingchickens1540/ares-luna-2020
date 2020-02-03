@@ -3,6 +3,7 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -22,6 +23,12 @@ public class Shooter extends SubsystemBase {
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
 
         shooterMotorB.follow(shooterMotorA);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Shooter/shooterAVelocity", shooterMotorA.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Shooter/shooterBVelocity", shooterMotorB.getSelectedSensorVelocity());
     }
 
     public void setVelocityTicksPerDecisecond(double velocity) {

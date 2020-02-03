@@ -1,16 +1,21 @@
 package org.team1540.robot2020.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
     // todo Should intake rollers and funnel be separate subsystems?
     private CANSparkMax rollerMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 
     private CANSparkMax funnelLeftMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelRightMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
+    private CANEncoder funnelRightEncoder = funnelRightMotor.getEncoder();
 
     public static final double defaultRollerPercent = 1;
     public static final double defaultFunnelLeftPercent = 1;
@@ -23,6 +28,13 @@ public class Intake extends SubsystemBase {
 
         funnelLeftMotor.restoreFactoryDefaults();
         funnelRightMotor.restoreFactoryDefaults();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Intake/rollerVelocity", rollerEncoder.getVelocity());
+        SmartDashboard.putNumber("Intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
+        SmartDashboard.putNumber("Intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
     }
 
     public void setRollerPercent(double percent) {

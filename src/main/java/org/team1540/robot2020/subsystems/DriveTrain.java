@@ -143,20 +143,20 @@ public class DriveTrain extends SubsystemBase {
         odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(),
             rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/encoderDistanceLeft", leftEncoder.getDistance());
-        SmartDashboard.putNumber("drive/encoderDistanceRight", rightEncoder.getDistance());
+        SmartDashboard.putNumber("DriveTrain/encoderDistanceLeft", leftEncoder.getDistance());
+        SmartDashboard.putNumber("DriveTrain/encoderDistanceRight", rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
-        SmartDashboard.putNumber("drive/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
+        SmartDashboard.putNumber("DriveTrain/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("DriveTrain/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
 
-        SmartDashboard.putNumber("drive/encoderTicksLeft", driveMotorLeftA.getSelectedSensorPosition());
-        SmartDashboard.putNumber("drive/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("DriveTrain/encoderTicksLeft", driveMotorLeftA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("DriveTrain/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
 
         Pose2d poseMeters = odometry.getPoseMeters();
         Translation2d poseTranslation = poseMeters.getTranslation();
-        SmartDashboard.putNumber("drive/odometry/X", poseTranslation.getX());
-        SmartDashboard.putNumber("drive/odometry/Y", poseTranslation.getY());
-        SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
+        SmartDashboard.putNumber("DriveTrain/odometry/X", poseTranslation.getX());
+        SmartDashboard.putNumber("DriveTrain/odometry/Y", poseTranslation.getY());
+        SmartDashboard.putNumber("DriveTrain/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
     public Pose2d getPose() {

@@ -3,6 +3,7 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
@@ -18,6 +19,13 @@ public class Climber extends SubsystemBase {
         climberMotor.configFactoryDefault();
 
         setRatchetServo(true);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("climberPosition", climberMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climberVelocity", climberMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("climberRatchetPosition", ratchetServo.get());
     }
 
     public void setPercent(double percent) {
