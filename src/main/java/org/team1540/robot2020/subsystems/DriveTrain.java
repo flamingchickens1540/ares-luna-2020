@@ -199,7 +199,7 @@ public class DriveTrain extends SubsystemBase {
         return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
     }
 
-    public void resetNavX() {
+    public void zeroAngle() {
         navxOffset = navx.getYawRadians();
     }
 }

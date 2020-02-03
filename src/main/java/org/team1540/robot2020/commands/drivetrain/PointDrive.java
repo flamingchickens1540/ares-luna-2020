@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.ControlUtils;
-import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.MiniPID;
+import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.TrigUtils;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.Axis2D;
@@ -16,6 +16,7 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
 
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
+    private NavX navx;
     private ChickenXboxController driver;
 
     private double goalAngle;
@@ -26,8 +27,9 @@ public class PointDrive extends CommandBase {
     private double deadzone;
 
     // TODO: this is pasted from last year's code, feel free to clean up the tuning constant stuff
-    public PointDrive(DriveTrain driveTrain, ChickenXboxController driver) {
+    public PointDrive(DriveTrain driveTrain, NavX navx, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
+        this.navx = navx;
         this.driver = driver;
         addRequirements(driveTrain);
 
@@ -40,7 +42,7 @@ public class PointDrive extends CommandBase {
         SmartDashboard.putNumber("PointDrive/deadzone", 0.02);
 
         pointController = new MiniPID(0, 0, 0);
-        driver.getButton(Y).whenPressed(new InstCommand(this::zeroAngle));
+        driver.getButton(Y).whenPressed(this::zeroAngle);
     }
 
     @Override
@@ -56,12 +58,12 @@ public class PointDrive extends CommandBase {
     }
 
     public void zeroAngle() {
-        angleOffset = driveTrain.getHeading();
+        angleOffset = navx.getYawRadians();
         setGoalToCurrentAngle();
     }
 
     public void setGoalToCurrentAngle() {
-        goalAngle = driveTrain.getHeading() - angleOffset;
+        goalAngle = navx.getYawRadians() - angleOffset;
     }
 
     @Override
