@@ -29,7 +29,7 @@ public class RobotContainer {
 
     private NavX navx = new NavX(SPI.Port.kMXP);
 
-    private DriveTrain driveTrain = new DriveTrain();
+    private DriveTrain driveTrain = new DriveTrain(navx);
     private Intake intake = new Intake();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();

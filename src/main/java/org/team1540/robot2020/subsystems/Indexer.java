@@ -17,6 +17,9 @@ public class Indexer extends SubsystemBase {
     private int balls = 0;
 
     public static final double ballLengthsToIndexAfterShoot = 1.5;
+    public static final double ballSizeMeters = 0.2;
+    public static final double speed = 1;
+    public static final double ballHeightThresholdMeters = 0.05;
 
     public Indexer() {
         // TODO figure out current limit on all motors
@@ -44,8 +47,7 @@ public class Indexer extends SubsystemBase {
         return shooterStagedSensor.get();
     }
 
-    // TODO this should use meters instead of inches
-    public double getEncoderInches() {
+    public double getEncoderMeters() {
         // TODO this needs tuning constant to convert from ticks
         return indexerEncoder.getPosition();
     }
