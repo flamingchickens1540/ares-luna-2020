@@ -33,7 +33,6 @@ public class Climber extends SubsystemBase {
     }
 
     // TODO these methods need to set and get climber position in meters, not ticks
-    // todo ticks to climber pos meters method
     public void setPositionTicks(double ticks) {
         climberMotor.set(ControlMode.Position, ticks);
     }
