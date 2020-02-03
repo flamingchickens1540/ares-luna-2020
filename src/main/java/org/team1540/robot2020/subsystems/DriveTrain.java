@@ -86,6 +86,8 @@ public class DriveTrain extends SubsystemBase {
         for (TalonFX talon : driveMotorAll) {
             // TODO this should restoreFactoryDefaults() on all motors
 
+            talon.configFactoryDefault();
+
             talon.setNeutralMode(NeutralMode.Brake);
 
             talon.configVoltageCompSaturation(saturationVoltage);
