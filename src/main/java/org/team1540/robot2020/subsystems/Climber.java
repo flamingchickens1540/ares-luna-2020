@@ -28,13 +28,25 @@ public class Climber extends SubsystemBase {
         climberMotor.set(ControlMode.Position, position);
     }
 
+    public void setPositionMeters(double position) {
+        climberMotor.set(ControlMode.Position, position);
+    }
+
     public double getPositionTicks() {
+        return climberMotor.getSelectedSensorPosition();
+    }
+
+    public double getPositionMeters() {
         return climberMotor.getSelectedSensorPosition();
     }
 
     // todo this method should not deal with ticks, use meters instead
     // todo this should take the tolerance in meters
     public boolean isAtPositionTicks(double position) {
+        return Math.abs(getPositionTicks() - position) <= 50;
+    }
+
+    public boolean isAtPositionMeters(double position) {
         return Math.abs(getPositionTicks() - position) <= 50;
     }
 
