@@ -15,8 +15,7 @@ public class IntakeWhileNotFull extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        // TODO this only run on initialize, did you mean to put this in periodic?
+    public void execute() {
         intake.setFunnelAndRollerPercent(!indexer.isFull());
     }
 }
