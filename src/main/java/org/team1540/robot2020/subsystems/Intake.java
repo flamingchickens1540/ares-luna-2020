@@ -45,5 +45,7 @@ public class Intake extends SubsystemBase {
         setFunnelPercent(inversion * Intake.defaultFunnelLeftPercent, inversion * Intake.defaultFunnelRightPercent);
     }
 
-    // TODO add stop method
+    public void stop() {
+        setFunnelAndRollerPercent(true);
+    }
 }
