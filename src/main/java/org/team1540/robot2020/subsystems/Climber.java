@@ -22,6 +22,10 @@ public class Climber extends SubsystemBase {
         climberMotor.set(ControlMode.PercentOutput, percent);
     }
 
+    public void disableMotors() {
+        setPercent(0);
+    }
+
     // TODO these methods need to set and get climber position in meters, not ticks
     // todo ticks to climber pos meters method
     public void setPositionTicks(double position) {
@@ -53,7 +57,5 @@ public class Climber extends SubsystemBase {
     public void setRatchetServo(boolean on) {
         ratchetServo.set(on ? 1 : 0);
     }
-
-    // todo disableMotors method to set percent to zero
 
 }
