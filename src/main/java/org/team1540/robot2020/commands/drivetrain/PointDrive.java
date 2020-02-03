@@ -56,12 +56,12 @@ public class PointDrive extends CommandBase {
     }
 
     public void zeroAngle() {
-        angleOffset = driveTrain.navx.getYawRadians();
+        angleOffset = driveTrain.getHeading();
         setGoalToCurrentAngle();
     }
 
     public void setGoalToCurrentAngle() {
-        goalAngle = driveTrain.navx.getYawRadians() - angleOffset;
+        goalAngle = driveTrain.getHeading() - angleOffset;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class PointDrive extends CommandBase {
         Axis2D pointAxis = driver.getAxis2D(RIGHT);
         if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
-        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, driveTrain.navx.getYawRadians());
+        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, driveTrain.getHeading());
         SmartDashboard.putNumber("PointDrive/error", error);
 
         double rawPIDOutput = pointController.getOutput(error);

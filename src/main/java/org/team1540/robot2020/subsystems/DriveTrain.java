@@ -3,7 +3,6 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -61,10 +60,7 @@ public class DriveTrain extends SubsystemBase {
     private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, true);
     private Encoder rightEncoder = new CTREBaseMotorControllerEncoder(driveMotorRightA, encoderMetersPerTick, false);
 
-    // TODO drivetrain should not be in charge of the navx
-    public final NavX navx = new NavX(Port.kMXP);
-
-    // TODO individual subsystems or commands that use the navx are in charge of keeping their own offset, and are not allowed to just reset the navx yaw
+    private NavX navx;
 
     private double navxOffset = 0;
 
@@ -72,9 +68,10 @@ public class DriveTrain extends SubsystemBase {
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
 
-    public DriveTrain() {
+    public DriveTrain(NavX navx) {
         initMotors();
         initEncoders();
+        this.navx = navx;
     }
 
     private void initMotors() {
@@ -202,7 +199,7 @@ public class DriveTrain extends SubsystemBase {
         return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
     }
 
-    public void zeroNavx() {
+    public void resetNavX() {
         navxOffset = navx.getYawRadians();
     }
 }
