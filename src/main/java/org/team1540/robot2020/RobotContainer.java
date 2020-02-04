@@ -22,9 +22,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
+import org.team1540.robot2020.commands.cargomech.CargoMechIntake;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
+import org.team1540.robot2020.subsystems.CargoMech;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.NavX;
@@ -42,6 +44,7 @@ public class RobotContainer {
     private NavX navx = new NavX(SPI.Port.kMXP);
 
     private DriveTrain driveTrain = new DriveTrain();
+    private CargoMech cargoMech = new CargoMech();
 
     public RobotContainer() {
         logger.info("Creating robot container...");
@@ -56,10 +59,11 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
-        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
-        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
-        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+//        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
+//        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
+//        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
+//        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+        driver.getButton(Y).whenPressed(new CargoMechIntake(cargoMech, driver.getButton(X)));
     }
 
     private void initModeTransitionBindings() {
