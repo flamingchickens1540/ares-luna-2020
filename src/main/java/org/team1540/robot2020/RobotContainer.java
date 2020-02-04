@@ -2,27 +2,21 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
-import org.team1540.robot2020.commands.IntakeIndexSequence;
-import org.team1540.robot2020.commands.ShootSequence;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
+import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
-import org.team1540.robot2020.subsystems.DriveTrain;
-import org.team1540.robot2020.subsystems.Indexer;
-import org.team1540.robot2020.subsystems.Intake;
-import org.team1540.robot2020.subsystems.Shooter;
+import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
+import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NavX;
-
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
-
+import org.team1540.rooster.triggers.DPadAxis;
 
 public class RobotContainer {
 
@@ -33,10 +27,11 @@ public class RobotContainer {
 
     private NavX navx = new NavX(SPI.Port.kMXP);
 
-    private DriveTrain driveTrain = new DriveTrain();
+    private DriveTrain driveTrain = new DriveTrain(navx);
     private Intake intake = new Intake();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
+    private Climber climber = new Climber();
 
     public RobotContainer() {
         logger.info("Creating robot container...");
@@ -51,11 +46,15 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
-        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
-        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
-        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
-        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
+//        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
+//        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
+//        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
+//        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+//        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
+        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
+        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
+        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
+        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
     }
 
     private void initModeTransitionBindings() {
@@ -78,7 +77,6 @@ public class RobotContainer {
                 // disable brakes
                 logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
-
     }
 
     public Command getAutoCommand() {
@@ -87,6 +85,13 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IntakeIndexSequence(intake, indexer));
+        indexer.setDefaultCommand(new IndexerManualControl(indexer,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
+        climber.setDefaultCommand(new ClimberManualControl(climber,
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
+                copilot.getButton(ChickenXboxController.XboxButton.X)));
+//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
+//        indexer.setDefaultCommand(new IndexSequence(indexer));
+//        intake.setDefaultCommand(new RunIntake(intake, indexer));
     }
 }

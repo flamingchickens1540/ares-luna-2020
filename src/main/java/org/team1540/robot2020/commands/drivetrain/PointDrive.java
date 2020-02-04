@@ -1,42 +1,86 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.utils.ChickenXboxController;
+import org.team1540.robot2020.utils.ControlUtils;
+import org.team1540.robot2020.utils.MiniPID;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.TrigUtils;
 
+import static org.team1540.robot2020.utils.ChickenXboxController.Axis2D;
+import static org.team1540.robot2020.utils.ChickenXboxController.Hand.RIGHT;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
 
-// TODO: Rewrite with features from 2019
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
-    private ChickenXboxController driver;
     private NavX navx;
-    private PIDController controller;
+    private ChickenXboxController driver;
 
-    public PointDrive(DriveTrain driveTrain, ChickenXboxController driver, NavX navx) {
+    private double goalAngle;
+    private MiniPID pointController;
+    private double angleOffset;
+    private double max;
+    private double min;
+    private double deadzone;
+
+    // TODO: this is pasted from last year's code, feel free to clean up the tuning constant stuff
+    public PointDrive(DriveTrain driveTrain, NavX navx, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
-        this.driver = driver;
         this.navx = navx;
-        controller = new PIDController(0.4,0, 0);
-        controller.setSetpoint(0);
+        this.driver = driver;
         addRequirements(driveTrain);
+
+        // TODO: hmm, we really need that YAML tuning lib
+        SmartDashboard.putNumber("PointDrive/P", 0.5);
+        SmartDashboard.putNumber("PointDrive/I", 0);
+        SmartDashboard.putNumber("PointDrive/D", 0);
+        SmartDashboard.putNumber("PointDrive/max", 0.5);
+        SmartDashboard.putNumber("PointDrive/min", 0);
+        SmartDashboard.putNumber("PointDrive/deadzone", 0.02);
+
+        pointController = new MiniPID(0, 0, 0);
+        driver.getButton(Y).whenPressed(this::zeroAngle);
+    }
+
+    @Override
+    public void initialize() {
+        double p = SmartDashboard.getNumber("PointDrive/P", 0);
+        double i = SmartDashboard.getNumber("PointDrive/I", 0);
+        double d = SmartDashboard.getNumber("PointDrive/D", 0);
+        max = SmartDashboard.getNumber("PointDrive/max", 0);
+        min = SmartDashboard.getNumber("PointDrive/min", 0);
+        deadzone = SmartDashboard.getNumber("PointDrive/deadzone", 0);
+        pointController.setPID(p, i, d);
+        setGoalToCurrentAngle();
+    }
+
+    public void zeroAngle() {
+        angleOffset = navx.getYawRadians();
+        setGoalToCurrentAngle();
+    }
+
+    public void setGoalToCurrentAngle() {
+        goalAngle = navx.getYawRadians() - angleOffset;
     }
 
     @Override
     public void execute() {
-        double currentAngle = -navx.getYawRadians() + driveTrain.getNavxOffset();
-        double destAngle = driver.getAxis2D(ChickenXboxController.Hand.RIGHT).angle().value();
-        double error = TrigUtils.signedAngleError(destAngle, currentAngle);
-        double pidValue = controller.calculate(error);
-        double forward = driver.getAxis(LEFT_X).withDeadzone(0.1).value();
-        driveTrain.tankDrivePercent(-pidValue + forward, pidValue + forward);
-    }
+        Axis2D pointAxis = driver.getAxis2D(RIGHT);
+        if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
-    @Override
-    public boolean isFinished() {
-        return false;
+        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, driveTrain.getHeading());
+        SmartDashboard.putNumber("PointDrive/error", error);
+
+        double rawPIDOutput = pointController.getOutput(error);
+        double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
+
+        double throttle = driver.getAxis(LEFT_X).withDeadzone(.1).value();
+
+        double leftMotors = throttle + angleOutput;
+        double rightMotors = throttle - angleOutput;
+        driveTrain.tankDrivePercent(leftMotors, rightMotors);
     }
 }

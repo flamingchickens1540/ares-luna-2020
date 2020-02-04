@@ -2,12 +2,11 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,14 +17,33 @@ import org.team1540.robot2020.utils.NavX;
 
 public class DriveTrain extends SubsystemBase {
 
-    public static final double trackwidthMeters = 0.761388065;
+    // Feed forward constants
+    public static final double ksVolts = 0.669;
+    public static final double kvVoltSecondsPerMeter = 2.76;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
 
-    public static final double encoderMetersPerRev = 0.4863499587;
-    public static final double encoderTicksPerRev = 512;
-    public static final double encoderMetersPerTick = encoderMetersPerRev / encoderTicksPerRev;
+    // Ramsete PID controllers
+//    public static final double kPDriveVel = 19.3;
+    public static final double kPDriveVel = 1;
+//    public static final double kPDriveVel = 0;
 
-    public static final int DRIVE_POSITION_SLOT_IDX = 0;
-    public static final int DRIVE_VELOCITY_SLOT_IDX = 1;
+    public static final double kTrackwidthMeters = 0.761388065;
+    public final DifferentialDriveKinematics kDriveKinematics =
+        new DifferentialDriveKinematics(kTrackwidthMeters);
+
+    private final double kWheelCircumference = 0.4863499587;
+    private final double kEncoderPPR = 512;
+    private final double encoderMetersPerTick = kWheelCircumference / kEncoderPPR;
+
+    // Motion control
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
+
+    public static final double kMaxSpeedMetersPerSecond = 2;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+
+    private static final int DRIVE_POSITION_SLOT_IDX = 0;
+    private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
     private TalonFX[] driveMotorAll;
     private TalonFX[] driveMotorMasters;
@@ -39,70 +57,77 @@ public class DriveTrain extends SubsystemBase {
     private TalonFX driveMotorRightA = new TalonFX(2);
     private TalonFX driveMotorRightB = new TalonFX(3);
 
-    private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, false);
+    private Encoder leftEncoder = new CTREBaseMotorControllerEncoder(driveMotorLeftA, encoderMetersPerTick, true);
     private Encoder rightEncoder = new CTREBaseMotorControllerEncoder(driveMotorRightA, encoderMetersPerTick, false);
 
-    private final NavX navx = new NavX(Port.kMXP);
+    private NavX navx;
 
     private double navxOffset = 0;
 
-    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
+    // TODO need a wrapper for the odometry class that allows us to not reset the encoders-  should store its own relative offsets
+    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
 
-    public DriveTrain() {
+    public DriveTrain(NavX navx) {
         initMotors();
         initEncoders();
+        this.navx = navx;
     }
 
     private void initMotors() {
         driveMotorAll = new TalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
         driveMotorMasters = new TalonFX[]{driveMotorLeftA, driveMotorRightA};
-        driveMotorFollowers = new TalonFX[]{driveMotorLeftB, driveMotorRightB};
+        driveMotorFollowers = new TalonFX[]{driveMotorRightB, driveMotorLeftB};
         driveMotorLefts = new TalonFX[]{driveMotorLeftA, driveMotorLeftB};
         driveMotorRights = new TalonFX[]{driveMotorRightA, driveMotorRightB};
 
         // TODO: Use TalonFXConfiguration instead
 
-        for (BaseMotorController controller : driveMotorAll) {
-            controller.configFactoryDefault();
+        for (TalonFX talon : driveMotorAll) {
+            talon.configFactoryDefault();
 
-            controller.setNeutralMode(NeutralMode.Brake);
+            talon.setNeutralMode(NeutralMode.Brake);
 
-            controller.configVoltageCompSaturation(saturationVoltage);
-            controller.enableVoltageCompensation(true);
-            controller.configPeakOutputForward(1);
-            controller.configPeakOutputReverse(-1);
+            talon.configVoltageCompSaturation(saturationVoltage);
+            talon.enableVoltageCompensation(true);
+            talon.configPeakOutputForward(1);
+            talon.configPeakOutputReverse(-1);
 
-            controller.configOpenloopRamp(0);
-            controller.configForwardSoftLimitEnable(false);
-            controller.configReverseSoftLimitEnable(false);
-            controller.overrideLimitSwitchesEnable(false);
+            talon.configOpenloopRamp(0);
+            talon.configForwardSoftLimitEnable(false);
+            talon.configReverseSoftLimitEnable(false);
+            talon.overrideLimitSwitchesEnable(false);
         }
 
-        for (TalonFX controller : driveMotorMasters) {
+        for (TalonFX talon : driveMotorMasters) {
+            talon.setNeutralMode(NeutralMode.Brake);
+
             // Position
-            controller.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kD(DRIVE_POSITION_SLOT_IDX, 0);
-            controller.config_kF(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kP(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kI(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kD(DRIVE_POSITION_SLOT_IDX, 0);
+            talon.config_kF(DRIVE_POSITION_SLOT_IDX, 0);
 
             // Velocity
-            controller.config_kP(DRIVE_VELOCITY_SLOT_IDX, 3);
-            controller.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
-            controller.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
-            controller.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
+            talon.config_kP(DRIVE_VELOCITY_SLOT_IDX, 3);
+            talon.config_kI(DRIVE_VELOCITY_SLOT_IDX, 0.02);
+            talon.config_kF(DRIVE_VELOCITY_SLOT_IDX, 0);
+            talon.config_kD(DRIVE_VELOCITY_SLOT_IDX, 0);
         }
 
-        for (BaseMotorController talon : driveMotorLefts) {
+        for (TalonFX talon : driveMotorLefts) {
             talon.setInverted(true);
         }
 
-        for (BaseMotorController talon : driveMotorRights) {
+        for (TalonFX talon : driveMotorRights) {
             talon.setInverted(false);
         }
 
         driveMotorLeftA.setSensorPhase(false);
         driveMotorRightA.setSensorPhase(false);
+
+//            talon.configPeakCurrentLimit(0);
+//            talon.configContinuousCurrentLimit(40);
 
         driveMotorLeftB.follow(driveMotorLeftA);
 
@@ -115,23 +140,23 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        odometry.update(new Rotation2d(getHeading()), leftEncoder.getDistance(),
+        odometry.update(Rotation2d.fromDegrees(getHeading()), leftEncoder.getDistance(),
             rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/encoderDistanceLeft", leftEncoder.getDistance());
-        SmartDashboard.putNumber("drive/encoderDistanceRight", rightEncoder.getDistance());
+        SmartDashboard.putNumber("DriveTrain/encoderDistanceLeft", leftEncoder.getDistance());
+        SmartDashboard.putNumber("DriveTrain/encoderDistanceRight", rightEncoder.getDistance());
 
-        SmartDashboard.putNumber("drive/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
-        SmartDashboard.putNumber("drive/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
+        SmartDashboard.putNumber("DriveTrain/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("DriveTrain/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
 
-        SmartDashboard.putNumber("drive/encoderTicksLeft", driveMotorLeftA.getSelectedSensorPosition());
-        SmartDashboard.putNumber("drive/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("DriveTrain/encoderTicksLeft", driveMotorLeftA.getSelectedSensorPosition());
+        SmartDashboard.putNumber("DriveTrain/encoderTicksRight", driveMotorRightA.getSelectedSensorPosition());
 
         Pose2d poseMeters = odometry.getPoseMeters();
-        Translation2d postTranslation = poseMeters.getTranslation();
-        SmartDashboard.putNumber("drive/odometry/X", postTranslation.getX());
-        SmartDashboard.putNumber("drive/odometry/Y", postTranslation.getY());
-        SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
+        Translation2d poseTranslation = poseMeters.getTranslation();
+        SmartDashboard.putNumber("DriveTrain/odometry/X", poseTranslation.getX());
+        SmartDashboard.putNumber("DriveTrain/odometry/Y", poseTranslation.getY());
+        SmartDashboard.putNumber("DriveTrain/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
     public Pose2d getPose() {
@@ -144,7 +169,7 @@ public class DriveTrain extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         resetEncoders();
-        odometry.resetPosition(pose, new Rotation2d(getHeading()));
+        odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -160,9 +185,9 @@ public class DriveTrain extends SubsystemBase {
         driveMotorRightA.set(ControlMode.Velocity, rightMetersPerSecond / encoderMetersPerTick / 10);
     }
 
-    public void tankDrivePercent(double leftSpeed, double rightSpeed) {
-        driveMotorLeftA.set(ControlMode.PercentOutput, leftSpeed);
-        driveMotorRightA.set(ControlMode.PercentOutput, rightSpeed);
+    public void tankDrivePercent(double leftPercent, double rightPercent) {
+        driveMotorLeftA.set(ControlMode.PercentOutput, leftPercent);
+        driveMotorRightA.set(ControlMode.PercentOutput, rightPercent);
     }
 
     public void resetEncoders() {
@@ -171,14 +196,10 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return navx.getAngleRadians();
+        return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
     }
 
-    public void zeroNavx() {
+    public void zeroAngle() {
         navxOffset = navx.getYawRadians();
-    }
-
-    public double getNavxOffset() {
-        return navxOffset;
     }
 }

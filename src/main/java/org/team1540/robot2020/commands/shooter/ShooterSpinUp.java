@@ -3,12 +3,14 @@ package org.team1540.robot2020.commands.shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Shooter;
 
-public class SpinUpShooter extends CommandBase {
+public class ShooterSpinUp extends CommandBase {
+
+    private static final double shooterSpeedToleranceTicksPerDecisecond = 50;
 
     private final int targetVelocityTicksPerDecisecond;
     private Shooter shooter;
 
-    public SpinUpShooter(Shooter shooter, int targetVelocityTicksPerDecisecond) {
+    public ShooterSpinUp(Shooter shooter, int targetVelocityTicksPerDecisecond) {
         this.shooter = shooter;
         this.targetVelocityTicksPerDecisecond = targetVelocityTicksPerDecisecond;
     }
@@ -20,7 +22,7 @@ public class SpinUpShooter extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= 50;
+        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= shooterSpeedToleranceTicksPerDecisecond;
     }
 }
 

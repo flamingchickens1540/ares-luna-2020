@@ -1,41 +1,59 @@
 package org.team1540.robot2020.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
-    private CANSparkMax indexerMotor = new CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax indexerMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANEncoder indexerEncoder = indexerMotor.getEncoder();
 
-    private DigitalInput indexerStaged = new DigitalInput(0);
-    private DigitalInput shooterStaged = new DigitalInput(1);
+    private DigitalInput indexerStagedSensor = new DigitalInput(0);
+    private DigitalInput shooterStagedSensor = new DigitalInput(1);
 
     private int balls = 0;
 
+    public static final double ballLengthsToIndexAfterShoot = 1.5;
+    public static final double ballSizeMeters = 0.2;
+    public static final double indexingSpeed = 1;
+    public static final double ballHeightThresholdMeters = 0.05;
+
     public Indexer() {
+        // TODO figure out current limit on all motors
+        indexerMotor.restoreFactoryDefaults();
+
         indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
-    public void setPercent(double speed) {
-        indexerMotor.set(speed);
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Indexer/indexerStaged", indexerStagedSensor.get());
+        SmartDashboard.putBoolean("Indexer/shooterStaged", shooterStagedSensor.get());
+        SmartDashboard.putNumber("Indexer/balls", balls);
     }
 
-    public boolean getIndexerStaged() {
-        return indexerStaged.get();
+    public void setPercent(double percent) {
+        indexerMotor.set(percent);
     }
 
-    public boolean getShooterStaged() {
-        return shooterStaged.get();
+    public boolean getIndexerStagedSensor() {
+        return indexerStagedSensor.get();
     }
 
-    public double getEncoderInches() {
-        return indexerMotor.getEncoder().getPosition();
+    public boolean getShooterStagedSensor() {
+        return shooterStagedSensor.get();
     }
 
-    public void resetEncoder() {
-        indexerMotor.getEncoder().setPosition(0);
+    public double getEncoderMeters() {
+        // TODO this needs tuning constant to convert from ticks
+        return indexerEncoder.getPosition();
+    }
+
+    private void resetEncoder() {
+        indexerEncoder.setPosition(0);
     }
 
     public int getBalls() {
@@ -43,6 +61,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public boolean isFull() {
+        // TODO this should be tunable
         return getBalls() == 5;
     }
 
