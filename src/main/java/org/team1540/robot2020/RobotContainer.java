@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.climber.ClimberManualControl;
+import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
@@ -80,7 +80,7 @@ public class RobotContainer {
     }
 
     public Command getAutoCommand() {
-        return new Autonomous(driveTrain);
+        return new FollowRamsetePath(driveTrain);
     }
 
     private void initDefaultCommands() {

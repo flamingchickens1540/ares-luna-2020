@@ -71,7 +71,7 @@ public class PointDrive extends CommandBase {
         Axis2D pointAxis = driver.getAxis2D(RIGHT);
         if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
-        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, driveTrain.getHeading());
+        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, navx.getYawRadians());
         SmartDashboard.putNumber("PointDrive/error", error);
 
         double rawPIDOutput = pointController.getOutput(error);

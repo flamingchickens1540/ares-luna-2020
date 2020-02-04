@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +16,6 @@ import org.team1540.robot2020.utils.NavX;
 public class DriveTrain extends SubsystemBase {
 
     public static final double kTrackwidthMeters = 0.761388065;
-    public final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
     private final double drivetrainTicksPerMeter = 1052.7398858397396;
 
@@ -106,7 +104,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        resetEncoders();
         odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -125,16 +122,7 @@ public class DriveTrain extends SubsystemBase {
         driveMotorRightA.setPercent(rightPercent);
     }
 
-    public void resetEncoders() {
-        driveMotorLeftA.setSelectedSensorPosition(0);
-        driveMotorRightA.setSelectedSensorPosition(0);
-    }
-
     public double getHeading() {
         return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
-    }
-
-    public void zeroAngle() {
-        navxOffset = navx.getYawRadians();
     }
 }
