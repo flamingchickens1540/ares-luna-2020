@@ -25,9 +25,12 @@ public class Intake extends SubsystemBase {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         rollerMotor.restoreFactoryDefaults();
-
         funnelLeftMotor.restoreFactoryDefaults();
         funnelRightMotor.restoreFactoryDefaults();
+
+        rollerMotor.setSmartCurrentLimit(20);
+        funnelLeftMotor.setSmartCurrentLimit(20);
+        funnelRightMotor.setSmartCurrentLimit(20);
     }
 
     @Override

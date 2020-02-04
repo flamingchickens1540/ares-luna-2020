@@ -24,8 +24,8 @@ public class Indexer extends SubsystemBase {
     public Indexer() {
         // TODO figure out current limit on all motors
         indexerMotor.restoreFactoryDefaults();
-
         indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        indexerMotor.setSmartCurrentLimit(20);
     }
 
     @Override
