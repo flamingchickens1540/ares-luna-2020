@@ -81,6 +81,6 @@ public class PointDrive extends CommandBase {
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;
-        driveTrain.tankDrivePercent(leftMotors, rightMotors);
+        driveTrain.setPercent(leftMotors, rightMotors);
     }
 }

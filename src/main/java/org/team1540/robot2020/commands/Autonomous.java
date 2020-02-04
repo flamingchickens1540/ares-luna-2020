@@ -14,8 +14,9 @@ import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConst
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import java.util.List;
 import org.team1540.robot2020.subsystems.DriveTrain;
+
+import java.util.List;
 
 public class Autonomous extends SequentialCommandGroup {
 
@@ -88,14 +89,14 @@ public class Autonomous extends SequentialCommandGroup {
             new PIDController(kPDriveVel, 0, 0),
             new PIDController(kPDriveVel, 0, 0),
             // RamseteCommand passes volts to the callback
-            driveTrain::tankDriveVolts,
+                driveTrain::setVoltage,
             driveTrain
         );
 
         addCommands(
                 new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
                 ramseteCommand,
-                new InstantCommand(() -> driveTrain.tankDriveVelocity(0, 0))
+                new InstantCommand(() -> driveTrain.setVelocityMetersPerSecond(0, 0))
         );
     }
 }
