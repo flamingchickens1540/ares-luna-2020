@@ -3,24 +3,33 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
     private TalonFX shooterMotorA = new TalonFX(8);
     private TalonFX shooterMotorB = new TalonFX(9);
 
-    private DigitalInput limitSwitch = new DigitalInput(0); // TODO:
+    // TODO the shooter hood limit switch is plugged into the reverse limit switch port of the spark max controlling the hood, see the Ares/Luna controls google sheet pinned in #robot-software
+    private DigitalInput limitSwitch = new DigitalInput(0);
 
     public Shooter() {
-        setupMotors();
+        setupFlywheelMotors();
+        setupHoodMotors();
     }
 
-    private void setupMotors() {
+    private void setupHoodMotors() {
+        // TODO
+    }
+
+    private void setupFlywheelMotors() {
         // TODO figure out current limit
-        shooterMotorA.configFactoryDefault();
-        shooterMotorB.configFactoryDefault();
+        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
+        shooterMotorA.configAllSettings(defaultConfig);
+        shooterMotorB.configAllSettings(defaultConfig);
 
         shooterMotorA.setNeutralMode(NeutralMode.Coast);
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
@@ -30,48 +39,43 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter/shooterAVelocity", shooterMotorA.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Shooter/shooterBVelocity", shooterMotorB.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Shooter/shooterVelocityA", shooterMotorB.getSelectedSensorVelocity());
+        // TODO log shooter current draw, hood position, hood current draw
     }
 
     public void disableMotors() {
         shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
 
-    public double getVelocityTicksPerDecisecond() {
-        return shooterMotorA.getSelectedSensorVelocity();
-    }
-
-    public void setVelocityTicksPerDecisecond(double velocity) {
-        shooterMotorA.set(TalonFXControlMode.Velocity, velocity);
-    }
-
-    // Hood
-
-    public boolean isLimitSwitchPressed() {
-        return limitSwitch.get();
-    }
-
     // Flywheel
-    public double getFlywheelVelocity() {
+    public double getFlywheelVelocityTicksPerDecisecond() {
         return shooterMotorA.getSelectedSensorVelocity();
     }
 
-    public void setFlywheelVelocity(double velocity) {
+    public void setFlywheelVelocityTicksPerDecisecond(double velocity) {
         shooterMotorA.set(TalonFXControlMode.Velocity, velocity);
     }
 
     // Hood
     public double getHoodPercent() {
+        // TODO: this is setting the shooter motor, not the hood motor
         return shooterMotorA.getMotorOutputPercent();
     }
 
     public void setHoodPercent(double speed) {
+        // TODO: this is setting the shooter motor, not the hood motor
         shooterMotorA.set(TalonFXControlMode.PercentOutput, speed);
     }
 
     public double getHoodPosition() {
+        // TODO: this is setting the shooter motor, not the hood motor
         return shooterMotorA.getSelectedSensorPosition();
+    }
+
+    // Hood Limit Switch
+    public boolean isLimitSwitchPressed() {
+        return limitSwitch.get();
     }
 
 }

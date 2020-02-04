@@ -1,7 +1,10 @@
 package org.team1540.robot2020;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -18,7 +21,11 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
 
+import java.util.List;
+
 public class RobotContainer {
+
+    // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
 
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
@@ -68,6 +75,7 @@ public class RobotContainer {
 
         enabled.whenActive(() -> {
             // enable brakes
+            driveTrain.setBrakes(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
         });
 
@@ -75,12 +83,13 @@ public class RobotContainer {
             .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
             .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                 // disable brakes
+                driveTrain.setBrakes(NeutralMode.Coast);
                 logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
     }
 
     public Command getAutoCommand() {
-        return new FollowRamsetePath(driveTrain);
+        return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
     }
 
     private void initDefaultCommands() {

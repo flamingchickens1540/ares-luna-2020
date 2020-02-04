@@ -28,6 +28,10 @@ public class DriveTrain extends SubsystemBase {
     private ChickenTalonFX driveMotorRightA = new ChickenTalonFX(2, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
     private ChickenTalonFX driveMotorRightB = new ChickenTalonFX(3, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
 
+    private ChickenTalonFX[] driveMotorAll = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
+    private ChickenTalonFX[] driveMotorLefts = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB};
+    private ChickenTalonFX[] driveMotorRights = new ChickenTalonFX[]{driveMotorRightA, driveMotorRightB};
+
     private NavX navx;
 
     private double navxOffset = 0;
@@ -41,10 +45,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initMotors() {
-        ChickenTalonFX[] driveMotorAll = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
-        ChickenTalonFX[] driveMotorLefts = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB};
-        ChickenTalonFX[] driveMotorRights = new ChickenTalonFX[]{driveMotorRightA, driveMotorRightB};
-
         TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
         defaultConfig.slot1.kP = 3.0;
         defaultConfig.slot1.kI = 0.02;
@@ -72,6 +72,14 @@ public class DriveTrain extends SubsystemBase {
 
         driveMotorLeftB.follow(driveMotorLeftA);
         driveMotorRightB.follow(driveMotorRightA);
+
+        setBrakes(NeutralMode.Brake);
+    }
+
+    public void setBrakes(NeutralMode brake) {
+        for (ChickenTalonFX talon : driveMotorAll) {
+            talon.setNeutralMode(brake);
+        }
     }
 
     @Override

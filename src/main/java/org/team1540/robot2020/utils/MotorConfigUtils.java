@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 public class MotorConfigUtils {
     @NotNull
     public static TalonFXConfiguration get1540DefaultTalonFXConfiguration() {
-        TalonFXConfiguration defaultTalonFXConfiguration = new TalonFXConfiguration();
-        defaultTalonFXConfiguration.voltageCompSaturation = 12;
-        defaultTalonFXConfiguration.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 0, 0, 0);
-        defaultTalonFXConfiguration.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 0, 0);
-        defaultTalonFXConfiguration.openloopRamp = 0;
-        return defaultTalonFXConfiguration;
+        TalonFXConfiguration defaultConfig = new TalonFXConfiguration();
+        defaultConfig.voltageCompSaturation = 12;
+        defaultConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 0, 0, 0);
+        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 0, 0);
+        defaultConfig.openloopRamp = 0;
+        return defaultConfig;
     }
 }

@@ -4,8 +4,6 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -35,7 +33,7 @@ public class FollowRamsetePath extends SequentialCommandGroup {
     private static final double kMaxAccelerationMetersPerSecondSquared = 1;
     private static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(DriveTrain.kTrackwidthMeters);
 
-    public FollowRamsetePath(DriveTrain driveTrain) {
+    public FollowRamsetePath(DriveTrain driveTrain, List<Pose2d> waypoints, boolean reversed) {
 
         var voltageConstraint =
                 new DifferentialDriveVoltageConstraint(
@@ -51,19 +49,10 @@ public class FollowRamsetePath extends SequentialCommandGroup {
                         .setKinematics(kDriveKinematics)
                         .addConstraint(voltageConstraint);
 
-//        Follow splines backwards
-//        config.setReversed(true);
+        trajectoryConfig.setReversed(reversed);
 
-        // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                List.of(
-                        new Translation2d(1, 1),
-                        new Translation2d(2, -1)
-//                        new Translation2d(-1, -1),
-//                        new Translation2d(-2, -1)
-                ),
-                new Pose2d(3, 0, new Rotation2d(0)),
+                waypoints,
                 trajectoryConfig
         );
 

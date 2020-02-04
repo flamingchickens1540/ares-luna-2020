@@ -17,12 +17,12 @@ public class ShooterSpinUp extends CommandBase {
 
     @Override
     public void initialize() {
-        shooter.setVelocityTicksPerDecisecond(targetVelocityTicksPerDecisecond);
+        shooter.setFlywheelVelocityTicksPerDecisecond(targetVelocityTicksPerDecisecond);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= shooterSpeedToleranceTicksPerDecisecond;
+        return Math.abs(shooter.getFlywheelVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= shooterSpeedToleranceTicksPerDecisecond;
     }
 }
 

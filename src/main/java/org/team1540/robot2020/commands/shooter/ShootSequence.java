@@ -17,9 +17,11 @@ public class ShootSequence extends SequentialCommandGroup {
         addRequirements(indexer);
         addCommands(
                 new ParallelCommandGroup(
+                        // TODO this parallel command group should also move the shooter hood
                         new ShooterSpinUp(shooter, 2000),
                         new StageBallsForShooting(indexer)
                 ),
+                // TODO the flywheel needs to continue spinning while moving the balls up one and continue for a little while afterwards, we don't want to trigger the motor safety cutoff
                 new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),
                 new InstantCommand(indexer::ballRemoved),
                 new WaitCommand(0.1)
