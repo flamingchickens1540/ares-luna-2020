@@ -7,18 +7,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
+
+    private static final double climberTicksPerMeter = 1;
+
     private TalonFX climberMotor = new TalonFX(12);
-
     private Servo ratchetServo = new Servo(0);
-
-    public static final double positionThresholdMeters = 0.05;
 
     public Climber() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
-        climberMotor.configFactoryDefault();
+        // TODO position PIDF tuning with networktables
 
-        setRatchetServo(true);
+        climberMotor.configFactoryDefault();
+        setRatchet(RatchetState.ON);
     }
 
     @Override
@@ -36,33 +37,34 @@ public class Climber extends SubsystemBase {
         setPercent(0);
     }
 
-    public double ticksToMeters(double ticks) {
-        return ticks;
+    private double climberTicksToMeters(double ticks) {
+        return ticks / climberTicksPerMeter;
     }
 
-    // TODO these methods need to set and get climber position in meters, not ticks
-    public void setPositionTicks(double ticks) {
-        climberMotor.set(ControlMode.Position, ticks);
+    private double climberMetersToTicks(double meters) {
+        return meters * climberTicksPerMeter;
     }
 
     public void setPositionMeters(double meters) {
-        setPositionTicks(ticksToMeters(meters));
-    }
-
-    public double getPositionTicks() {
-        return climberMotor.getSelectedSensorPosition();
+        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
     }
 
     public double getPositionMeters() {
-        return ticksToMeters(getPositionTicks());
+        return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
     }
 
-    public boolean isAtPositionMeters(double meters) {
-        return Math.abs(getPositionMeters() - meters) <= positionThresholdMeters;
+    public enum RatchetState {
+        ON(1),
+        OFF(0);
+
+        private double servoPosition;
+
+        RatchetState(double servoPosition) {
+            this.servoPosition = servoPosition;
+        }
     }
 
-    public void setRatchetServo(boolean on) {
-        ratchetServo.set(on ? 1 : 0);
+    public void setRatchet(RatchetState state) {
+        ratchetServo.set(state.servoPosition);
     }
-
 }

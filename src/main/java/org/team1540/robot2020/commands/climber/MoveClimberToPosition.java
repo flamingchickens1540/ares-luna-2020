@@ -11,13 +11,13 @@ public class MoveClimberToPosition extends SequentialCommandGroup {
         addRequirements(climber);
         addCommands(
                 new InstCommand(() -> {
-                    if (positionMeters >= climber.getPositionTicks()) {
-                        climber.setRatchetServo(true);
+                    if (positionMeters >= climber.getPositionMeters()) {
+                        climber.setRatchet(Climber.RatchetState.OFF);
                     }
                 }),
                 new WaitCommand(0.25),
-                new MoveClimberToPositionUnsafe(climber, positionMeters),
-                new InstCommand(() -> climber.setRatchetServo(false))
+                new MoveClimberToPositionUnsafe(climber, positionMeters, 0.01),
+                new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ON))
         );
     }
 }

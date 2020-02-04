@@ -4,25 +4,26 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Climber;
 
 /**
- * Moves the climber to a position without checking the ratchet servo
+ * Moves the climber to a positionMeters without checking the ratchet servo
  */
 public class MoveClimberToPositionUnsafe extends CommandBase {
     private Climber climber;
-    private double position;
+    private double positionMeters;
+    private double toleranceMeters;
 
-    public MoveClimberToPositionUnsafe(Climber climber, double positionMeters) {
+    public MoveClimberToPositionUnsafe(Climber climber, double positionMeters, double toleranceMeters) {
         this.climber = climber;
-        this.position = positionMeters;
+        this.positionMeters = positionMeters;
+        this.toleranceMeters = toleranceMeters;
     }
 
     @Override
     public void initialize() {
-        climber.setPositionMeters(position);
+        climber.setPositionMeters(positionMeters);
     }
 
     @Override
     public boolean isFinished() {
-        // todo write isAtPositionMeters
-        return climber.isAtPositionMeters(position);
+        return Math.abs(climber.getPositionMeters() - positionMeters) <= toleranceMeters;
     }
 }
