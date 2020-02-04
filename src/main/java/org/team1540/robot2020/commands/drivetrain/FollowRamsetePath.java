@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.subsystems.DriveTrain;
@@ -20,32 +19,35 @@ public class FollowRamsetePath extends SequentialCommandGroup {
 
     // TODO: need class that does odometry and follows a sequence of paths
 
-    // Feed forward constants
+    // Feed forward constants (determined using FRC Robot Characterization app)
     private static final double ksVolts = 0.669;
     private static final double kvVoltSecondsPerMeter = 2.76;
     private static final double kaVoltSecondsSquaredPerMeter = 0.662;
-    // Ramsete PID controllers
+
+    // PID controllers
     private static final double kPDriveVel = 1;
-    // Motion control
+
+    // Ramsete tuning constants
     private static final double kRamseteB = 2;
     private static final double kRamseteZeta = 0.7;
-    private static final double kMaxSpeedMetersPerSecond = 2;
-    private static final double kMaxAccelerationMetersPerSecondSquared = 1;
+
+    // Motion Constraints
+    private static final double maxVelocityMetersPerSecond = 2;
+    private static final double maxAccelerationMetersPerSecondSq = 1;
+    private static final double maxVoltage = 10;
+
+    // Path Constraints
     private static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(DriveTrain.kTrackwidthMeters);
+    private static final DifferentialDriveVoltageConstraint voltageConstraint =
+            new DifferentialDriveVoltageConstraint(
+                    new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter),
+                    kDriveKinematics,
+                    maxVoltage);
 
     public FollowRamsetePath(DriveTrain driveTrain, List<Pose2d> waypoints, boolean reversed) {
 
-        var voltageConstraint =
-                new DifferentialDriveVoltageConstraint(
-                        new SimpleMotorFeedforward(ksVolts,
-                                kvVoltSecondsPerMeter,
-                                kaVoltSecondsSquaredPerMeter),
-                        kDriveKinematics,
-                        10);
-
         TrajectoryConfig trajectoryConfig =
-                new TrajectoryConfig(kMaxSpeedMetersPerSecond,
-                        kMaxAccelerationMetersPerSecondSquared)
+                new TrajectoryConfig(maxVelocityMetersPerSecond, maxAccelerationMetersPerSecondSq)
                         .setKinematics(kDriveKinematics)
                         .addConstraint(voltageConstraint);
 
@@ -62,7 +64,7 @@ public class FollowRamsetePath extends SequentialCommandGroup {
                 new RamseteController(kRamseteB, kRamseteZeta),
                 new SimpleMotorFeedforward(ksVolts,
                         kvVoltSecondsPerMeter,
-                        kaVoltSecondsSquaredPerMeter),
+                        maxVoltage),
                 kDriveKinematics,
                 driveTrain::getWheelSpeeds,
                 new PIDController(kPDriveVel, 0, 0),
@@ -71,10 +73,6 @@ public class FollowRamsetePath extends SequentialCommandGroup {
                 driveTrain
         );
 
-        addCommands(
-                new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
-                ramseteCommand,
-                new InstantCommand(() -> driveTrain.setVelocityMetersPerSecond(0, 0))
-        );
+        addCommands(ramseteCommand);
     }
 }
