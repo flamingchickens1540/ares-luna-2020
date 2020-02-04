@@ -24,7 +24,6 @@ public class BallQueueSequence extends SequentialCommandGroup {
     @Override
     public void end(boolean interrupted) {
         if (!interrupted) {
-            // TODO test if this works with Phineas
             this.schedule();
         }
     }
