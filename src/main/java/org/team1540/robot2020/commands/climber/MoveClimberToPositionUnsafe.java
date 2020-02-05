@@ -24,6 +24,6 @@ public class MoveClimberToPositionUnsafe extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(climber.getPositionMeters() - positionMeters) <= toleranceMeters;
+        return climber.atPositionMeters(positionMeters, toleranceMeters);
     }
 }

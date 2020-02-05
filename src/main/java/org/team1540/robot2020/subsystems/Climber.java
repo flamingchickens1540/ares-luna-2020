@@ -60,6 +60,10 @@ public class Climber extends SubsystemBase {
         return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
     }
 
+    public boolean atPositionMeters(double position, double toleranceMeters) {
+        return Math.abs(getPositionMeters() - getPositionMeters()) <= toleranceMeters;
+    }
+
     public enum RatchetState {
         ON(1),
         OFF(0);
