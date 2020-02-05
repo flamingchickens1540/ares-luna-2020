@@ -2,9 +2,11 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Climber extends SubsystemBase {
 
@@ -18,7 +20,12 @@ public class Climber extends SubsystemBase {
         // TODO figure out current limit on all motors
         // TODO position PIDF tuning with networktables
 
-        climberMotor.configFactoryDefault();
+        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
+        defaultConfig.slot1.kP = 1;
+        defaultConfig.slot1.kI = 0;
+        defaultConfig.slot1.kD = 0;
+        climberMotor.configAllSettings(defaultConfig);
+
         setRatchet(RatchetState.ON);
     }
 
