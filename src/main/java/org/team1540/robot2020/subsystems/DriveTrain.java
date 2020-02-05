@@ -90,17 +90,17 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void logState() {
-        SmartDashboard.putNumber("DriveTrain/encoderDistanceLeft", driveMotorLeftA.getDistanceMeters());
-        SmartDashboard.putNumber("DriveTrain/encoderDistanceRight", driveMotorRightA.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/encoderDistanceLeft", driveMotorLeftA.getDistanceMeters());
+        SmartDashboard.putNumber("driveTrain/encoderDistanceRight", driveMotorRightA.getDistanceMeters());
 
-        SmartDashboard.putNumber("DriveTrain/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
-        SmartDashboard.putNumber("DriveTrain/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
+        SmartDashboard.putNumber("driveTrain/encoderSpeedLeft", getWheelSpeeds().leftMetersPerSecond);
+        SmartDashboard.putNumber("driveTrain/encoderSpeedRight", getWheelSpeeds().rightMetersPerSecond);
 
         Pose2d poseMeters = odometry.getPoseMeters();
         Translation2d poseTranslation = poseMeters.getTranslation();
-        SmartDashboard.putNumber("DriveTrain/odometry/X", poseTranslation.getX());
-        SmartDashboard.putNumber("DriveTrain/odometry/Y", poseTranslation.getY());
-        SmartDashboard.putNumber("DriveTrain/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
+        SmartDashboard.putNumber("driveTrain/odometry/X", poseTranslation.getX());
+        SmartDashboard.putNumber("driveTrain/odometry/Y", poseTranslation.getY());
+        SmartDashboard.putNumber("driveTrain/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
     }
 
     public Pose2d getPose() {

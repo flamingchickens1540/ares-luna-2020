@@ -24,9 +24,9 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("climberPosition", climberMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber("climberVelocity", climberMotor.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("climberRatchetPosition", ratchetServo.get());
+        SmartDashboard.putNumber("climber/position", climberMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
     }
 
     public void setPercent(double percent) {

@@ -39,8 +39,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Shooter/shooterVelocityA", shooterMotorB.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorB.getSelectedSensorVelocity());
         // TODO log shooter current draw, hood position, hood current draw
     }
 

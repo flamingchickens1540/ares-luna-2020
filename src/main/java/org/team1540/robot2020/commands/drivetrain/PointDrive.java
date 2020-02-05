@@ -34,12 +34,12 @@ public class PointDrive extends CommandBase {
         addRequirements(driveTrain);
 
         // TODO: hmm, we really need that YAML tuning lib
-        SmartDashboard.putNumber("PointDrive/P", 0.5);
-        SmartDashboard.putNumber("PointDrive/I", 0);
-        SmartDashboard.putNumber("PointDrive/D", 0);
-        SmartDashboard.putNumber("PointDrive/max", 0.5);
-        SmartDashboard.putNumber("PointDrive/min", 0);
-        SmartDashboard.putNumber("PointDrive/deadzone", 0.02);
+        SmartDashboard.putNumber("pointDrive/P", 0.5);
+        SmartDashboard.putNumber("pointDrive/I", 0);
+        SmartDashboard.putNumber("pointDrive/D", 0);
+        SmartDashboard.putNumber("pointDrive/max", 0.5);
+        SmartDashboard.putNumber("pointDrive/min", 0);
+        SmartDashboard.putNumber("pointDrive/deadzone", 0.02);
 
         pointController = new MiniPID(0, 0, 0);
         driver.getButton(Y).whenPressed(this::zeroAngle);
@@ -47,12 +47,12 @@ public class PointDrive extends CommandBase {
 
     @Override
     public void initialize() {
-        double p = SmartDashboard.getNumber("PointDrive/P", 0);
-        double i = SmartDashboard.getNumber("PointDrive/I", 0);
-        double d = SmartDashboard.getNumber("PointDrive/D", 0);
-        max = SmartDashboard.getNumber("PointDrive/max", 0);
-        min = SmartDashboard.getNumber("PointDrive/min", 0);
-        deadzone = SmartDashboard.getNumber("PointDrive/deadzone", 0);
+        double p = SmartDashboard.getNumber("pointDrive/P", 0);
+        double i = SmartDashboard.getNumber("pointDrive/I", 0);
+        double d = SmartDashboard.getNumber("pointDrive/D", 0);
+        max = SmartDashboard.getNumber("pointDrive/max", 0);
+        min = SmartDashboard.getNumber("pointDrive/min", 0);
+        deadzone = SmartDashboard.getNumber("pointDrive/deadzone", 0);
         pointController.setPID(p, i, d);
         setGoalToCurrentAngle();
     }
@@ -72,7 +72,7 @@ public class PointDrive extends CommandBase {
         if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
         double error = TrigUtils.signedAngleError(goalAngle + angleOffset, navx.getYawRadians());
-        SmartDashboard.putNumber("PointDrive/error", error);
+        SmartDashboard.putNumber("pointDrive/error", error);
 
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);

@@ -30,9 +30,9 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Indexer/indexerStaged", indexerStagedSensor.get());
-        SmartDashboard.putBoolean("Indexer/shooterStaged", shooterStagedSensor.get());
-        SmartDashboard.putNumber("Indexer/balls", balls);
+        SmartDashboard.putBoolean("indexer/indexerStaged", indexerStagedSensor.get());
+        SmartDashboard.putBoolean("indexer/shooterStaged", shooterStagedSensor.get());
+        SmartDashboard.putNumber("indexer/balls", balls);
     }
 
     public void setPercent(double percent) {

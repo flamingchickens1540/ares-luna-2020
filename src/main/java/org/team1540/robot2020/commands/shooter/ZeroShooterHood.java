@@ -23,8 +23,8 @@ public class ZeroShooterHood extends CommandBase {
         }
 
         // TODO these should be put in the shooter periodic
-        SmartDashboard.putBoolean("shooter/limit_switch", shooter.isLimitSwitchPressed());
-        SmartDashboard.putNumber("shooter/hood_percent", shooter.getHoodPercent());
+        SmartDashboard.putBoolean("shooter/limitSwitch", shooter.isLimitSwitchPressed());
+        SmartDashboard.putNumber("shooter/hoodPercent", shooter.getHoodPercent());
     }
 
     @Override
