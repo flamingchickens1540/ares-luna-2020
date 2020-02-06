@@ -15,10 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
-
-    private final int NEO_550_CURRENT_MAX = 20;
-    private final int FALCON_500_CURRENT_MAX = 80;
-
     private TalonFX shooterMotorA = new TalonFX(8);
     private TalonFX shooterMotorB = new TalonFX(9);
 
@@ -32,8 +28,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupHoodMotors() {
-        hoodMotor.restoreFactoryDefaults();
-        hoodMotor.setSmartCurrentLimit(NEO_550_CURRENT_MAX);
+        MotorConfigUtils.setDefaultNEOConfiguration(hoodMotor);
     }
 
     private void setupFlywheelMotors() {
@@ -43,10 +38,6 @@ public class Shooter extends SubsystemBase {
 
         shooterMotorA.setNeutralMode(NeutralMode.Coast);
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
-
-        StatorCurrentLimitConfiguration talonFXCurrentLimitConfig = new StatorCurrentLimitConfiguration(true, FALCON_500_CURRENT_MAX, 0, 0);
-        shooterMotorA.configStatorCurrentLimit(talonFXCurrentLimitConfig);
-        shooterMotorB.configStatorCurrentLimit(talonFXCurrentLimitConfig);
 
         shooterMotorB.follow(shooterMotorA);
         shooterMotorB.setInverted(TalonFXInvertType.OpposeMaster);
