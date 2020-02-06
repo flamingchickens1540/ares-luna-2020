@@ -56,6 +56,14 @@ public class Climber extends SubsystemBase {
         climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
     }
 
+    public double getCurrentDraw() {
+        return climberMotor.getStatorCurrent();
+    }
+
+    public double getVelocity() {
+        return climberMotor.getSelectedSensorVelocity();
+    }
+
     public double getPositionMeters() {
         return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
     }

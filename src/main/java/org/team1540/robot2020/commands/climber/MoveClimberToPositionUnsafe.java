@@ -24,6 +24,8 @@ public class MoveClimberToPositionUnsafe extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        //CHANGE CURRENT DRAW AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
+        if(climber.getCurrentDraw()>1 && climber.getVelocity()<2) return true;
         return climber.atPositionMeters(positionMeters, toleranceMeters);
     }
 }
