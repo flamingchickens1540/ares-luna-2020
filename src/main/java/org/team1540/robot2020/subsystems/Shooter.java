@@ -51,17 +51,9 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-        // Shooter
-        SmartDashboard.putNumber("Shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Shooter/shooterVelocityB", shooterMotorB.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Shooter/CurrentDraw", shooterMotorA.getStatorCurrent());
-
-        // Hood
-        SmartDashboard.putNumber("Shooter/HoodPosition", hoodEncoder.getPosition());
-        SmartDashboard.putNumber("Shooter/HoodCurrentDraw", hoodMotor.getOutputCurrent());
-
-        SmartDashboard.putBoolean("Shooter/LimitSwitchPressed", limitSwitch.get());
+        SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorB.getSelectedSensorVelocity());
+        // TODO log shooter current draw, hood position, hood current draw
     }
 
     public void disableMotors() {

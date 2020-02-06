@@ -35,9 +35,9 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake/rollerVelocity", rollerEncoder.getVelocity());
-        SmartDashboard.putNumber("Intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
-        SmartDashboard.putNumber("Intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/rollerVelocity", rollerEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
     }
 
     public void setRollerPercent(double percent) {
