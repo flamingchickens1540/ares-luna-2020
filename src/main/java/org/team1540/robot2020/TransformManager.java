@@ -16,7 +16,7 @@ public class TransformManager {
 
     public void periodic() {
         double value = lidarLite.getDistance();
-        SmartDashboard.putNumber("LIDAR Distance", value); // 2.54 to convert to inches and +6 is the tuning offset
+        SmartDashboard.putNumber("sensors/lidarDistance", value);
         System.out.println(value);
     }
 }
