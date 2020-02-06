@@ -3,6 +3,7 @@ package org.team1540.robot2020.utils;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.revrobotics.CANSparkMax;
 import org.jetbrains.annotations.NotNull;
 
 public class MotorConfigUtils {
@@ -14,5 +15,10 @@ public class MotorConfigUtils {
         defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 0, 0);
         defaultConfig.openloopRamp = 0;
         return defaultConfig;
+    }
+
+    public static void setDefaultNEOConfiguration(CANSparkMax neo) {
+        neo.restoreFactoryDefaults();
+        neo.setSmartCurrentLimit(20);
     }
 }
