@@ -20,6 +20,7 @@ public class Indexer extends SubsystemBase {
     public static final double ballSizeMeters = 0.2;
     public static final double indexingSpeed = 1;
     public static final double ballHeightThresholdMeters = 0.05;
+    public static final double maxBalls = 5;
 
     public Indexer() {
         // TODO figure out current limit on all motors
@@ -62,7 +63,7 @@ public class Indexer extends SubsystemBase {
 
     public boolean isFull() {
         // TODO this should be tunable
-        return getBalls() == 5;
+        return getBalls() == maxBalls;
     }
 
     public void ballAdded() {

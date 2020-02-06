@@ -2,13 +2,20 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Climber extends SubsystemBase {
 
-    private static final double climberTicksPerMeter = 1;
+    public static final double climberTicksPerMeter = 1;
+    public static final double climberTopPositionMeters = 1;
+
+    //CHANGE CURRENT DRAW AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
+    public static final double currentThreshold = 1;
+    public static final double velocityThreshold = 1;
 
     private TalonFX climberMotor = new TalonFX(12);
     private Servo ratchetServo = new Servo(0);
@@ -18,7 +25,12 @@ public class Climber extends SubsystemBase {
         // TODO figure out current limit on all motors
         // TODO position PIDF tuning with networktables
 
-        climberMotor.configFactoryDefault();
+        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
+        defaultConfig.slot1.kP = 1;
+        defaultConfig.slot1.kI = 0;
+        defaultConfig.slot1.kD = 0;
+        climberMotor.configAllSettings(defaultConfig);
+
         setRatchet(RatchetState.ON);
     }
 
@@ -49,8 +61,20 @@ public class Climber extends SubsystemBase {
         climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
     }
 
+    public double getCurrentDraw() {
+        return climberMotor.getStatorCurrent();
+    }
+
+    public double getVelocity() {
+        return climberMotor.getSelectedSensorVelocity();
+    }
+
     public double getPositionMeters() {
         return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
+    }
+
+    public boolean atPositionMeters(double position, double toleranceMeters) {
+        return Math.abs(getPositionMeters() - getPositionMeters()) <= toleranceMeters;
     }
 
     public enum RatchetState {
