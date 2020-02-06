@@ -1,6 +1,9 @@
 package org.team1540.robot2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.revrobotics.CANDigitalInput;
@@ -53,7 +56,11 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorA.getSelectedSensorVelocity());
         SmartDashboard.putNumber("shooter/shooterVelocityA", shooterMotorB.getSelectedSensorVelocity());
-        // TODO log shooter current draw, hood position, hood current draw
+        SmartDashboard.putNumber("shooter/shooterCurrent", shooterMotorA.getStatorCurrent());
+
+        SmartDashboard.putNumber("shooter/hoodPosition", hoodEncoder.getPosition());
+        SmartDashboard.putNumber("shooter/hoodCurrent", hoodMotor.getOutputCurrent());
+        SmartDashboard.putBoolean("shooter/limitSwitch", limitSwitch.get());
     }
 
     public void disableMotors() {
