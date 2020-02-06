@@ -11,9 +11,6 @@ public class MoveClimberToPositionUnsafe extends CommandBase {
     private double positionMeters;
     private double toleranceMeters;
 
-    private final double currentThreshold = 1;
-    private final double velocityThreshold = 1;
-
     public MoveClimberToPositionUnsafe(Climber climber, double positionMeters, double toleranceMeters) {
         this.climber = climber;
         this.positionMeters = positionMeters;
@@ -28,7 +25,9 @@ public class MoveClimberToPositionUnsafe extends CommandBase {
     @Override
     public boolean isFinished() {
         //CHANGE CURRENT DRAW AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
-        if(climber.getCurrentDraw()>currentThreshold && climber.getVelocity()<velocityThreshold) return true;
+        if (climber.getCurrentDraw() > Climber.currentThreshold && climber.getVelocity() < Climber.velocityThreshold) {
+            return true;
+        }
         return climber.atPositionMeters(positionMeters, toleranceMeters);
     }
 }

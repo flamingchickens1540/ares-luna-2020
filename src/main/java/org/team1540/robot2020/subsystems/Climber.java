@@ -10,8 +10,10 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Climber extends SubsystemBase {
 
-    private static final double climberTicksPerMeter = 1;
-    private static final double climberTopPositionMeters = 1;
+    public static final double climberTicksPerMeter = 1;
+    public static final double climberTopPositionMeters = 1;
+    public static final double currentThreshold = 1;
+    public static final double velocityThreshold = 1;
 
     private TalonFX climberMotor = new TalonFX(12);
     private Servo ratchetServo = new Servo(0);
