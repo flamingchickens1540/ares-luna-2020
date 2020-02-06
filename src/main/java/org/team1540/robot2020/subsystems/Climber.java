@@ -12,6 +12,8 @@ public class Climber extends SubsystemBase {
 
     public static final double climberTicksPerMeter = 1;
     public static final double climberTopPositionMeters = 1;
+
+    //CHANGE CURRENT DRAW AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
     public static final double currentThreshold = 1;
     public static final double velocityThreshold = 1;
 
