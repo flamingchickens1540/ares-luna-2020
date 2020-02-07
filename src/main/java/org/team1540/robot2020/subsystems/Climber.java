@@ -18,7 +18,7 @@ public class Climber extends SubsystemBase {
     public static final double velocityThreshold = 1;
 
     private TalonFX climberMotor = new TalonFX(12);
-    private Servo ratchetServo = new Servo(0);
+    private Servo ratchetServo = new Servo(9);
 
     public Climber() {
         // TODO figure out brake mode on all motors
@@ -78,7 +78,7 @@ public class Climber extends SubsystemBase {
     }
 
     public enum RatchetState {
-        ON(1),
+        ON(0.372),
         OFF(0);
 
         private double servoPosition;
@@ -90,5 +90,9 @@ public class Climber extends SubsystemBase {
 
     public void setRatchet(RatchetState state) {
         ratchetServo.set(state.servoPosition);
+    }
+
+    public void setRatchet(double position) {
+        ratchetServo.set(position);
     }
 }
