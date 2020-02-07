@@ -31,7 +31,6 @@ public class PointDrive extends CommandBase {
     private double deadzone;
 
     // TODO: this is pasted from last year's code, feel free to clean up the tuning constant stuff
-    // TODO can we pass in the Axis objects and Button objects instead of the entire damn controller
     public PointDrive(DriveTrain driveTrain, NavX navx, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
         this.navx = navx;
