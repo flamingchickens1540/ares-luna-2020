@@ -1,15 +1,15 @@
 package org.team1540.robot2020.subsystems;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Indexer extends SubsystemBase {
-    private CANSparkMax indexerMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANEncoder indexerEncoder = indexerMotor.getEncoder();
+    private TalonFX indexerMotor = new TalonFX(8);
 
     private DigitalInput indexerStagedSensor = new DigitalInput(0);
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
@@ -23,10 +23,11 @@ public class Indexer extends SubsystemBase {
     public static final double maxBalls = 5;
 
     public Indexer() {
-        // TODO figure out current limit on all motors
-        indexerMotor.restoreFactoryDefaults();
-        indexerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        indexerMotor.setSmartCurrentLimit(20);
+        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
+        defaultConfig.slot1.kP = 1;
+        defaultConfig.slot1.kI = 0;
+        defaultConfig.slot1.kD = 0;
+        indexerMotor.configAllSettings(defaultConfig);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setPercent(double percent) {
-        indexerMotor.set(percent);
+        indexerMotor.set(ControlMode.PercentOutput, percent);
     }
 
     public boolean getIndexerStagedSensor() {
@@ -50,11 +51,7 @@ public class Indexer extends SubsystemBase {
 
     public double getEncoderMeters() {
         // TODO this needs tuning constant to convert from ticks
-        return indexerEncoder.getPosition();
-    }
-
-    private void resetEncoder() {
-        indexerEncoder.setPosition(0);
+        return indexerMotor.getSelectedSensorPosition();
     }
 
     public int getBalls() {
@@ -62,7 +59,6 @@ public class Indexer extends SubsystemBase {
     }
 
     public boolean isFull() {
-        // TODO this should be tunable
         return getBalls() == maxBalls;
     }
 

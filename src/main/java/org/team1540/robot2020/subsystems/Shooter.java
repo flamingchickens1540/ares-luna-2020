@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
-    private TalonFX shooterMotorA = new TalonFX(8);
-    private TalonFX shooterMotorB = new TalonFX(9);
+    private TalonFX shooterMotorA = new TalonFX(9);
+    private TalonFX shooterMotorB = new TalonFX(10);
 
-    private CANSparkMax hoodMotor = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder hoodEncoder = hoodMotor.getEncoder();
     private CANDigitalInput limitSwitch = hoodMotor.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
 

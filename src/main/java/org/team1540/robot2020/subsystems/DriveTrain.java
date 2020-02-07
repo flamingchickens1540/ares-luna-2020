@@ -22,11 +22,11 @@ public class DriveTrain extends SubsystemBase {
     private static final int DRIVE_POSITION_SLOT_IDX = 0;
     private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
 
-    private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(0, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
-    private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(1, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
 
-    private ChickenTalonFX driveMotorRightA = new ChickenTalonFX(2, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
-    private ChickenTalonFX driveMotorRightB = new ChickenTalonFX(3, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorRightA = new ChickenTalonFX(3, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorRightB = new ChickenTalonFX(4, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
 
     private ChickenTalonFX[] driveMotorAll = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
     private ChickenTalonFX[] driveMotorLefts = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB};

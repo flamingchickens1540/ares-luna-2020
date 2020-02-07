@@ -17,7 +17,7 @@ public class Climber extends SubsystemBase {
     public static final double currentThreshold = 1;
     public static final double velocityThreshold = 1;
 
-    private TalonFX climberMotor = new TalonFX(12);
+    private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
 
     public Climber() {

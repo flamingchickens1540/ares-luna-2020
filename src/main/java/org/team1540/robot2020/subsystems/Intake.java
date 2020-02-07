@@ -9,11 +9,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
 
     // todo Should intake rollers and funnel be separate subsystems?
-    private CANSparkMax rollerMotor = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 
-    private CANSparkMax funnelLeftMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANSparkMax funnelRightMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax funnelLeftMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax funnelRightMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
     private CANEncoder funnelRightEncoder = funnelRightMotor.getEncoder();
 

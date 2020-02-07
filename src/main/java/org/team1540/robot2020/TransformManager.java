@@ -17,6 +17,6 @@ public class TransformManager {
     public void periodic() {
         double value = lidarLite.getDistance();
         SmartDashboard.putNumber("sensors/lidarDistance", value);
-        System.out.println(value);
+//        System.out.println(value);
     }
 }

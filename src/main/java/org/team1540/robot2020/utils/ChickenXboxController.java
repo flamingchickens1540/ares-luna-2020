@@ -169,6 +169,8 @@ public class ChickenXboxController {
 
     public interface Axis extends DoubleSupplier {
 
+        Axis ZERO = () -> 0;
+
         default Axis withDeadzone(double deadzone) {
             return () -> deadzone(value(), deadzone);
         }
