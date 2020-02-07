@@ -24,8 +24,7 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-        // TODO your default P value should not be 1
-        defaultConfig.slot1.kP = 1;
+        defaultConfig.slot1.kP = 0;
         defaultConfig.slot1.kI = 0;
         defaultConfig.slot1.kD = 0;
         indexerMotor.configAllSettings(defaultConfig);
