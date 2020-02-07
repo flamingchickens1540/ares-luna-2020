@@ -103,7 +103,7 @@ public class RobotContainer {
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
         climber.setDefaultCommand(new ClimberManualControl(climber,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.15),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
