@@ -11,6 +11,7 @@ public class ShooterSpinUp extends CommandBase {
     private Shooter shooter;
 
     public ShooterSpinUp(Shooter shooter, int targetVelocityTicksPerDecisecond) {
+        // TODO need to add a requirement for the shooter
         this.shooter = shooter;
         this.targetVelocityTicksPerDecisecond = targetVelocityTicksPerDecisecond;
     }

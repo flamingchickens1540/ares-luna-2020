@@ -53,6 +53,7 @@ public class DriveTrain extends SubsystemBase {
         defaultConfig.slot1.integralZone = 0;
         defaultConfig.slot1.allowableClosedloopError = 0;
         defaultConfig.slot1.maxIntegralAccumulator = 0.0;
+        // TODO set drivetrain current limit to 70 amps
 
         for (ChickenTalonFX talon : driveMotorAll) {
             talon.configFactoryDefault();

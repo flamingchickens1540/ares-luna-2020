@@ -40,6 +40,10 @@ public class Shooter extends SubsystemBase {
 
         shooterMotorB.follow(shooterMotorA);
         shooterMotorB.setInverted(TalonFXInvertType.OpposeMaster);
+
+        // TODO set the PIDF coefficients plz
+
+        // TODO make a ShooterManualControl so that we can find the F coefficient
     }
 
     @Override

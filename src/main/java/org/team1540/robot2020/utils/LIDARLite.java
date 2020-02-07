@@ -27,6 +27,7 @@ public class LIDARLite {
         writeRegister(0x11, 0x00); // One measurement per distance measurement command. (Terminate the previous 0xff to register 0x11)
     }
 
+    // TODO document that this returns inches or whatever?
     public double getDistance() {
         m_buffer.put(0, (byte) 0x8f); // Special combination for readShort which combines high and low byte registers
         I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
