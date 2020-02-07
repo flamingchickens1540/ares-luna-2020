@@ -1,6 +1,7 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -53,7 +54,7 @@ public class DriveTrain extends SubsystemBase {
         defaultConfig.slot1.integralZone = 0;
         defaultConfig.slot1.allowableClosedloopError = 0;
         defaultConfig.slot1.maxIntegralAccumulator = 0.0;
-        // TODO set drivetrain current limit to 70 amps
+        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 70, 0, 0);
 
         for (ChickenTalonFX talon : driveMotorAll) {
             talon.configFactoryDefault();
