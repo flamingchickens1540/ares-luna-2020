@@ -80,8 +80,7 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean atPositionMeters(double position, double toleranceMeters) {
-        // TODO uhhhhhhhhhhhh
-        return Math.abs(getPositionMeters() - getPositionMeters()) <= toleranceMeters;
+        return Math.abs(getPositionMeters() - position) <= toleranceMeters;
     }
 
     public enum RatchetState {
