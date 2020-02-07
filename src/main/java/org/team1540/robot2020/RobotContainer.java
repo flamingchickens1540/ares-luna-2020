@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
+import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
@@ -22,6 +23,10 @@ import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.List;
+
+import static org.team1540.robot2020.utils.ChickenXboxController.Hand.RIGHT;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
 
 public class RobotContainer {
 
@@ -65,7 +70,7 @@ public class RobotContainer {
         copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
         copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
         // TODO why is this not using ShooterSequence?
-        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
+        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
     }
 
@@ -105,7 +110,11 @@ public class RobotContainer {
         climber.setDefaultCommand(new ClimberManualControl(climber,
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.15),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
-//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
+//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, navx,
+//                driver.getAxis2D(RIGHT),
+//                driver.getAxis(LEFT_X).withDeadzone(.1),
+//                driver.getButton(Y)
+//        ));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
     }
