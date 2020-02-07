@@ -19,7 +19,7 @@ public class RatchetServoManualControl extends CommandBase {
     @Override
     public void execute() {
         SmartDashboard.putNumber("RatchetValue", ratchetValue);
-        ratchetValue += joystickAxis.withDeadzone(0.1).value() / 50;
+        ratchetValue += joystickAxis.withDeadzone(0.15).value() / 50;
         climber.setRatchet(ratchetValue);
     }
 }
