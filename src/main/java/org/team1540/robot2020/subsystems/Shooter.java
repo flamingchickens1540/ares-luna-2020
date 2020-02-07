@@ -80,6 +80,10 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getPosition();
     }
 
+    public void setHoodPosition(double position) {
+        hoodEncoder.setPosition(position);
+    }
+
     // Hood Limit Switch
     public boolean isLimitSwitchPressed() {
         return limitSwitch.get();

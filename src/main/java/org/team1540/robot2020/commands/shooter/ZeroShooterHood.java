@@ -9,18 +9,22 @@ public class ZeroShooterHood extends CommandBase {
     public ZeroShooterHood(Shooter shooter) {
         // TODO this needs to require the shooter
         this.shooter = shooter;
+        addRequirements(shooter);
     }
 
     @Override
     public void execute() {
-        // TODO setHoodPercent takes a fraction like 0.25 not a number
-        shooter.setHoodPercent(25);
+        shooter.setHoodPercent(0.25);
     }
-
-    // TODO you currently don't actually stop the hood or zero its position when the command ends
 
     @Override
     public boolean isFinished() {
         return shooter.isLimitSwitchPressed();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        shooter.setHoodPercent(0);
+        shooter.setHoodPosition(0);
     }
 }
