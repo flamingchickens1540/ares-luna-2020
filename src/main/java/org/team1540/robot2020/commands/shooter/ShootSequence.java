@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
+import org.team1540.robot2020.commands.indexer.MoveBallsToTop;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.subsystems.Indexer;
 import org.team1540.robot2020.subsystems.Intake;

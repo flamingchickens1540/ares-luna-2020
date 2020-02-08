@@ -8,27 +8,23 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
-import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
+import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
+import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NavX;
-import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.Hand.RIGHT;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.A;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.B;
 
 public class RobotContainer {
 
@@ -69,10 +65,12 @@ public class RobotContainer {
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
-        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true), intake);
-        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false), intake);
-        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
-        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
+//        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true), intake);
+//        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false), intake);
+//        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
+//        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
+        copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
+        copilot.getButton(B).whenPressed(() -> indexer.setEncoderTicks(0));
     }
 
     private void initModeTransitionBindings() {
@@ -113,10 +111,10 @@ public class RobotContainer {
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
-        climber.setDefaultCommand(new ClimberManualControl(climber,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.05),
-                copilot.getButton(ChickenXboxController.XboxButton.X)));
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        climber.setDefaultCommand(new ClimberManualControl(climber,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
+//                copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, navx,
 //                driver.getAxis2D(RIGHT),
 //                driver.getAxis(LEFT_X).withDeadzone(.1),

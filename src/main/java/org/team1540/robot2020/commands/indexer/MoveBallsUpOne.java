@@ -5,20 +5,28 @@ import org.team1540.robot2020.subsystems.Indexer;
 
 public class MoveBallsUpOne extends CommandBase {
     private Indexer indexer;
+    private double balls;
     private double setpoint;
 
     public MoveBallsUpOne(Indexer indexer, double balls) {
         this.indexer = indexer;
-        this.setpoint = indexer.getEncoderMeters() + (balls * Indexer.ballSizeMeters);
+        this.balls = balls;
+        addRequirements(indexer);
     }
 
     @Override
     public void initialize() {
-        indexer.setPercent(Indexer.indexingSpeed);
+        this.setpoint = indexer.getEncoderMeters() + (balls * Indexer.ballSizeMeters);
+        indexer.setPercent(Indexer.firstIndexingSpeed);
     }
 
     @Override
     public boolean isFinished() {
         return Math.abs(setpoint - indexer.getEncoderMeters()) <= Indexer.ballHeightThresholdMeters;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        indexer.setPercent(0);
     }
 }
