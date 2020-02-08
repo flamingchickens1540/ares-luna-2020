@@ -22,7 +22,6 @@ public class Climber extends SubsystemBase {
     private Servo ratchetServo = new Servo(9);
 
     private TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-    private TalonFXConfiguration liftConfig = new TalonFXConfiguration();
 
     public Climber() {
         // TODO figure out brake mode on all motors
@@ -36,11 +35,6 @@ public class Climber extends SubsystemBase {
         defaultConfig.slot1.kD = 0;
         defaultConfig.slot1.kF = 0;
 
-        // TODO tune liftConfig
-        liftConfig.slot1.kP = 1;
-        liftConfig.slot1.kI = 0;
-        liftConfig.slot1.kD = 0;
-        liftConfig.slot1.kF = 0;
         climberMotor.configAllSettings(defaultConfig);
 
         setRatchet(RatchetState.ON);
@@ -51,14 +45,6 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/position", climberMotor.getSelectedSensorPosition());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
-    }
-
-    public void setClimberMotorConfig(int configID) {
-        if(configID == 0) {
-            climberMotor.configAllSettings(defaultConfig);
-        } else if(configID == 1) {
-            climberMotor.configAllSettings(liftConfig);
-        }
     }
 
     public void setPercent(double percent) {
