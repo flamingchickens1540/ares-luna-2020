@@ -22,8 +22,6 @@ public class Indexer extends SubsystemBase {
     private int balls = 0;
     public double bottomOfBottomBallMeters = getEncoderMeters();
     public boolean isFull = false;
-    public boolean moveBallsUpOneBottomBeanBreakUntriggered = false;
-    public double encoderWhenIndexerUnstaged = 0;
 
 //  24569 ticks per 0.4318 meters
     public static final double ticksPerMeter = 56899.0273275;
@@ -53,16 +51,6 @@ public class Indexer extends SubsystemBase {
             Indexer.secondIndexingSpeed = SmartDashboard.getNumber("indexer/secondIndexingSpeed", Indexer.secondIndexingSpeed);
             Indexer.afterMoveBallUpDist = SmartDashboard.getNumber("indexer/afterMoveBallUpDist", Indexer.afterMoveBallUpDist);
         }, EntryListenerFlags.kUpdate);
-
-        indexerStagedSensor.requestInterrupts(new InterruptHandlerFunction<>() {
-            @Override
-            public void interruptFired(int i, Object o) {
-                moveBallsUpOneBottomBeanBreakUntriggered = true;
-                encoderWhenIndexerUnstaged = getEncoderMeters();
-            }
-        });
-        indexerStagedSensor.setUpSourceEdge(true, false);
-        indexerStagedSensor.enableInterrupts();
     }
 
     @Override
