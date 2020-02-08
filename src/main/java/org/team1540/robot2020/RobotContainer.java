@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
@@ -65,7 +66,8 @@ public class RobotContainer {
         copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
         copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
         // TODO why is this not using ShooterSequence?
-        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
+//        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
+        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
         copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
     }
 
@@ -85,12 +87,12 @@ public class RobotContainer {
         });
 
         disabled.whenActive(new WaitCommand(2)
-            .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
-            .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-                // disable brakes
-                driveTrain.setBrakes(NeutralMode.Coast);
-                logger.info("Mechanism brakes disabled");
-            }, true), RobotState::isEnabled)));
+                .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
+                .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
+                    // disable brakes
+                    driveTrain.setBrakes(NeutralMode.Coast);
+                    logger.info("Mechanism brakes disabled");
+                }, true), RobotState::isEnabled)));
     }
 
     public Command getAutoCommand() {
@@ -100,13 +102,17 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.15)));
+
         climber.setDefaultCommand(new ClimberManualControl(climber,
                 copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, driver));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
+
+        shooter.setDefaultCommand(new RunCommand(() -> shooter.disableMotors(), shooter));
     }
 }
