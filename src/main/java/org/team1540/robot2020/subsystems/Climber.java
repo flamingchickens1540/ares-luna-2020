@@ -13,9 +13,10 @@ public class Climber extends SubsystemBase {
     public static final double climberTicksPerMeter = 1;
     public static final double climberTopPositionMeters = 1;
 
-    // TODO CHANGE CURRENT DRAW AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
+    // TODO CHANGE CURRENT DRAW, TIME AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
     public static final double currentThreshold = 1;
     public static final double velocityThreshold = 1;
+    public static final double timeThreshold = 0.15;
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
@@ -44,6 +45,10 @@ public class Climber extends SubsystemBase {
 
     public void setPercent(double percent) {
         climberMotor.set(ControlMode.PercentOutput, percent);
+    }
+
+    public void stop() {
+        climberMotor.set(ControlMode.PercentOutput,0);
     }
 
     public void disableMotors() {
