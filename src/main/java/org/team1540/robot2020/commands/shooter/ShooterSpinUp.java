@@ -4,27 +4,25 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Shooter;
 
 public class ShooterSpinUp extends CommandBase {
+    private final double FLYWHEEL_RPM = 3000;
+    private final double FLYWHEEL_RPM_TOLERANCE = 100;
 
-    private static final double shooterSpeedToleranceTicksPerDecisecond = 50;
-
-    private final int targetVelocityTicksPerDecisecond;
     private Shooter shooter;
 
-    public ShooterSpinUp(Shooter shooter, int targetVelocityTicksPerDecisecond) {
-        // TODO need to add a requirement for the shooter
+    public ShooterSpinUp(Shooter shooter) {
         this.shooter = shooter;
-        this.targetVelocityTicksPerDecisecond = targetVelocityTicksPerDecisecond;
+        addRequirements(shooter);
     }
 
     @Override
     public void initialize() {
-        shooter.setFlywheelVelocityTicksPerDecisecond(targetVelocityTicksPerDecisecond);
+        shooter.setFlywheelVelocityRPM(FLYWHEEL_RPM);
     }
 
-    @Override
-    public boolean isFinished() {
-        return Math.abs(shooter.getFlywheelVelocityTicksPerDecisecond() - targetVelocityTicksPerDecisecond) <= shooterSpeedToleranceTicksPerDecisecond;
-    }
+//    @Override
+//    public boolean isFinished() {
+//        return Math.abs(shooter.getFlywheelVelocityRPM() - TARGET_FLYWHEEL_RPM) < TARGET_FLYWHEEL_TOLERANCE;
+//    }
 }
 
 // TODO: keep motor spinning while actually shooting
