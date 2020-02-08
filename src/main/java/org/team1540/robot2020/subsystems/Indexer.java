@@ -20,6 +20,11 @@ public class Indexer extends SubsystemBase {
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
 
     private int balls = 0;
+    public double bottomOfBottomBallMeters = getEncoderMeters();
+    public boolean isFull = false;
+    public boolean moveBallsUpOneBottomBeanBreakUntriggered = false;
+    public double encoderWhenIndexerUnstaged = 0;
+
 //  24569 ticks per 0.4318 meters
     public static final double ticksPerMeter = 56899.0273275;
     public static final double ballSizeMeters = 0.1778;
@@ -59,7 +64,6 @@ public class Indexer extends SubsystemBase {
         indexerStagedSensor.setUpSourceEdge(true, false);
         indexerStagedSensor.enableInterrupts();
     }
-
 
     @Override
     public void periodic() {
