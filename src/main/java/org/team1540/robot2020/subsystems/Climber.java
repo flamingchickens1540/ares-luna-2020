@@ -21,16 +21,26 @@ public class Climber extends SubsystemBase {
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
 
+    private TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
+    private TalonFXConfiguration liftConfig = new TalonFXConfiguration();
+
     public Climber() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         // TODO position PIDF tuning with networktables
 
-        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-        // TODO your default KP should absolutely not be 1
+
+        // TODO tune PIDF values
         defaultConfig.slot1.kP = 1;
         defaultConfig.slot1.kI = 0;
         defaultConfig.slot1.kD = 0;
+        defaultConfig.slot1.kF = 0;
+
+        // TODO tune liftConfig
+        liftConfig.slot1.kP = 1;
+        liftConfig.slot1.kI = 0;
+        liftConfig.slot1.kD = 0;
+        liftConfig.slot1.kF = 0;
         climberMotor.configAllSettings(defaultConfig);
 
         setRatchet(RatchetState.ON);
@@ -41,6 +51,14 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/position", climberMotor.getSelectedSensorPosition());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
+    }
+
+    public void setClimberMotorConfig(int configID) {
+        if(configID == 0) {
+            climberMotor.configAllSettings(defaultConfig);
+        } else if(configID == 1) {
+            climberMotor.configAllSettings(liftConfig);
+        }
     }
 
     public void setPercent(double percent) {
@@ -64,12 +82,11 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPositionMeters(double meters) {
-        // TODO use motion magic
-        // TODO add gravity feed-forward
+        // TODO tune gravity feed-forward
         // TODO we will probably need a different control method for the actual climb, because we should disengage the
         //  motors and let the ratchet hold us once we're high enough and also because the PIDs for a ~5 pound climber
         //  frame are probably different than those for a 140-pound robot (and a PID might not actually be necessary)
-        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
+        climberMotor.set(ControlMode.MotionMagic, climberMetersToTicks(meters));
     }
 
     public double getCurrentDraw() {
