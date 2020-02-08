@@ -21,7 +21,7 @@ public class MoveClimberToPosition extends SequentialCommandGroup {
                         () -> positionMeters >= climber.getPositionMeters()
                 ),
                 new MoveClimberToPositionUnsafe(climber, positionMeters, 0.01),
-                new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ON))
+                new InstCommand(() -> climber.setRatchet(true))
         );
     }
 }

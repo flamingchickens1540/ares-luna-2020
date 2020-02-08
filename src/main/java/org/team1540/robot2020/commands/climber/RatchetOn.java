@@ -12,6 +12,6 @@ public class RatchetOn extends InstCommand {
 
     @Override
     public void initialize() {
-        climber.setRatchet(Climber.RatchetState.ON);
+        climber.setRatchet(false);
     }
 }
