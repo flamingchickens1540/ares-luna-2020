@@ -1,6 +1,7 @@
 package org.team1540.robot2020;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -19,6 +20,7 @@ import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.LIDARLite;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
 
@@ -33,15 +35,15 @@ public class RobotContainer {
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
-    // TODO donde esta el LIDAR
     private NavX navx = new NavX(SPI.Port.kMXP);
+    private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
 
     // TODO split Intake into Intake and Funnel
-    // TODO split Shooter into Shooter and ShooterHood
     private DriveTrain driveTrain = new DriveTrain(navx);
     private Intake intake = new Intake();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
+    private Hood hood = new Hood();
     private Climber climber = new Climber();
 
     public RobotContainer() {
