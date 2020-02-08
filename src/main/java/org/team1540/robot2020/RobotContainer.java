@@ -116,9 +116,9 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-//        indexer.setDefaultCommand(new BallQueueSequence(indexer));
+//        indexer.setDefaultCommand(new IndexerManualControl(indexer,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        indexer.setDefaultCommand(new BallQueueSequence(indexer));
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
 //                copilot.getButton(ChickenXboxController.XboxButton.X)));
