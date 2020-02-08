@@ -1,6 +1,8 @@
 package org.team1540.robot2020.subsystems;
 
 import com.revrobotics.*;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
@@ -16,6 +18,11 @@ public class Hood extends SubsystemBase {
 
     public Hood() {
         MotorConfigUtils.setDefaultNEOConfiguration(hoodMotor);
+
+        SmartDashboard.putNumber("hood/kP", kP);
+        SmartDashboard.putNumber("hood/kD", kD);
+
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/hood").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     @Override
