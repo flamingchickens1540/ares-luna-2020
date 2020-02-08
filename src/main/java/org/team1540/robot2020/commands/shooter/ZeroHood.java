@@ -12,14 +12,20 @@ public class ZeroHood extends CommandBase {
     }
 
     @Override
-    public void execute() {
-        hood.setPosition(0);
+    public void initialize() {
+        hood.setPercent(25);
     }
-
-    // TODO you currently don't actually stop the hood or zero its position when the command ends
 
     @Override
     public boolean isFinished() {
         return hood.isLimitSwitchPressed();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if (!interrupted) {
+            hood.zero();
+            hood.setPercent(0);
+        }
     }
 }
