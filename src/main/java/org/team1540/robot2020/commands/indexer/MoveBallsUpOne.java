@@ -8,6 +8,7 @@ public class MoveBallsUpOne extends CommandBase {
     private Indexer indexer;
     private double balls;
     private double setpoint;
+    private double encoderWhenHitSensor;
 
     public MoveBallsUpOne(Indexer indexer, double balls) {
         this.indexer = indexer;
@@ -20,17 +21,26 @@ public class MoveBallsUpOne extends CommandBase {
         setpoint = indexer.bottomOfBottomBallMeters + (balls * Indexer.ballSizeMeters);
         SmartDashboard.putNumber("indexer/moveBallsUpOneSetpoint", setpoint);
         indexer.setPercent(Indexer.firstIndexingSpeed);
+        indexer.moveBallsUpOneBottomBeanBreakUntriggered = false;
+    }
+
+    @Override
+    public void execute() {
+        SmartDashboard.putBoolean("indexer/hitEncoderInCommand", indexer.moveBallsUpOneBottomBeanBreakUntriggered);
+        SmartDashboard.putNumber("indexer/encoderWhenHitLimitSw", indexer.encoderWhenIndexerUnstaged);
     }
 
     @Override
     public boolean isFinished() {
-        return setpoint - indexer.getEncoderMeters() <= Indexer.ballHeightThresholdMeters &&
-                !indexer.getIndexerStagedSensor();
+        return indexer.moveBallsUpOneBottomBeanBreakUntriggered &&
+                (indexer.getEncoderMeters() - indexer.encoderWhenIndexerUnstaged) >= Indexer.afterMoveBallUpDist;
     }
 
     @Override
     public void end(boolean interrupted) {
         indexer.setPercent(0);
-        indexer.bottomOfBottomBallMeters = indexer.getEncoderMeters();
+        if (!interrupted) {
+            indexer.bottomOfBottomBallMeters = indexer.getEncoderMeters();
+        }
     }
 }

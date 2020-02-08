@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
@@ -26,6 +27,7 @@ public class Indexer extends SubsystemBase {
     public static final double ballLengthsToIndexAfterShoot = 1.5;
     public static double firstIndexingSpeed = 0.5;
     public static double secondIndexingSpeed = 0.1;
+    public static double afterMoveBallUpDist = 0;
     public static final double maxBalls = 5;
 
     public Indexer() {
@@ -37,13 +39,25 @@ public class Indexer extends SubsystemBase {
         indexerMotor.setNeutralMode(NeutralMode.Brake);
         indexerMotor.setInverted(InvertType.InvertMotorOutput);
 
-        SmartDashboard.putNumber("indexer/firstIndexingSpeed", Indexer.firstIndexingSpeed);
-        SmartDashboard.putNumber("indexer/secondIndexingSpeed", Indexer.secondIndexingSpeed);
+        SmartDashboard.putNumber("indexer/firstIndexingSpeed", firstIndexingSpeed);
+        SmartDashboard.putNumber("indexer/secondIndexingSpeed", secondIndexingSpeed);
+        SmartDashboard.putNumber("indexer/afterMoveBallUpDist", afterMoveBallUpDist);
 
         NetworkTableInstance.getDefault().getTable("SmartDashboard/indexer").addEntryListener((table, key, entry, value, flags) -> {
             Indexer.firstIndexingSpeed = SmartDashboard.getNumber("indexer/firstIndexingSpeed", Indexer.firstIndexingSpeed);
             Indexer.secondIndexingSpeed = SmartDashboard.getNumber("indexer/secondIndexingSpeed", Indexer.secondIndexingSpeed);
+            Indexer.afterMoveBallUpDist = SmartDashboard.getNumber("indexer/afterMoveBallUpDist", Indexer.afterMoveBallUpDist);
         }, EntryListenerFlags.kUpdate);
+
+        indexerStagedSensor.requestInterrupts(new InterruptHandlerFunction<>() {
+            @Override
+            public void interruptFired(int i, Object o) {
+                moveBallsUpOneBottomBeanBreakUntriggered = true;
+                encoderWhenIndexerUnstaged = getEncoderMeters();
+            }
+        });
+        indexerStagedSensor.setUpSourceEdge(true, false);
+        indexerStagedSensor.enableInterrupts();
     }
 
 
@@ -82,9 +96,9 @@ public class Indexer extends SubsystemBase {
         return balls;
     }
 
-    public boolean isFull() {
-        return getBalls() == maxBalls;
-    }
+//    public boolean isFull() {
+//        return getBalls() == maxBalls;
+//    }
 
     public void ballAdded() {
         balls++;

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.indexer.BallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
@@ -23,8 +24,8 @@ import org.team1540.robot2020.utils.NavX;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.A;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.B;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 public class RobotContainer {
 
@@ -69,7 +70,9 @@ public class RobotContainer {
 //        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false), intake);
 //        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
 //        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
-        copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
+//        copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
+        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
+//        copilot.getButton(X).toggleWhenPressed(new IndexerManualControl(indexer, driver.getAxis(LEFT_X).withDeadzone(0.1)));
         copilot.getButton(B).whenPressed(() -> {
             indexer.setEncoderTicks(0);
             indexer.bottomOfBottomBallMeters = 0;
@@ -113,8 +116,9 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
-        indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        indexer.setDefaultCommand(new IndexerManualControl(indexer,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        indexer.setDefaultCommand(new BallQueueSequence(indexer));
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
 //                copilot.getButton(ChickenXboxController.XboxButton.X)));
