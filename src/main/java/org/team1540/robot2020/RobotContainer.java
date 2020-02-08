@@ -70,7 +70,10 @@ public class RobotContainer {
 //        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
 //        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
         copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
-        copilot.getButton(B).whenPressed(() -> indexer.setEncoderTicks(0));
+        copilot.getButton(B).whenPressed(() -> {
+            indexer.setEncoderTicks(0);
+            indexer.bottomOfBottomBallMeters = 0;
+        });
     }
 
     private void initModeTransitionBindings() {

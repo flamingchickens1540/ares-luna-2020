@@ -12,7 +12,7 @@ public class BallQueueSequence extends SequentialCommandGroup {
                         new WaitUntilCommand(() -> !indexer.isFull()),
                         new SequentialCommandGroup(
                                 new WaitUntilCommand(indexer::getIndexerStagedSensor),
-                                new WaitCommand(0.25),
+                                new WaitCommand(0.1),
                                 new MoveBallsUpOne(indexer, 1),
                                 new InstantCommand(indexer::ballAdded)
                         ),

@@ -1,5 +1,6 @@
 package org.team1540.robot2020.commands.indexer;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Indexer;
 
@@ -16,17 +17,20 @@ public class MoveBallsUpOne extends CommandBase {
 
     @Override
     public void initialize() {
-        this.setpoint = indexer.getEncoderMeters() + (balls * Indexer.ballSizeMeters);
+        setpoint = indexer.bottomOfBottomBallMeters + (balls * Indexer.ballSizeMeters);
+        SmartDashboard.putNumber("indexer/moveBallsUpOneSetpoint", setpoint);
         indexer.setPercent(Indexer.firstIndexingSpeed);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(setpoint - indexer.getEncoderMeters()) <= Indexer.ballHeightThresholdMeters;
+        return setpoint - indexer.getEncoderMeters() <= Indexer.ballHeightThresholdMeters &&
+                !indexer.getIndexerStagedSensor();
     }
 
     @Override
     public void end(boolean interrupted) {
         indexer.setPercent(0);
+        indexer.bottomOfBottomBallMeters = indexer.getEncoderMeters();
     }
 }

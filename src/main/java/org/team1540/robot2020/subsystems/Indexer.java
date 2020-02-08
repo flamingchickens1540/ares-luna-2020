@@ -22,7 +22,7 @@ public class Indexer extends SubsystemBase {
 //  24569 ticks per 0.4318 meters
     public static final double ticksPerMeter = 56899.0273275;
     public static final double ballSizeMeters = 0.1778;
-    public static final double ballHeightThresholdMeters = 0.02;
+    public static final double ballHeightThresholdMeters = 0.005;
     public static final double ballLengthsToIndexAfterShoot = 1.5;
     public static double firstIndexingSpeed = 0.5;
     public static double secondIndexingSpeed = 0.1;
