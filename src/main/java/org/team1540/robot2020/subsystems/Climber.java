@@ -102,10 +102,9 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    // TODO can we have a method here that takes a boolean instead of a  t w o   v a l u e   e n u m
     // TODO maybe set the max output in the "up" direction to 0 whenever the ratchet is engaged
-    public void setRatchet(RatchetState state) {
-        ratchetServo.set(state.servoPosition);
+    public void setRatchet(boolean state) {
+        if(state) ratchetServo.set(RatchetState.ON.servoPosition); else ratchetServo.set(RatchetState.OFF.servoPosition);
     }
 
     public void setRatchet(double position) {
