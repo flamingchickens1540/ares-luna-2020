@@ -64,7 +64,7 @@ public class Climber extends SubsystemBase {
     }
 
     public void stop() {
-        climberMotor.set(ControlMode.PercentOutput,0);
+        climberMotor.set(ControlMode.PercentOutput, 0);
     }
 
     public void disableMotors() {
@@ -116,7 +116,7 @@ public class Climber extends SubsystemBase {
 
     // TODO maybe set the max output in the "up" direction to 0 whenever the ratchet is engaged
     public void setRatchet(boolean state) {
-        if(state) ratchetServo.set(RatchetState.ON.servoPosition); else ratchetServo.set(RatchetState.OFF.servoPosition);
+        ratchetServo.set(state ? RatchetState.ON.servoPosition : RatchetState.OFF.servoPosition);
     }
 
     public void setRatchet(double position) {
@@ -128,6 +128,6 @@ public class Climber extends SubsystemBase {
     }
 
     public void setBrake(boolean state) {
-        if (state) climberMotor.setNeutralMode(NeutralMode.Brake); else climberMotor.setNeutralMode(NeutralMode.Coast);
+        climberMotor.setNeutralMode(state ? NeutralMode.Brake : NeutralMode.Coast);
     }
 }
