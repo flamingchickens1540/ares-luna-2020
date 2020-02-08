@@ -132,6 +132,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
+        return 0;
+//        return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360); //TODO: This line causes a nullpointer
     }
 }
