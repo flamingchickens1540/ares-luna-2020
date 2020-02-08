@@ -37,7 +37,7 @@ public class Climber extends SubsystemBase {
 
         climberMotor.configAllSettings(defaultConfig);
 
-        setRatchet(RatchetState.ON);
+        setRatchet(true);
     }
 
     @Override
