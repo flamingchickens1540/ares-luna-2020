@@ -2,6 +2,7 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -37,6 +38,8 @@ public class Climber extends SubsystemBase {
         defaultConfig.slot1.kI = 0;
         defaultConfig.slot1.kD = 0;
         defaultConfig.slot1.kF = 0;
+
+        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 0, 0, 0);
 
         climberMotor.configAllSettings(defaultConfig);
         climberMotor.setInverted(TalonFXInvertType.Clockwise);
