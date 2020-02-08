@@ -20,6 +20,6 @@ public class ClimberManualControl extends CommandBase {
     @Override
     public void execute() {
         climber.setPercent(joystickAxis.value());
-        climber.setRatchet(ratchetButton.get() ? true : false);
+        climber.setRatchet(ratchetButton.get());
     }
 }

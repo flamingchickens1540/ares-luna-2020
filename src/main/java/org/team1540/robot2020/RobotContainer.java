@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
@@ -54,6 +56,7 @@ public class RobotContainer {
         initButtonBindings();
         initModeTransitionBindings();
         initDefaultCommands();
+        initDashboard();
 
 //        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
     }
@@ -84,6 +87,7 @@ public class RobotContainer {
         enabled.whenActive(() -> {
             // enable brakes
             driveTrain.setBrakes(NeutralMode.Brake);
+            climber.setBrake(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
         });
 
@@ -92,6 +96,7 @@ public class RobotContainer {
             .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                 // disable brakes
                 driveTrain.setBrakes(NeutralMode.Coast);
+                climber.setBrake(NeutralMode.Coast);
                 logger.info("Mechanism brakes disabled");
             }, true), RobotState::isEnabled)));
     }
@@ -101,12 +106,16 @@ public class RobotContainer {
         return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
     }
 
+    private void initDashboard() {
+        SmartDashboard.putData(new InstCommand(() -> climber.zero(), true));
+    }
+
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
         climber.setDefaultCommand(new ClimberManualControl(climber,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.15),
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.05),
                 copilot.getButton(ChickenXboxController.XboxButton.X)));
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, navx,
 //                driver.getAxis2D(RIGHT),

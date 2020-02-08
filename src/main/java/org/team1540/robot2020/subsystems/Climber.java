@@ -1,6 +1,8 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.Servo;
@@ -10,8 +12,8 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Climber extends SubsystemBase {
 
-    public static final double climberTicksPerMeter = 1;
-    public static final double climberTopPositionMeters = 1;
+    public static final double climberTicksPerMeter = 175289.47806139;
+    public static final double climberTopPositionMeters = 0.7;
 
     // TODO CHANGE CURRENT DRAW, TIME AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
     public static final double currentThreshold = 1;
@@ -20,6 +22,7 @@ public class Climber extends SubsystemBase {
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
+    private double offset = 0;
 
     private TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
 
@@ -36,15 +39,21 @@ public class Climber extends SubsystemBase {
         defaultConfig.slot1.kF = 0;
 
         climberMotor.configAllSettings(defaultConfig);
+        climberMotor.setInverted(TalonFXInvertType.Clockwise);
 
         setRatchet(true);
     }
 
+    public void zero() {
+        offset = -climberMotor.getSelectedSensorPosition();
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("climber/position", climberMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("climber/position", getPositionMeters());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
+        SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
     }
 
     public void setPercent(double percent) {
@@ -84,7 +93,7 @@ public class Climber extends SubsystemBase {
     }
 
     public double getPositionMeters() {
-        return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
+        return climberTicksToMeters(climberMotor.getSelectedSensorPosition() + offset);
     }
 
     public boolean atPositionMeters(double position, double toleranceMeters) {
@@ -109,5 +118,13 @@ public class Climber extends SubsystemBase {
 
     public void setRatchet(double position) {
         ratchetServo.set(position);
+    }
+
+    public void setBrake(NeutralMode state) {
+        climberMotor.setNeutralMode(state);
+    }
+
+    public void setBrake(boolean state) {
+        if (state) climberMotor.setNeutralMode(NeutralMode.Brake); else climberMotor.setNeutralMode(NeutralMode.Coast);
     }
 }

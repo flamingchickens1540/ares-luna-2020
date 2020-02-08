@@ -13,10 +13,7 @@ public class MoveClimberToPosition extends SequentialCommandGroup {
         addRequirements(climber);
         addCommands(
                 new ConditionalCommand(
-                        new SequentialCommandGroup(
-                                new RatchetOff(climber),
-                                new WaitCommand(0.25)
-                        ),
+                        new RatchetOff(climber).andThen(new WaitCommand((0.25))),
                         new InstCommand(),
                         () -> positionMeters >= climber.getPositionMeters()
                 ),
