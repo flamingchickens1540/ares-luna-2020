@@ -4,8 +4,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
-import org.team1540.robot2020.commands.indexer.MoveBallsToTop;
+import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.subsystems.Indexer;
 import org.team1540.robot2020.subsystems.Intake;
@@ -23,7 +22,7 @@ public class ShootSequence extends SequentialCommandGroup {
                         new StageBallsForShooting(indexer)
                 ),
                 // TODO the flywheel needs to continue spinning while moving the balls up one and continue for a little while afterwards, we don't want to trigger the motor safety cutoff
-                new MoveBallsUpOne(indexer, Indexer.ballLengthsToIndexAfterShoot),
+                new IndexerMoveToPosition(indexer, () -> indexer.getPositionMeters() + 0.18, 0.5),
                 new InstantCommand(indexer::ballRemoved),
                 new WaitCommand(0.1)
         );

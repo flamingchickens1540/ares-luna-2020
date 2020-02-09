@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
-import org.team1540.robot2020.commands.indexer.BallQueueSequence;
 import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
+import org.team1540.robot2020.commands.indexer.BallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
+import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.commands.shooter.ShooterManualControl;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -27,7 +29,6 @@ import org.team1540.robot2020.utils.NavX;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 public class RobotContainer {
@@ -73,13 +74,18 @@ public class RobotContainer {
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
 //        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
-//        copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
+        SmartDashboard.putNumber("indexer/position/inputGoal", 0);
+        copilot.getButton(START).whenPressed(new IndexerMoveToPosition(indexer, () -> SmartDashboard.getNumber("indexer/position/inputGoal", 0), 0.5));
+        copilot.getButton(Y).whenPressed(new InstCommand(() -> indexer.bottomOfBottomBallMeters = indexer.getPositionMeters()));
+        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer));
         copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
+        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 //        copilot.getButton(X).toggleWhenPressed(new IndexerManualControl(indexer, driver.getAxis(LEFT_X).withDeadzone(0.1)));
-        copilot.getButton(B).whenPressed(() -> {
-            indexer.setEncoderTicks(0);
-            indexer.bottomOfBottomBallMeters = 0;
-        });
+//        copilot.getButton(B).whenPressed(() -> {
+//            indexer.setEncoderTicks(0);
+//            indexer.bottomOfBottomBallMeters = 0;
+//        });
     }
 
     private void initModeTransitionBindings() {

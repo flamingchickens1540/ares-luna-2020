@@ -1,7 +1,8 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -17,7 +18,7 @@ public class Indexer extends SubsystemBase {
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
 
     private int balls = 0;
-    public double bottomOfBottomBallMeters = getEncoderMeters();
+    public double bottomOfBottomBallMeters = 0;
     public boolean isFull = false;
 
 //  24569 ticks per 0.4318 meters
@@ -32,7 +33,20 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         MotorConfigUtils.setDefaultTalonFXConfig(indexerMotor);
-        indexerMotor.setInverted(InvertType.InvertMotorOutput);
+        SlotConfiguration defaultConfig = new SlotConfiguration();
+        defaultConfig.kP = 1.0;
+        defaultConfig.kI = 0.0;
+        defaultConfig.kD = 0.0;
+        defaultConfig.kF = 0.0;
+        defaultConfig.integralZone = 0;
+        defaultConfig.allowableClosedloopError = 0;
+        defaultConfig.maxIntegralAccumulator = 0.0;
+        indexerMotor.getSlotConfigs(defaultConfig, MotorConfigUtils.VELOCITY_SLOT_IDX, 50);
+        indexerMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 100, 0, 0));
+
+        indexerMotor.setInverted(true);
+
+        setEncoderTicks(0);
 
         SmartDashboard.putNumber("indexer/firstIndexingSpeed", firstIndexingSpeed);
         SmartDashboard.putNumber("indexer/secondIndexingSpeed", secondIndexingSpeed);
@@ -47,16 +61,35 @@ public class Indexer extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("indexer/encoder", indexerMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("indexer/position/ticks", indexerMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("indexer/position/meters", this.getPositionMeters());
         SmartDashboard.putNumber("indexer/current", indexerMotor.getStatorCurrent());
+        SmartDashboard.putNumber("indexer/position/closedLoopError", indexerMotor.getClosedLoopError());
+        SmartDashboard.putNumber("indexer/position/closedLoopErrorMeters", this.getCloseLoopErrorMeters());
 
-        SmartDashboard.putBoolean("indexer/indexerStaged", getIndexerStagedSensor());
-        SmartDashboard.putBoolean("indexer/shooterStaged", getShooterStagedSensor());
+        SmartDashboard.putBoolean("indexer/indexerStagedSensor", getIndexerStagedSensor());
+        SmartDashboard.putBoolean("indexer/shooterStagedSensor", getShooterStagedSensor());
         SmartDashboard.putNumber("indexer/balls", balls);
     }
 
+    public void setPID(double p, double i, double d) {
+        indexerMotor.config_kP(0, p);
+        indexerMotor.config_kI(0, i);
+        indexerMotor.config_kD(0, d);
+    }
+
     public void setPercent(double percent) {
+        // TODO: is it ok to config peak output every tick?
+        indexerMotor.configPeakOutputForward(1);
+        indexerMotor.configPeakOutputReverse(-1);
         indexerMotor.set(ControlMode.PercentOutput, percent);
+    }
+
+    public void setPositionMeters(double positionMeters, double speed) {
+        // TODO: is it ok to config peak output every tick?
+        indexerMotor.configPeakOutputForward(speed);
+        indexerMotor.configPeakOutputReverse(-speed);
+        indexerMotor.set(ControlMode.Position, positionMeters * ticksPerMeter);
     }
 
     public boolean getIndexerStagedSensor() {
@@ -67,9 +100,13 @@ public class Indexer extends SubsystemBase {
         return !shooterStagedSensor.get();
     }
 
-    public double getEncoderMeters() {
+    public double getPositionMeters() {
         // TODO this needs tuning constant to convert from ticks
         return indexerMotor.getSelectedSensorPosition() / ticksPerMeter;
+    }
+
+    public double getCloseLoopErrorMeters() {
+        return indexerMotor.getClosedLoopError() / ticksPerMeter;
     }
 
     public void setEncoderTicks(int position) {

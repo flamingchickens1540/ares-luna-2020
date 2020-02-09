@@ -1,27 +1,27 @@
 package org.team1540.robot2020.commands.indexer;
 
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2020.subsystems.Indexer;
-import org.team1540.robot2020.utils.InstCommand;
 
 public class BallQueueSequence extends SequentialCommandGroup {
-    public BallQueueSequence(Indexer indexer) {
+
+    public BallQueueSequence(Indexer indexer) {        // TODO: ATTN this doesn't work
         addRequirements(indexer);
         addCommands(
-                new ConditionalCommand(
-                        new SequentialCommandGroup(
-                            new InstCommand(() -> indexer.isFull = true),
-                            new StageBallsForShooting(indexer),
-                            new WaitUntilCommand(() -> !indexer.isFull)
-                        ),
-                        new SequentialCommandGroup(
-                                new WaitUntilCommand(indexer::getIndexerStagedSensor),
-                                new WaitCommand(0.1),
-                                new MoveBallsUpOne(indexer, 1),
-                                new InstantCommand(indexer::ballAdded)
-                        ),
-                        indexer::getShooterStagedSensor
-                )
+                new WaitUntilCommand(indexer::getIndexerStagedSensor),
+                new FunctionalCommand(
+                        () -> indexer.setPercent(0.3),
+                        () -> {
+                        },
+                        (interrupted) -> indexer.bottomOfBottomBallMeters = indexer.getPositionMeters(),
+                        () -> !indexer.getIndexerStagedSensor(),
+                        indexer),
+                new InstantCommand(() -> indexer.setPercent(0)),
+                new IndexerMoveToPosition(indexer, () -> indexer.bottomOfBottomBallMeters + 0.05, 0.3),
+                new InstantCommand(indexer::ballAdded)
         );
     }
 
