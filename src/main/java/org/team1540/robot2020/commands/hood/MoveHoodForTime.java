@@ -21,6 +21,7 @@ public class MoveHoodForTime extends CommandBase {
     @Override
     public void initialize() {
         timer.reset();
+        timer.start();
         hood.setPercent(speed);
     }
 

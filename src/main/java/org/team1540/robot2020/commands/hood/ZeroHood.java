@@ -25,9 +25,10 @@ public class ZeroHood extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        hood.setPercent(0);
+
         if (!interrupted) {
             hood.zero();
-            hood.setPercent(0);
         }
     }
 }
