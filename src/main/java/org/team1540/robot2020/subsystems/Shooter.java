@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
@@ -27,13 +26,12 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupHoodMotors() {
-        MotorConfigUtils.setDefaultNEOConfiguration(hoodMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(hoodMotor);
     }
 
     private void setupFlywheelMotors() {
-        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-        shooterMotorA.configAllSettings(defaultConfig);
-        shooterMotorB.configAllSettings(defaultConfig);
+        MotorConfigUtils.setDefaultTalonFXConfig(shooterMotorA);
+        MotorConfigUtils.setDefaultTalonFXConfig(shooterMotorB);
 
         shooterMotorA.setNeutralMode(NeutralMode.Coast);
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
