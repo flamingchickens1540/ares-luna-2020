@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.InterruptHandlerFunction;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
@@ -30,7 +29,6 @@ public class Indexer extends SubsystemBase {
     public static double secondIndexingSpeed = 0.1;
     public static double afterMoveBallUpDist = 0;
     public static final double maxBalls = 5;
-    public double bottomOfBottomBallMeters;
 
     public Indexer() {
         MotorConfigUtils.setDefaultTalonFXConfig(indexerMotor);
