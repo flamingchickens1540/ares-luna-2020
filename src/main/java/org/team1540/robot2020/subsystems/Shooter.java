@@ -1,5 +1,6 @@
 package org.team1540.robot2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -66,5 +67,9 @@ public class Shooter extends SubsystemBase {
         shooterMotorA.config_kP(0, SmartDashboard.getNumber("shooter/kP", kP));
         shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/kD", kD));
         shooterMotorA.config_kF(0, SmartDashboard.getNumber("shooter/kF", kF));
+    }
+
+    public void setPercent(double value) {
+        shooterMotorA.set(ControlMode.PercentOutput, value);
     }
 }
