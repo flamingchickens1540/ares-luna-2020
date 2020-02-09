@@ -9,16 +9,15 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
-import org.team1540.robot2020.commands.hood.ZeroHoodSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
-import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
+import org.team1540.robot2020.commands.shooter.ShooterManualControl;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -55,8 +54,6 @@ public class RobotContainer {
         initModeTransitionBindings();
         initDefaultCommands();
         initDashboard();
-
-//        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
     }
 
     private void initButtonBindings() {
@@ -67,15 +64,13 @@ public class RobotContainer {
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
-        // TODO these need to actually require the intake subsystem
 //        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setPercent(true));
 //        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setPercent(false));
-        // TODO why is this not using ShooterSequence?
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
-        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
-        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
+//        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
+//        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
 
-        copilot.getButton(ChickenXboxController.XboxButton.B).whenPressed(new ZeroHoodSequence(hood));
+//        copilot.getButton(ChickenXboxController.XboxButton.B).whenPressed(new ZeroHoodSequence(hood));
 
     }
 
@@ -117,7 +112,9 @@ public class RobotContainer {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1).withDeadzone(0.15)));
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        funnel.setDefaultCommand(new FunnelManualControl(funnel,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
@@ -130,9 +127,9 @@ public class RobotContainer {
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
 
-        shooter.setDefaultCommand(new RunCommand(() -> shooter.disableMotors(), shooter));
-
+        shooter.setDefaultCommand(new ShooterManualControl(shooter,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG).withDeadzone(0.15)));
         hood.setDefaultCommand(new HoodManualControl(hood,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.15)));
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
     }
 }
