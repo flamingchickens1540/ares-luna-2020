@@ -11,16 +11,18 @@ public class IndexerMoveToPosition extends CommandBase {
     private final double maxPercent;
     private Indexer indexer;
     private double currentGoal;
+    private double tolerance;
 
-    public IndexerMoveToPosition(Indexer indexer, DoubleSupplier calculateGoalMeters, double maxPercent) {
+    public IndexerMoveToPosition(Indexer indexer, DoubleSupplier calculateGoalMeters, double maxPercent, double tolerance) {
         this.indexer = indexer;
         this.calculateGoalMeters = calculateGoalMeters;
         this.maxPercent = maxPercent;
+        this.tolerance = tolerance;
         addRequirements(indexer);
 
-        SmartDashboard.putNumber("indexer/position/p", 1);
+        SmartDashboard.putNumber("indexer/position/p", 0.8);
         SmartDashboard.putNumber("indexer/position/i", 0);
-        SmartDashboard.putNumber("indexer/position/d", 0);
+        SmartDashboard.putNumber("indexer/position/d", 10);
     }
 
     @Override
@@ -36,7 +38,6 @@ public class IndexerMoveToPosition extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double tolerance = 0.001;
         return indexer.getCloseLoopErrorMeters() < tolerance && Math.abs(indexer.getPositionMeters() - currentGoal) < tolerance;
     }
 

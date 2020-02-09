@@ -213,6 +213,11 @@ public class ChickenXboxController {
             return () -> value().getY();
         }
 
+        default Axis2D withDeadzone(double deadzone) {
+            // TODO this is a square deadzone, make a circular deadzone
+            return () -> new Vector2D(deadzone(value().getX(), deadzone), deadzone(value().getY(), deadzone));
+        }
+
         default Vector2D value() {
             return get();
         }
