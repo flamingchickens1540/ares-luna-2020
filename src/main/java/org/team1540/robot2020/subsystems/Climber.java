@@ -3,13 +3,14 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
+
+import static org.team1540.robot2020.utils.MotorConfigUtils.VELOCITY_SLOT_IDX;
 
 public class Climber extends SubsystemBase {
 
@@ -25,7 +26,6 @@ public class Climber extends SubsystemBase {
     private Servo ratchetServo = new Servo(9);
     private double offset = 0;
 
-    private TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
 
     public Climber() {
         // TODO figure out brake mode on all motors
@@ -34,15 +34,20 @@ public class Climber extends SubsystemBase {
 
 
         // TODO tune PIDF values
-        defaultConfig.slot1.kP = 1;
-        defaultConfig.slot1.kI = 0;
-        defaultConfig.slot1.kD = 0;
-        defaultConfig.slot1.kF = 0;
 
-        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 0, 0, 0);
+        MotorConfigUtils.setDefaultTalonFXConfig(climberMotor);
 
-        climberMotor.configAllSettings(defaultConfig);
-        climberMotor.setInverted(TalonFXInvertType.Clockwise);
+        SlotConfiguration defaultConfig = new SlotConfiguration();
+        defaultConfig.kP = 1;
+        defaultConfig.kI = 0;
+        defaultConfig.kD = 0;
+        defaultConfig.kF = 0;
+        climberMotor.getSlotConfigs(defaultConfig, VELOCITY_SLOT_IDX, 50);
+        climberMotor.selectProfileSlot(VELOCITY_SLOT_IDX, 0);
+
+        climberMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0));
+
+        climberMotor.setInverted(true);
 
         setRatchet(true);
     }

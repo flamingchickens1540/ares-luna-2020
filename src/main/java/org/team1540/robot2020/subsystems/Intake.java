@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
-        MotorConfigUtils.setDefaultNEOConfiguration(rollerMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
     }
 
     @Override
@@ -26,15 +26,11 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("intake/rollerVelocity", rollerEncoder.getVelocity());
     }
 
-    public void setRollerPercent(double percent) {
+    public void setPercent(double percent) {
         rollerMotor.set(percent);
     }
 
-    public void setRollerPercent(boolean forwards) {
-        rollerMotor.set(forwards ? defaultRollerPercent : -defaultRollerPercent);
-    }
-
     public void stop() {
-        setRollerPercent(0);
+        setPercent(0);
     }
 }

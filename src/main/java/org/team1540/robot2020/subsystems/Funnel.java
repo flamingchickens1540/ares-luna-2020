@@ -20,8 +20,8 @@ public class Funnel extends SubsystemBase {
     public Funnel() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
-        MotorConfigUtils.setDefaultNEOConfiguration(funnelLeftMotor);
-        MotorConfigUtils.setDefaultNEOConfiguration(funnelRightMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(funnelRightMotor);
     }
 
     @Override
@@ -31,12 +31,16 @@ public class Funnel extends SubsystemBase {
         SmartDashboard.putNumber("intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
     }
 
-    public void setFunnelPercent(double percentLeft, double percentRight) {
+    public void setPercent(double percentLeft, double percentRight) {
         funnelLeftMotor.set(percentLeft);
         funnelRightMotor.set(percentRight);
     }
 
+    public void setPercent(double percent) {
+        setPercent(percent, percent);
+    }
+
     public void stop() {
-        setFunnelPercent(0, 0);
+        setPercent(0, 0);
     }
 }

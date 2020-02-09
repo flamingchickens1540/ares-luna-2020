@@ -2,9 +2,7 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -30,12 +28,7 @@ public class Indexer extends SubsystemBase {
     public double bottomOfBottomBallMeters;
 
     public Indexer() {
-        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-        defaultConfig.slot1.kP = 0;
-        defaultConfig.slot1.kI = 0;
-        defaultConfig.slot1.kD = 0;
-        indexerMotor.configAllSettings(defaultConfig);
-        indexerMotor.setNeutralMode(NeutralMode.Brake);
+        MotorConfigUtils.setDefaultTalonFXConfig(indexerMotor);
         indexerMotor.setInverted(InvertType.InvertMotorOutput);
 
         SmartDashboard.putNumber("indexer/firstIndexingSpeed", Indexer.firstIndexingSpeed);

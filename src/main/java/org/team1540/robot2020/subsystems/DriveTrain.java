@@ -2,7 +2,7 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -20,14 +20,11 @@ public class DriveTrain extends SubsystemBase {
 
     private final double drivetrainTicksPerMeter = 1052.7398858397396;
 
-    private static final int DRIVE_POSITION_SLOT_IDX = 0;
-    private static final int DRIVE_VELOCITY_SLOT_IDX = 1;
+    private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
 
-    private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
-    private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
-
-    private ChickenTalonFX driveMotorRightA = new ChickenTalonFX(3, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
-    private ChickenTalonFX driveMotorRightB = new ChickenTalonFX(4, drivetrainTicksPerMeter, DRIVE_POSITION_SLOT_IDX, DRIVE_VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorRightA = new ChickenTalonFX(3, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
+    private ChickenTalonFX driveMotorRightB = new ChickenTalonFX(4, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
 
     private ChickenTalonFX[] driveMotorAll = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB, driveMotorRightA, driveMotorRightB};
     private ChickenTalonFX[] driveMotorLefts = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB};
@@ -50,22 +47,20 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initMotors() {
-        TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
-        defaultConfig.slot1.kP = 3.0;
-        defaultConfig.slot1.kI = 0.02;
-        defaultConfig.slot1.kD = 0.0;
-        defaultConfig.slot1.kF = 0.0;
-        defaultConfig.slot1.integralZone = 0;
-        defaultConfig.slot1.allowableClosedloopError = 0;
-        defaultConfig.slot1.maxIntegralAccumulator = 0.0;
-        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 70, 0, 0);
-
         for (ChickenTalonFX talon : driveMotorAll) {
-            talon.configFactoryDefault();
-            talon.configAllSettings(defaultConfig);
+            MotorConfigUtils.setDefaultTalonFXConfig(talon);
 
-            talon.setNeutralMode(NeutralMode.Brake);
-            talon.enableVoltageCompensation(true);
+            SlotConfiguration defaultConfig = new SlotConfiguration();
+            defaultConfig.kP = 3.0;
+            defaultConfig.kI = 0.02;
+            defaultConfig.kD = 0.0;
+            defaultConfig.kF = 0.0;
+            defaultConfig.integralZone = 0;
+            defaultConfig.allowableClosedloopError = 0;
+            defaultConfig.maxIntegralAccumulator = 0.0;
+            talon.getSlotConfigs(defaultConfig, MotorConfigUtils.VELOCITY_SLOT_IDX, 50);
+
+            talon.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 0, 0));
         }
 
         for (ChickenTalonFX talon : driveMotorLefts) {
