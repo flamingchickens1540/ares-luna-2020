@@ -12,19 +12,13 @@ public class MoveClimberToPosition extends SequentialCommandGroup {
     public MoveClimberToPosition(Climber climber, double positionMeters) {
         addRequirements(climber);
         addCommands(
-                new InstCommand(() -> {
-                    // TODO do this with a ConditionalCommand
-                    if (positionMeters >= climber.getPositionMeters()) {
-                        // TODO create a premade RatchetOff and RatchetOn command class or something, so you don't have
-                        //  to type new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ON)) every time
-                        climber.setRatchet(Climber.RatchetState.OFF);
-                    }
-                }),
-                // TODO only make it wait when you're actually disabling the ratchet (hint: this involves using a
-                //  command group inside the conditional command)
-                new WaitCommand(0.25),
+                new ConditionalCommand(
+                        new RatchetOff(climber).andThen(new WaitCommand((0.25))),
+                        new InstCommand(),
+                        () -> positionMeters >= climber.getPositionMeters()
+                ),
                 new MoveClimberToPositionUnsafe(climber, positionMeters, 0.01),
-                new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ON))
+                new InstCommand(() -> climber.setRatchet(true))
         );
     }
 }

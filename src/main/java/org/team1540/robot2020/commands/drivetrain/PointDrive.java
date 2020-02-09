@@ -2,6 +2,7 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.ControlUtils;
@@ -17,7 +18,10 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
     private NavX navx;
-    private ChickenXboxController driver;
+
+    private Axis2D pointAxis;
+    private ChickenXboxController.Axis throttleAxis;
+    private JoystickButton resetNavXButton;
 
     private double goalAngle;
     private MiniPID pointController;
@@ -27,11 +31,14 @@ public class PointDrive extends CommandBase {
     private double deadzone;
 
     // TODO: this is pasted from last year's code, feel free to clean up the tuning constant stuff
-    // TODO can we pass in the Axis objects and Button objects instead of the entire damn controller
-    public PointDrive(DriveTrain driveTrain, NavX navx, ChickenXboxController driver) {
+    public PointDrive(DriveTrain driveTrain, NavX navx, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
         this.navx = navx;
-        this.driver = driver;
+
+        this.pointAxis = pointAxis;
+        this.throttleAxis = throttleAxis;
+        this.resetNavXButton = resetNavXButton;
+
         addRequirements(driveTrain);
 
         // TODO: hmm, we really need that YAML tuning lib
@@ -43,7 +50,7 @@ public class PointDrive extends CommandBase {
         SmartDashboard.putNumber("pointDrive/deadzone", 0.02);
 
         pointController = new MiniPID(0, 0, 0);
-        driver.getButton(Y).whenPressed(this::zeroAngle);
+        resetNavXButton.whenPressed(this::zeroAngle);
     }
 
     @Override
@@ -69,7 +76,6 @@ public class PointDrive extends CommandBase {
 
     @Override
     public void execute() {
-        Axis2D pointAxis = driver.getAxis2D(RIGHT);
         if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
         double error = TrigUtils.signedAngleError(goalAngle + angleOffset, navx.getYawRadians());
@@ -78,7 +84,7 @@ public class PointDrive extends CommandBase {
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
 
-        double throttle = driver.getAxis(LEFT_X).withDeadzone(.1).value();
+        double throttle = throttleAxis.value();
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;

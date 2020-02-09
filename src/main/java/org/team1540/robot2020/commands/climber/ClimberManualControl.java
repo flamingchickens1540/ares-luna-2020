@@ -19,8 +19,7 @@ public class ClimberManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        // TODO the withDeadzone processing step should be moved to RobotContainer (pass the result of withDeadzone into the command)
-        climber.setPercent(joystickAxis.withDeadzone(0.15).value());
-        climber.setRatchet(ratchetButton.get() ? Climber.RatchetState.ON : Climber.RatchetState.OFF);
+        climber.setPercent(joystickAxis.value());
+        climber.setRatchet(ratchetButton.get());
     }
 }

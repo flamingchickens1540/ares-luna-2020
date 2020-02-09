@@ -16,6 +16,7 @@ public class IntakeWhileNotFull extends CommandBase {
 
     @Override
     public void execute() {
-        intake.setFunnelAndRollerPercent(!indexer.isFull());
+        boolean forwards = !indexer.isFull();
+        intake.setPercent(forwards ? Intake.defaultRollerPercent : -Intake.defaultRollerPercent);
     }
 }
