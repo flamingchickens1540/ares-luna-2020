@@ -37,8 +37,8 @@ public class Hood extends SubsystemBase {
     }
 
     public void updatePIDs() {
-        hoodController.setP(SmartDashboard.getNumber("shooter/hood_kP", kP));
-        hoodController.setD(SmartDashboard.getNumber("shooter/hood_kD", kD));
+        hoodController.setP(SmartDashboard.getNumber("shooter/kP", kP));
+        hoodController.setD(SmartDashboard.getNumber("shooter/kD", kD));
     }
 
     public double getPosition() {
