@@ -49,6 +49,14 @@ public class Hood extends SubsystemBase {
         hoodController.setReference(position, ControlType.kPosition);
     }
 
+    public void setPercent(double speed) {
+        hoodMotor.set(speed);
+    }
+
+    public void zero() {
+        hoodEncoder.setPosition(0);
+    }
+
     public boolean isLimitSwitchPressed() {
         return limitSwitch.get();
     }
