@@ -14,7 +14,6 @@ public class MoveHoodForTime extends CommandBase {
         this.hood = hood;
         this.speed = speed;
         this.time = time;
-        this.withTimeout(time);
         addRequirements(hood);
     }
 
