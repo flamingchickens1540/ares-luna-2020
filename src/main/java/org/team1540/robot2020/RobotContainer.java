@@ -1,6 +1,7 @@
 package org.team1540.robot2020;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -8,22 +9,23 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.hood.HoodManualControl;
+import org.team1540.robot2020.commands.hood.ZeroHoodSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
-import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
+import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.LIDARLite;
 import org.team1540.robot2020.utils.NavX;
 
 import java.util.List;
-
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.A;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.B;
 
 public class RobotContainer {
 
@@ -34,16 +36,16 @@ public class RobotContainer {
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
 
-    // TODO donde esta el LIDAR
     private NavX navx = new NavX(SPI.Port.kMXP);
+    private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
 
     // TODO split Intake into Intake and Funnel
-    // TODO split Shooter into Shooter and ShooterHood
     private DriveTrain driveTrain = new DriveTrain(navx);
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
+    private Hood hood = new Hood();
     private Climber climber = new Climber();
 
     public RobotContainer() {
@@ -65,15 +67,16 @@ public class RobotContainer {
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
-//        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true), intake);
-//        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false), intake);
-//        copilot.getButton(Y).whenPressed(new ShooterSpinUp(shooter, 100));
-//        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
-        copilot.getButton(A).whenPressed(new MoveBallsUpOne(indexer, 1));
-        copilot.getButton(B).whenPressed(() -> {
-            indexer.setEncoderTicks(0);
-            indexer.bottomOfBottomBallMeters = 0;
-        });
+        // TODO these need to actually require the intake subsystem
+//        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setPercent(true));
+//        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setPercent(false));
+        // TODO why is this not using ShooterSequence?
+//        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
+        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
+        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
+
+        copilot.getButton(ChickenXboxController.XboxButton.B).whenPressed(new ZeroHoodSequence(hood));
+
     }
 
     private void initModeTransitionBindings() {
@@ -93,13 +96,12 @@ public class RobotContainer {
         });
 
         disabled.whenActive(new WaitCommand(2)
-            .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
-            .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-                // disable brakes
-                driveTrain.setBrakes(NeutralMode.Coast);
-                climber.setBrake(NeutralMode.Coast);
-                logger.info("Mechanism brakes disabled");
-            }, true), RobotState::isEnabled)));
+                .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
+                .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
+                    // disable brakes
+                    driveTrain.setBrakes(NeutralMode.Coast);
+                    climber.setBrake(NeutralMode.Coast);logger.info("Mechanism brakes disabled");
+                }, true), RobotState::isEnabled)));
     }
 
     public Command getAutoCommand() {
@@ -113,8 +115,10 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1).withDeadzone(0.15)));
+
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
 //                copilot.getButton(ChickenXboxController.XboxButton.X)));
@@ -125,5 +129,10 @@ public class RobotContainer {
 //        ));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
+
+        shooter.setDefaultCommand(new RunCommand(() -> shooter.disableMotors(), shooter));
+
+        hood.setDefaultCommand(new HoodManualControl(hood,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.15)));
     }
 }
