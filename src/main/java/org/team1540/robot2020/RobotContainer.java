@@ -15,7 +15,9 @@ import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.hood.ZeroHoodSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -71,6 +73,9 @@ public class RobotContainer {
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
         copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
+
+        copilot.getButton(ChickenXboxController.XboxButton.B).whenPressed(new ZeroHoodSequence(hood));
+
     }
 
     private void initModeTransitionBindings() {
@@ -116,5 +121,8 @@ public class RobotContainer {
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
 
         shooter.setDefaultCommand(new RunCommand(() -> shooter.disableMotors(), shooter));
+
+        hood.setDefaultCommand(new HoodManualControl(hood,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.15)));
     }
 }
