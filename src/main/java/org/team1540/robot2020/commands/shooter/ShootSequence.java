@@ -19,7 +19,7 @@ public class ShootSequence extends SequentialCommandGroup {
         addCommands(
                 new ParallelCommandGroup(
                         // TODO this parallel command group should also move the shooter hood
-                        new ShooterSpinUp(shooter, 2000),
+                        new ShooterSpinUp(shooter),
                         new StageBallsForShooting(indexer)
                 ),
                 // TODO the flywheel needs to continue spinning while moving the balls up one and continue for a little while afterwards, we don't want to trigger the motor safety cutoff
