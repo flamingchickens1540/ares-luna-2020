@@ -22,6 +22,8 @@ public class Funnel extends SubsystemBase {
         // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelRightMotor);
+        funnelLeftMotor.setInverted(true);
+
     }
 
     @Override

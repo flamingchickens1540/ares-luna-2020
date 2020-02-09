@@ -6,9 +6,9 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 
 public class FunnelManualControl extends CommandBase {
     private Funnel funnel;
-    private ChickenXboxController.Axis joystickAxis;
+    private ChickenXboxController.Axis2D joystickAxis;
 
-    public FunnelManualControl(Funnel funnel, ChickenXboxController.Axis joystickAxis) {
+    public FunnelManualControl(Funnel funnel, ChickenXboxController.Axis2D joystickAxis) {
         this.funnel = funnel;
         this.joystickAxis = joystickAxis;
         addRequirements(funnel);
@@ -16,6 +16,8 @@ public class FunnelManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        funnel.setPercent(joystickAxis.value());
+        double forward = joystickAxis.x().value();
+        double sideways = joystickAxis.y().value();
+        funnel.setPercent(forward + sideways, forward - sideways);
     }
 }
