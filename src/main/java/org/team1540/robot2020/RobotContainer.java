@@ -15,10 +15,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.ZeroHoodSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
-import org.team1540.robot2020.commands.hood.HoodManualControl;
-import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
+import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -26,9 +26,6 @@ import org.team1540.robot2020.utils.LIDARLite;
 import org.team1540.robot2020.utils.NavX;
 
 import java.util.List;
-
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.A;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.B;
 
 public class RobotContainer {
 
@@ -71,8 +68,8 @@ public class RobotContainer {
 //        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
 //        driver.getButton(RIGHT_BUMPER).whileHeld(new ShootSequence(intake, indexer, shooter));
         // TODO these need to actually require the intake subsystem
-        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setFunnelAndRollerPercent(true));
-        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setFunnelAndRollerPercent(false));
+//        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setPercent(true));
+//        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setPercent(false));
         // TODO why is this not using ShooterSequence?
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));

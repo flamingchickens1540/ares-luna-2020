@@ -17,7 +17,7 @@ public class Hood extends SubsystemBase {
     private CANDigitalInput limitSwitch = hoodMotor.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
 
     public Hood() {
-        MotorConfigUtils.setDefaultNEOConfiguration(hoodMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(hoodMotor);
 
         SmartDashboard.putNumber("hood/kP", kP);
         SmartDashboard.putNumber("hood/kD", kD);
