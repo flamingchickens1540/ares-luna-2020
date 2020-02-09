@@ -15,7 +15,6 @@ import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.MoveBallsUpOne;
-import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -42,6 +41,7 @@ public class RobotContainer {
     // TODO split Shooter into Shooter and ShooterHood
     private DriveTrain driveTrain = new DriveTrain(navx);
     private Intake intake = new Intake();
+    private Funnel funnel = new Funnel();
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
     private Climber climber = new Climber();

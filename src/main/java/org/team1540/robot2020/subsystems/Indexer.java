@@ -27,6 +27,7 @@ public class Indexer extends SubsystemBase {
     public static double firstIndexingSpeed = 0.5;
     public static double secondIndexingSpeed = 0.1;
     public static final double maxBalls = 5;
+    public double bottomOfBottomBallMeters;
 
     public Indexer() {
         TalonFXConfiguration defaultConfig = MotorConfigUtils.get1540DefaultTalonFXConfiguration();
