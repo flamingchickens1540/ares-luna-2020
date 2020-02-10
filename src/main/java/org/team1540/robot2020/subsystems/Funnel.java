@@ -28,9 +28,10 @@ public class Funnel extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO put current draw to smart dashboard
         SmartDashboard.putNumber("intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
         SmartDashboard.putNumber("intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/funnelLeftCurrent", funnelLeftMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/funnelRightCurrent", funnelRightMotor.getOutputCurrent());
     }
 
     public void setPercent(double percentLeft, double percentRight) {
