@@ -16,11 +16,11 @@ import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.funnel.FunnelManualControl;
-import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.indexer.BallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
+import org.team1540.robot2020.commands.intake.IntakeManualControl;
 import org.team1540.robot2020.commands.panel.ControlPanelServoManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterManualControl;
 import org.team1540.robot2020.subsystems.*;
@@ -84,7 +84,7 @@ public class RobotContainer {
         copilot.getButton(START).whenPressed(new IndexerMoveToPosition(indexer, () -> SmartDashboard.getNumber("indexer/position/inputGoal", 0), 0.5, 0.001));
         copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> indexer.setEncoderTicks(0)));
         copilot.getButton(Y).whenPressed(new InstCommand(() -> indexer.bottomOfBottomBallMeters = indexer.getPositionMeters()));
-        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer));
+        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
         copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
         copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
@@ -150,10 +150,12 @@ public class RobotContainer {
 //        ));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
 //        intake.setDefaultCommand(new RunIntake(intake, indexer));
+        intake.setDefaultCommand(new IntakeManualControl(intake,
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.1)));
 
         shooter.setDefaultCommand(new ShooterManualControl(shooter,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG).withDeadzone(0.15)));
-        hood.setDefaultCommand(new HoodManualControl(hood,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
+//        hood.setDefaultCommand(new HoodManualControl(hood,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
     }
 }
