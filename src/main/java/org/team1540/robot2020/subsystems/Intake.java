@@ -19,11 +19,15 @@ public class Intake extends SubsystemBase {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
+        rollerMotor.setSmartCurrentLimit(60);
+        rollerMotor.setSecondaryCurrentLimit(20, 20000);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake/rollerVelocity", rollerEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/rollerCurrent", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
     }
 
     public void setPercent(double percent) {
