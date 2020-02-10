@@ -20,7 +20,7 @@ public class BallQueueSequence extends SequentialCommandGroup {
                                         (interrupted) -> indexer.bottomOfBottomBallMeters = indexer.getPositionMeters(),
                                         () -> !indexer.getIndexerStagedSensor(),
                                         indexer),
-                                new IndexerMoveToPosition(indexer, () -> indexer.bottomOfBottomBallMeters + 0.01, 0.3, 0.001),
+                                new IndexerMoveToPosition(indexer, () -> indexer.bottomOfBottomBallMeters + 0.02, 0.3, 0.001),
                                 new InstantCommand(indexer::ballAdded)),
                         new FunctionalCommand(
                                 () -> funnel.setPercent(0.5, 0.1),
