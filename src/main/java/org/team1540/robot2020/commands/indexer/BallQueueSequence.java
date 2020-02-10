@@ -14,7 +14,7 @@ public class BallQueueSequence extends SequentialCommandGroup {
         addCommands(
                 race(
                         sequence(
-                                new IndexerStagedForAWhile(indexer, 0.5),
+                                new IndexerStagedForAWhile(indexer, 0.3),
                                 race(
                                         sequence(new FunctionalCommand(
                                                         () -> indexer.setPercent(0.3),
