@@ -16,8 +16,8 @@ public class FunnelManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        double forward = joystickAxis.x().value();
-        double sideways = joystickAxis.y().value();
+        double forward = joystickAxis.x().value() * .6;
+        double sideways = joystickAxis.y().value() * .6;
         funnel.setPercent(forward + sideways, forward - sideways);
     }
 }
