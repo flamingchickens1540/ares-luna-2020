@@ -1,11 +1,11 @@
 package org.team1540.robot2020.utils;
 
-import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class InstCommand  extends CommandBase {
+import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
+
+public class InstCommand extends CommandBase {
     private final Runnable toRun;
     private final boolean runWhenDisabled;
 

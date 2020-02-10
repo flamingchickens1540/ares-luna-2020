@@ -95,7 +95,8 @@ public class RobotContainer {
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                     // disable brakes
                     driveTrain.setBrakes(NeutralMode.Coast);
-                    climber.setBrake(NeutralMode.Coast);logger.info("Mechanism brakes disabled");
+                    climber.setBrake(NeutralMode.Coast);
+                    logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
     }
 
