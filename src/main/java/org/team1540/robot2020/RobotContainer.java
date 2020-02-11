@@ -117,6 +117,7 @@ public class RobotContainer {
         enabled.whenActive(() -> {
             // enable brakes
             driveTrain.setBrakes(NeutralMode.Brake);
+            indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
         });
