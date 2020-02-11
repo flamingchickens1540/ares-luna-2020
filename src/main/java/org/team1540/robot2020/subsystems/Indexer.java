@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Indexer extends SubsystemBase {
     private TalonFX indexerMotor = new TalonFX(8);
 
@@ -18,7 +21,8 @@ public class Indexer extends SubsystemBase {
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
 
     private int balls = 0;
-    public double bottomOfBottomBallMeters = 0;
+//    public double bottomOfBottomBallMeters = 0;
+    public List<Double> ballPositions = new LinkedList<>();
     public boolean isFull = false;
 
     //  24569 ticks per 0.4318 meters
@@ -70,6 +74,7 @@ public class Indexer extends SubsystemBase {
         SmartDashboard.putBoolean("indexer/indexerStagedSensor", getIndexerStagedSensor());
         SmartDashboard.putBoolean("indexer/shooterStagedSensor", getShooterStagedSensor());
         SmartDashboard.putNumber("indexer/balls", balls);
+        SmartDashboard.putBoolean("indexer/isFull", isFull);
     }
 
     public void setPID(double p, double i, double d) {
@@ -122,10 +127,6 @@ public class Indexer extends SubsystemBase {
 //    }
 
     public void ballAdded() {
-        balls++;
-    }
-
-    public void ballRemoved() {
-        balls--;
+        ballPositions.add(0, getPositionMeters());
     }
 }

@@ -23,7 +23,6 @@ public class ShootSequence extends SequentialCommandGroup {
                 ),
                 // TODO the flywheel needs to continue spinning while moving the balls up one and continue for a little while afterwards, we don't want to trigger the motor safety cutoff
                 new IndexerMoveToPosition(indexer, () -> indexer.getPositionMeters() + 0.18, 0.5, 0.001),
-                new InstantCommand(indexer::ballRemoved),
                 new WaitCommand(0.1)
         );
     }
