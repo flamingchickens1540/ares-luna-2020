@@ -91,7 +91,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("indexer/position/inputGoal", 0);
         copilot.getButton(START).whenPressed(new IndexerMoveToPosition(indexer, () -> SmartDashboard.getNumber("indexer/position/inputGoal", 0), 0.5, 0.001));
         copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> indexer.setEncoderTicks(0)));
-        copilot.getButton(Y).whenPressed(new InstCommand(() -> indexer.bottomOfBottomBallMeters = indexer.getPositionMeters()));
+        copilot.getButton(Y).whenPressed(new InstCommand(indexer::ballAdded));
 //        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer));
 //        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
         copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
@@ -126,6 +126,7 @@ public class RobotContainer {
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                     // disable brakes
                     driveTrain.setBrakes(NeutralMode.Coast);
+                    indexer.setBrake(NeutralMode.Coast);
                     climber.setBrake(NeutralMode.Coast);
                     logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));

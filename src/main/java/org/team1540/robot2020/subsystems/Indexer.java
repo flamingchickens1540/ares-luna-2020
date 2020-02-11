@@ -1,6 +1,7 @@
 package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -95,6 +96,10 @@ public class Indexer extends SubsystemBase {
         indexerMotor.configPeakOutputForward(speed);
         indexerMotor.configPeakOutputReverse(-speed);
         indexerMotor.set(ControlMode.Position, positionMeters * ticksPerMeter);
+    }
+
+    public void setBrake(NeutralMode brake) {
+        indexerMotor.setNeutralMode(brake);
     }
 
     public boolean getIndexerStagedSensor() {
