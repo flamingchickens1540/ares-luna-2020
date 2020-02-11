@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Hood extends SubsystemBase {
-    private final double kP = 0;
+    private final double kP = 2;
     private final double kD = 0;
 
     private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -30,6 +30,8 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("hood/position", hoodEncoder.getPosition());
         SmartDashboard.putNumber("hood/current", hoodMotor.getOutputCurrent());
         SmartDashboard.putBoolean("hood/limitSwitch", limitSwitch.get());
+        SmartDashboard.putNumber("hood/error", hoodController.getSmartMotionAllowedClosedLoopError(0));
+
     }
 
     public void disableMotors() {
