@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.subsystems.Shooter;
 
 public class ShooterSpinUp extends CommandBase {
-    private final double FLYWHEEL_RPM = 3000;
+    private final double FLYWHEEL_RPM = 5900;
     private final double FLYWHEEL_RPM_TOLERANCE = 100;
 
     private Shooter shooter;
