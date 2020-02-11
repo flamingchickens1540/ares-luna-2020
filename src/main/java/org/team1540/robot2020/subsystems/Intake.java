@@ -9,7 +9,6 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Intake extends SubsystemBase {
 
-    // todo Should intake rollers and funnel be separate subsystems?
     private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 
@@ -19,11 +18,15 @@ public class Intake extends SubsystemBase {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
+        rollerMotor.setSmartCurrentLimit(60);
+        rollerMotor.setSecondaryCurrentLimit(20, 20000);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake/rollerVelocity", rollerEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/rollerCurrent", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
     }
 
     public void setPercent(double percent) {
