@@ -30,6 +30,7 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("intake/kD", kD);
         SmartDashboard.putNumber("intake/kF", kF);
 
+        updatePIDs();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/intake").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 

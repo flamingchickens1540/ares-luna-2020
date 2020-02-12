@@ -16,6 +16,7 @@ import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.indexer.BallQueueSequence;
+import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.commands.intake.RunIntake;
@@ -87,6 +88,8 @@ public class RobotContainer {
         copilot.getButton(Y).whenPressed(new InstCommand(indexer::ballAdded));
 //        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer));
 //        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
+        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
+                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
         copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
         copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
         copilot.getButton(BACK).toggleWhenPressed(new RunIntake(intake));
