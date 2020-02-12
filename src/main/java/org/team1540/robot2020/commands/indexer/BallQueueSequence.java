@@ -12,7 +12,7 @@ import org.team1540.robot2020.utils.InstCommand;
 public class BallQueueSequence extends SequentialCommandGroup {
     private boolean endFlag;
 
-    public BallQueueSequence(Indexer indexer, Funnel funnel) {        // TODO: ATTN this doesn't work
+    public BallQueueSequence(Indexer indexer, Funnel funnel) {
         addRequirements(indexer, funnel);
         addCommands(
                 race(
