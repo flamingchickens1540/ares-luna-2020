@@ -11,9 +11,6 @@ import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.TrigUtils;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.Axis2D;
-import static org.team1540.robot2020.utils.ChickenXboxController.Hand.RIGHT;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.Y;
 
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;

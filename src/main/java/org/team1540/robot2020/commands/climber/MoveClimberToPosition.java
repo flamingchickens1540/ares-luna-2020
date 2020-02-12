@@ -1,7 +1,6 @@
 package org.team1540.robot2020.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.subsystems.Climber;

@@ -95,7 +95,8 @@ public class RobotContainer {
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                     // disable brakes
                     driveTrain.setBrakes(NeutralMode.Coast);
-                    climber.setBrake(NeutralMode.Coast);logger.info("Mechanism brakes disabled");
+                    climber.setBrake(NeutralMode.Coast);
+                    logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
     }
 
@@ -114,7 +115,7 @@ public class RobotContainer {
         indexer.setDefaultCommand(new IndexerManualControl(indexer,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
         funnel.setDefaultCommand(new FunnelManualControl(funnel,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
