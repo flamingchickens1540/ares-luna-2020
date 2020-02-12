@@ -1,15 +1,20 @@
 package org.team1540.robot2020.subsystems;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.*;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Intake extends SubsystemBase {
 
+    private double kP = 2.0E-4;
+    private double kD = 100.0;
+    private double kF = 9.2E-5;
+
     private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANPIDController pidController = rollerMotor.getPIDController();
     private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 
     public static final double defaultRollerPercent = 1;
@@ -18,8 +23,20 @@ public class Intake extends SubsystemBase {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
-        rollerMotor.setSmartCurrentLimit(60);
+        rollerMotor.setSmartCurrentLimit(50);
         rollerMotor.setSecondaryCurrentLimit(20, 20000);
+
+        SmartDashboard.putNumber("intake/kP", kP);
+        SmartDashboard.putNumber("intake/kD", kD);
+        SmartDashboard.putNumber("intake/kF", kF);
+
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/intake").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+    }
+
+    public void updatePIDs() {
+        pidController.setP(SmartDashboard.getNumber("intake/kP", kP));
+        pidController.setD(SmartDashboard.getNumber("intake/kD", kD));
+        pidController.setFF(SmartDashboard.getNumber("intake/kF", kF));
     }
 
     @Override
@@ -29,11 +46,19 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
     }
 
+    public void setVelocity(double velocity) {
+        pidController.setReference(velocity, ControlType.kVelocity);
+    }
+
     public void setPercent(double percent) {
         rollerMotor.set(percent);
     }
 
     public void stop() {
         setPercent(0);
+    }
+
+    public double getVelocity() {
+        return rollerEncoder.getVelocity();
     }
 }

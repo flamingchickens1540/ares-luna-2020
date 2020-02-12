@@ -64,11 +64,11 @@ public class DriveTrain extends SubsystemBase {
         }
 
         for (ChickenTalonFX talon : driveMotorLefts) {
-            talon.setInverted(true);
+            talon.setInverted(false);
         }
 
         for (ChickenTalonFX talon : driveMotorRights) {
-            talon.setInverted(false);
+            talon.setInverted(true);
         }
 
         driveMotorLeftB.follow(driveMotorLeftA);

@@ -1,7 +1,6 @@
 package org.team1540.robot2020;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -16,21 +15,15 @@ import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
-import org.team1540.robot2020.commands.hood.SetHoodPosition;
-import org.team1540.robot2020.commands.hood.ZeroHoodSequence;
-import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.indexer.BallQueueSequence;
-import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
-import org.team1540.robot2020.commands.intake.IntakeManualControl;
+import org.team1540.robot2020.commands.intake.RunIntake;
 import org.team1540.robot2020.commands.panel.ControlPanelServoManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterManualControl;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
-import org.team1540.robot2020.utils.LIDARLite;
-import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.List;
@@ -84,8 +77,8 @@ public class RobotContainer {
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
 
-        copilot.getButton(B).whenPressed(new ZeroHoodSequence(hood));
-        copilot.getButton(A).whenPressed(new SetHoodPosition(hood, -133));
+//        copilot.getButton(B).whenPressed(new ZeroHoodSequence(hood));
+//        copilot.getButton(A).whenPressed(new SetHoodPosition(hood, -133));
 
 //        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
         SmartDashboard.putNumber("indexer/position/inputGoal", 0);
@@ -96,8 +89,7 @@ public class RobotContainer {
 //        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
         copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
         copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
-        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        copilot.getButton(BACK).toggleWhenPressed(new RunIntake(intake));
 //        copilot.getButton(X).toggleWhenPressed(new IndexerManualControl(indexer, driver.getAxis(LEFT_X).withDeadzone(0.1)));
 //        copilot.getButton(B).whenPressed(() -> {
 //            indexer.setEncoderTicks(0);
@@ -145,10 +137,10 @@ public class RobotContainer {
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 
-        indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-        funnel.setDefaultCommand(new FunnelManualControl(funnel,
-                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
+//        indexer.setDefaultCommand(new IndexerManualControl(indexer,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        funnel.setDefaultCommand(new FunnelManualControl(funnel,
+//                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 //        indexer.setDefaultCommand(new IndexerManualControl(indexer,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
@@ -166,13 +158,12 @@ public class RobotContainer {
 //                driver.getButton(Y)
 //        ));
 //        indexer.setDefaultCommand(new IndexSequence(indexer));
-//        intake.setDefaultCommand(new RunIntake(intake, indexer));
-        intake.setDefaultCommand(new IntakeManualControl(intake,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.1)));
+//        intake.setDefaultCommand(new IntakeManualControl(intake,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 
         shooter.setDefaultCommand(new ShooterManualControl(shooter,
                 copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG).withDeadzone(0.15)));
-//        hood.setDefaultCommand(new HoodManualControl(hood,
-//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
+        hood.setDefaultCommand(new HoodManualControl(hood,
+                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
     }
 }
