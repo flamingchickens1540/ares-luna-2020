@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.I2CTest;
 import org.team1540.robot2020.commands.climber.ClimberManualControl;
+import org.team1540.robot2020.commands.climber.MoveClimberToPositionMeters;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
@@ -67,6 +68,11 @@ public class RobotContainer {
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
+
+        climbTester.getButton(A).whenPressed(new MoveClimberToPositionMeters(climber, 0));
+        climbTester.getButton(B).whenPressed(new MoveClimberToPositionMeters(climber, Climber.climberTopPositionMeters));
+        climbTester.getButton(X).whenPressed(new ClimberManualControl(climber,
+                climbTester.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.15), climbTester.getButton(BACK)));
 
 //        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
 //        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));

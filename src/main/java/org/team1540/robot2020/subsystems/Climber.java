@@ -3,24 +3,25 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
-import static org.team1540.robot2020.utils.MotorConfigUtils.VELOCITY_SLOT_IDX;
+import static org.team1540.robot2020.utils.MotorConfigUtils.POSITION_SLOT_IDX;
 
 public class Climber extends SubsystemBase {
 
     public static final double climberTicksPerMeter = 175289.47806139;
     public static final double climberTopPositionMeters = 0.7;
 
-    // TODO CHANGE CURRENT DRAW, TIME AND VELOCITY THRESHOLD ONCE TESTING IS COMPLETE
-    public static final double currentThreshold = 1;
-    public static final double velocityThreshold = 1;
-    public static final double timeThreshold = 0.15;
+    private double kP;
+    private double kI;
+    private double kD;
+    private double kF;
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
@@ -37,13 +38,7 @@ public class Climber extends SubsystemBase {
 
         MotorConfigUtils.setDefaultTalonFXConfig(climberMotor);
 
-        SlotConfiguration defaultConfig = new SlotConfiguration();
-        defaultConfig.kP = 1;
-        defaultConfig.kI = 0;
-        defaultConfig.kD = 0;
-        defaultConfig.kF = 0;
-        climberMotor.getSlotConfigs(defaultConfig, VELOCITY_SLOT_IDX, 50);
-        climberMotor.selectProfileSlot(VELOCITY_SLOT_IDX, 0);
+        climberMotor.selectProfileSlot(POSITION_SLOT_IDX, 0);
 
         climberMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0));
 
@@ -51,7 +46,21 @@ public class Climber extends SubsystemBase {
 
         climberMotor.setNeutralMode(NeutralMode.Coast);
 
-        setRatchet(true);
+        setRatchet(RatchetState.ENGAGED);
+        SmartDashboard.putNumber("climber/kP", kP);
+        SmartDashboard.putNumber("climber/kI", kI);
+        SmartDashboard.putNumber("climber/kD", kD);
+        SmartDashboard.putNumber("climber/kF", kF);
+
+        updatePIDs();
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+    }
+
+    private void updatePIDs() {
+        climberMotor.config_kP(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kP", kP));
+        climberMotor.config_kI(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kI", kI));
+        climberMotor.config_kD(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kD", kD));
+        climberMotor.config_kF(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kF", kF));
     }
 
     public void zero() {
@@ -62,8 +71,11 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("climber/position", getPositionMeters());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("climber/error", climberMotor.getClosedLoopError());
+        SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("climber/target", climberMotor.getClosedLoopTarget());
     }
 
     public void setPercent(double percent) {
@@ -87,19 +99,15 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPositionMeters(double meters) {
-        // TODO tune gravity feed-forward
-        // TODO we will probably need a different control method for the actual climb, because we should disengage the
-        //  motors and let the ratchet hold us once we're high enough and also because the PIDs for a ~5 pound climber
-        //  frame are probably different than those for a 140-pound robot (and a PID might not actually be necessary)
-        climberMotor.set(ControlMode.MotionMagic, climberMetersToTicks(meters));
+        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
     }
 
     public double getCurrentDraw() {
         return climberMotor.getStatorCurrent();
     }
 
-    public double getVelocity() {
-        return climberMotor.getSelectedSensorVelocity();
+    public double getVelocityMeters() {
+        return climberTicksToMeters(climberMotor.getSelectedSensorVelocity() * 10);
     }
 
     public double getPositionMeters() {
@@ -111,8 +119,8 @@ public class Climber extends SubsystemBase {
     }
 
     public enum RatchetState {
-        ON(0.372),
-        OFF(0);
+        ENGAGED(0),
+        DISENGAGED(0.372);
 
         private double servoPosition;
 
@@ -121,9 +129,9 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    // TODO maybe set the max output in the "up" direction to 0 whenever the ratchet is engaged
-    public void setRatchet(boolean state) {
-        ratchetServo.set(state ? RatchetState.ON.servoPosition : RatchetState.OFF.servoPosition);
+    public void setRatchet(RatchetState state) {
+        climberMotor.configPeakOutputForward(state == RatchetState.ENGAGED ? 0 : 1);
+        ratchetServo.set(state.servoPosition);
     }
 
     public void setRatchet(double position) {
@@ -132,9 +140,5 @@ public class Climber extends SubsystemBase {
 
     public void setBrake(NeutralMode state) {
         climberMotor.setNeutralMode(state);
-    }
-
-    public void setBrake(boolean state) {
-        climberMotor.setNeutralMode(state ? NeutralMode.Brake : NeutralMode.Coast);
     }
 }
