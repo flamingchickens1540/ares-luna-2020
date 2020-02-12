@@ -49,6 +49,8 @@ public class Climber extends SubsystemBase {
 
         climberMotor.setInverted(true);
 
+        climberMotor.setNeutralMode(NeutralMode.Coast);
+
         setRatchet(true);
     }
 

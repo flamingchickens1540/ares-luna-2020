@@ -9,7 +9,6 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Intake extends SubsystemBase {
 
-    // todo Should intake rollers and funnel be separate subsystems?
     private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 

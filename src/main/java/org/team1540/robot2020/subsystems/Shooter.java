@@ -26,9 +26,6 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupFlywheelMotors() {
-        MotorConfigUtils.setDefaultTalonFXConfig(shooterMotorA);
-        MotorConfigUtils.setDefaultTalonFXConfig(shooterMotorB);
-
         shooterMotorA.setNeutralMode(NeutralMode.Coast);
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
 
