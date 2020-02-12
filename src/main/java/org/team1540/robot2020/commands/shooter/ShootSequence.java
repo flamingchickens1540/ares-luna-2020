@@ -16,7 +16,7 @@ public class ShootSequence extends SequentialCommandGroup {
         this.shooter = shooter;
         addRequirements(indexer);
         addCommands(
-                new ParallelCommandGroup(
+                parallel(
                         // TODO this parallel command group should also move the shooter hood
                         new ShooterSpinUp(shooter),
                         new StageBallsForShooting(indexer)
