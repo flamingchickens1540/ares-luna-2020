@@ -1,5 +1,6 @@
 package org.team1540.robot2020.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -26,25 +27,25 @@ public class PointDrive extends CommandBase {
     private double max;
     private double min;
     private double deadzone;
+    private SlewRateLimiter throttleRateLimiter;
 
-    // TODO: this is pasted from last year's code, feel free to clean up the tuning constant stuff
     public PointDrive(DriveTrain driveTrain, NavX navx, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
         this.navx = navx;
 
-        this.pointAxis = pointAxis;
-        this.throttleAxis = throttleAxis;
+        this.pointAxis = pointAxis.withDeadzone(0.2);
+        this.throttleAxis = throttleAxis.withDeadzone(0.1);
         this.resetNavXButton = resetNavXButton;
 
         addRequirements(driveTrain);
 
-        // TODO: hmm, we really need that YAML tuning lib
-        SmartDashboard.putNumber("pointDrive/P", 0.5);
+        SmartDashboard.putNumber("pointDrive/P", 0.3);
         SmartDashboard.putNumber("pointDrive/I", 0);
         SmartDashboard.putNumber("pointDrive/D", 0);
-        SmartDashboard.putNumber("pointDrive/max", 0.5);
+        SmartDashboard.putNumber("pointDrive/max", 0.45);
         SmartDashboard.putNumber("pointDrive/min", 0);
-        SmartDashboard.putNumber("pointDrive/deadzone", 0.02);
+        SmartDashboard.putNumber("pointDrive/deadzone", 0);
+        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 2);
 
         pointController = new MiniPID(0, 0, 0);
         resetNavXButton.whenPressed(this::zeroAngle);
@@ -58,6 +59,7 @@ public class PointDrive extends CommandBase {
         max = SmartDashboard.getNumber("pointDrive/max", 0);
         min = SmartDashboard.getNumber("pointDrive/min", 0);
         deadzone = SmartDashboard.getNumber("pointDrive/deadzone", 0);
+        throttleRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("pointDrive/throttleRateLimiter", 0));
         pointController.setPID(p, i, d);
         setGoalToCurrentAngle();
     }
@@ -81,7 +83,7 @@ public class PointDrive extends CommandBase {
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
 
-        double throttle = throttleAxis.value();
+        double throttle = throttleRateLimiter.calculate(throttleAxis.value());
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;

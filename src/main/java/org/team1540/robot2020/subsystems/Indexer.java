@@ -3,7 +3,6 @@ package org.team1540.robot2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -38,15 +37,6 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         MotorConfigUtils.setDefaultTalonFXConfig(indexerMotor);
-        SlotConfiguration defaultConfig = new SlotConfiguration();
-        defaultConfig.kP = 1.0;
-        defaultConfig.kI = 0.0;
-        defaultConfig.kD = 0.0;
-        defaultConfig.kF = 0.0;
-        defaultConfig.integralZone = 0;
-        defaultConfig.allowableClosedloopError = 0;
-        defaultConfig.maxIntegralAccumulator = 0.0;
-        indexerMotor.getSlotConfigs(defaultConfig, MotorConfigUtils.VELOCITY_SLOT_IDX, 50);
         indexerMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 100, 0, 0));
 
         indexerMotor.setInverted(true);

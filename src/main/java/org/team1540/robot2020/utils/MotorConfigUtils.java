@@ -17,7 +17,7 @@ public class MotorConfigUtils {
         TalonFXConfiguration defaultConfig = new TalonFXConfiguration();
         defaultConfig.voltageCompSaturation = 12;
         defaultConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 0, 0, 0);
-        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 40, 0, 0);
+        defaultConfig.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 0, 0, 0);
         defaultConfig.openloopRamp = 0;
 
         talonFX.configFactoryDefault();

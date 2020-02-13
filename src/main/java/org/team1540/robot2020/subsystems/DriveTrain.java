@@ -2,7 +2,6 @@ package org.team1540.robot2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -48,17 +47,9 @@ public class DriveTrain extends SubsystemBase {
         for (ChickenTalonFX talon : driveMotorAll) {
             MotorConfigUtils.setDefaultTalonFXConfig(talon);
 
-            SlotConfiguration defaultConfig = new SlotConfiguration();
-            defaultConfig.kP = 3.0;
-            defaultConfig.kI = 0.02;
-            defaultConfig.kD = 0.0;
-            defaultConfig.kF = 0.0;
-            defaultConfig.integralZone = 0;
-            defaultConfig.allowableClosedloopError = 0;
-            defaultConfig.maxIntegralAccumulator = 0.0;
-            talon.getSlotConfigs(defaultConfig, MotorConfigUtils.VELOCITY_SLOT_IDX, 50);
+            talon.configNeutralDeadband(0.01);
 
-            talon.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 0, 0));
+            talon.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 90, 0, 0));
         }
 
         for (ChickenTalonFX talon : driveMotorLefts) {

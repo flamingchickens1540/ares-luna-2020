@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.I2CTest;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
+import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
@@ -73,6 +74,7 @@ public class RobotContainer {
 //        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setPercent(false));
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
         copilot.getButton(ChickenXboxController.XboxButton.A).toggleWhenPressed(new ShooterSpinUp(shooter));
+        driver.getButton(ChickenXboxController.XboxButton.BACK).toggleWhenPressed(new TankDrive(driveTrain, driver));
 
 //        copilot.getButton(B).whenPressed(new ZeroHoodSequence(hood));
 //        copilot.getButton(A).whenPressed(new SetHoodPosition(hood, -133));
@@ -148,7 +150,10 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, transformManager.getNavX(),
+                driver.getAxis2D(ChickenXboxController.Hand.RIGHT),
+                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+                driver.getButton(ChickenXboxController.XboxButton.Y)));
 
 //        indexer.setDefaultCommand(new IndexerManualControl(indexer,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
