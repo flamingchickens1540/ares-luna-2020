@@ -21,8 +21,9 @@ import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.StageBallsForShooting;
 import org.team1540.robot2020.commands.intake.RunIntake;
-import org.team1540.robot2020.commands.panel.ControlPanelServoManualControl;
+//import org.team1540.robot2020.commands.panel.ControlPanelServoManualControl;
 import org.team1540.robot2020.commands.shooter.ShooterManualControl;
+import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -40,8 +41,6 @@ public class RobotContainer {
 
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
-    private ChickenXboxController climbTester = new ChickenXboxController(2);
-    private ChickenXboxController controlPanelTester = new ChickenXboxController(3);
 
     private TransformManager transformManager = new TransformManager();
 
@@ -69,11 +68,6 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        climbTester.getButton(A).whenPressed(new MoveClimberToPositionMeters(climber, 0));
-        climbTester.getButton(B).whenPressed(new MoveClimberToPositionMeters(climber, Climber.climberTopPositionMeters));
-        climbTester.getButton(X).whenPressed(new ClimberManualControl(climber,
-                climbTester.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.15), climbTester.getButton(BACK)));
-
 //        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
 //        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver));
@@ -82,23 +76,31 @@ public class RobotContainer {
 //        copilot.getButton(DPadAxis.UP).whileHeld(() -> intake.setPercent(true));
 //        copilot.getButton(DPadAxis.DOWN).whileHeld(() -> intake.setPercent(false));
 //        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter, 100));
-//        copilot.getButton(ChickenXboxController.XboxButton.Y).whenPressed(new ShooterSpinUp(shooter));
+        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(new ShooterSpinUp(shooter));
 
 //        copilot.getButton(B).whenPressed(new ZeroHoodSequence(hood));
 //        copilot.getButton(A).whenPressed(new SetHoodPosition(hood, -133));
 
 //        copilot.getButton(ChickenXboxController.XboxButton.A).whenPressed(shooter::disableMotors);
-        SmartDashboard.putNumber("indexer/position/inputGoal", 0);
-        copilot.getButton(START).whenPressed(new IndexerMoveToPosition(indexer, () -> SmartDashboard.getNumber("indexer/position/inputGoal", 0), 0.5, 0.001));
-        copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> indexer.setEncoderTicks(0)));
-        copilot.getButton(Y).whenPressed(new InstCommand(indexer::ballAdded));
+//        SmartDashboard.putNumber("indexer/position/inputGoal", 0);
+//        copilot.getButton(START).whenPressed(new IndexerMoveToPosition(indexer, () -> SmartDashboard.getNumber("indexer/position/inputGoal", 0), 0.5, 0.001));
+//        copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> indexer.setEncoderTicks(0)));
+//        copilot.getButton(Y).whenPressed(new InstCommand(indexer::ballAdded));
 //        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer));
 //        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
-        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
-        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
-        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
-        copilot.getButton(BACK).toggleWhenPressed(new RunIntake(intake));
+//        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
+//        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
+//        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
+//        copilot.getButton(BACK).toggleWhenPressed(new RunIntake(intake));
+
+//        copilot.getButton(DPadAxis.UP).whenPressed(new InstCommand(() -> {
+//            controlPanel.setArmServo(true);
+//        }));
+//
+//        copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> {
+//            controlPanel.setArmServo(true);
+//        }));
 //        copilot.getButton(X).toggleWhenPressed(new IndexerManualControl(indexer, driver.getAxis(LEFT_X).withDeadzone(0.1)));
 //        copilot.getButton(B).whenPressed(() -> {
 //            indexer.setEncoderTicks(0);
@@ -154,12 +156,6 @@ public class RobotContainer {
 //                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
 //                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
-
-        climber.setDefaultCommand(new ClimberManualControl(climber,
-                climbTester.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05),
-                climbTester.getButton(ChickenXboxController.XboxButton.X)));
-        controlPanel.setDefaultCommand(new ControlPanelServoManualControl(controlPanel,
-                controlPanelTester.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.05)));
 
 //        driveTrain.setDefaultCommand(new PointDrive(driveTrain, navx,
 //                driver.getAxis2D(RIGHT),

@@ -13,8 +13,8 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
     private final double kP = 2.5;
-    private final double kD = 0;
-    private final double kF = 0.0518;
+    private final double kD = 2.3;
+    private final double kF = 0.0484;
 
     private TalonFX shooterMotorA = new TalonFX(9);
     private TalonFX shooterMotorB = new TalonFX(10);
