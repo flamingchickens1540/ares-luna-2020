@@ -59,10 +59,10 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-//        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
-//        driver.getButton(X).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
+        driver.getButton(A).whenPressed(driveTrain::resetEncoders);
+        driver.getButton(B).whenPressed(() -> driveTrain.resetOdometry(new Pose2d()));
 //        driver.getButton(B).toggleWhenPressed(new PointDrive(driveTrain, driver, navx));
-//        driver.getButton(Y).whenPressed(driveTrain::zeroNavx);
+//        driver.getButton().whenPressed(driveTrain::zeroNavx);
         driver.getButton(Y).whenPressed(new CargoMechIntake(cargoMech, driver.getButton(X)));
     }
 
@@ -90,7 +90,7 @@ public class RobotContainer {
     }
 
     public Command getAutoCommand() {
-        return new Autonomous(driveTrain);
+        return new Autonomous(driveTrain, cargoMech, driver);
     }
 
     private void initDefaultCommands() {

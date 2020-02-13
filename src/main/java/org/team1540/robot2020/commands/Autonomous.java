@@ -14,16 +14,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.team1540.robot2020.commands.cargomech.CargoMechIntake;
 import org.team1540.robot2020.shouldbeinrooster.ChickenRamseteCommand;
+import org.team1540.robot2020.subsystems.CargoMech;
 import org.team1540.robot2020.subsystems.DriveTrain;
+import org.team1540.rooster.util.ChickenXboxController;
 
 import java.util.List;
 
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
+import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
+
 public class Autonomous extends SequentialCommandGroup {
     private DriveTrain driveTrain;
+    private CargoMech cargoMech;
+    private ChickenXboxController driver;
 
-    public Autonomous(DriveTrain driveTrain) {
+    public Autonomous(DriveTrain driveTrain, CargoMech cargoMech, ChickenXboxController driver) {
         this.driveTrain = driveTrain;
+        this.cargoMech = cargoMech;
+        this.driver = driver;
 
         // Create a voltage constraint to ensure we don't accelerate too fast
         var autoVoltageConstraint =
@@ -47,21 +57,21 @@ public class Autonomous extends SequentialCommandGroup {
 //        config.setReversed(true);
 
         // An example trajectory to follow.  All units in meters.
-        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(
-                    new Translation2d(0.5, 1),
-                    new Translation2d(1, -1)
-//                        new Translation2d(-1, -1),
-//                        new Translation2d(-2, -1)
-                ),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(1.5, 0, new Rotation2d(0)),
-                // Pass config
-                config
-        );
+//        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+//                // Start at the origin facing the +X direction
+//                new Pose2d(0, 0, new Rotation2d(0)),
+//                // Pass through these two interior waypoints, making an 's' curve path
+//                List.of(
+//                    new Translation2d(0.9, 0.5),
+//                    new Translation2d(1.9, -0.5)
+////                        new Translation2d(-1, -1),
+////                        new Translation2d(-2, -1)
+//                ),
+//                // End 3 meters straight ahead of where we started, facing forward
+//                new Pose2d(2.9, 0, new Rotation2d(0)),
+//                // Pass config
+//                config
+//        );
 
 //        RamseteCommand ramseteCommand = new RamseteCommand(
 //                exampleTrajectory,
@@ -80,22 +90,22 @@ public class Autonomous extends SequentialCommandGroup {
 //        );
 
         Command ramseteCommand = new ChickenRamseteCommand(
-//                TrajectoryGenerator.generateTrajectory(
-//                        new Pose2d(0, 0, new Rotation2d(0)),
-//                        List.of(
-//                                new Translation2d(0.5, 0.5),
-//                                new Translation2d(1, -0.5)
-//                        ),
-//                        new Pose2d(1.5, 0, new Rotation2d(0)),
-//                        config
-//                ),
-                exampleTrajectory,
+                TrajectoryGenerator.generateTrajectory(
+                        new Pose2d(0, 0, new Rotation2d(0)),
+                        List.of(
+                                new Translation2d(0.9, 0.5),
+                                new Translation2d(1.9, -0.5)
+                        ),
+                        new Pose2d(2.9, 0, new Rotation2d(0)),
+                        config
+                ),
                 driveTrain
         );
 
         addCommands(
                 new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
                 ramseteCommand,
+                new CargoMechIntake(cargoMech, driver.getButton(X)),
                 new InstantCommand(() -> driveTrain.tankDriveVelocity(0, 0))
         );
     }

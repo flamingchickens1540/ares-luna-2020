@@ -27,8 +27,5 @@ public class CargoMechIntake extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         cargoMech.setRollerSpeed(0);
-        if (!interrupted) {
-            this.schedule();
-        }
     }
 }
