@@ -12,16 +12,16 @@ public class BaseChickenRamseteCommand extends RamseteCommand {
         super(
                 trajectory,
                 driveTrain::getPose,
-                new RamseteController(driveTrain.kRamseteB, driveTrain.kRamseteZeta),
+                new RamseteController(DriveTrain.kRamseteB, DriveTrain.kRamseteZeta),
                 new SimpleMotorFeedforward(
-                        driveTrain.ksVolts,
-                        driveTrain.kvVoltSecondsPerMeter,
-                        driveTrain.kaVoltSecondsSquaredPerMeter
+                        DriveTrain.ksVolts,
+                        DriveTrain.kvVoltSecondsPerMeter,
+                        DriveTrain.kaVoltSecondsSquaredPerMeter
                 ),
-                driveTrain.kDriveKinematics,
+                DriveTrain.kDriveKinematics,
                 driveTrain::getWheelSpeeds,
-                new PIDController(driveTrain.kPDriveVel, 0, 0),
-                new PIDController(driveTrain.kPDriveVel, 0, 0),
+                new PIDController(DriveTrain.kPDriveVel, 0, 0),
+                new PIDController(DriveTrain.kPDriveVel, 0, 0),
                 driveTrain::tankDriveVolts,
                 driveTrain
         );
