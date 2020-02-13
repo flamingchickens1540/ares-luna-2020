@@ -41,6 +41,8 @@ public class RobotContainer {
 
     private ChickenXboxController driver = new ChickenXboxController(0);
     private ChickenXboxController copilot = new ChickenXboxController(1);
+    private ChickenXboxController climbTester = new ChickenXboxController(2);
+    private ChickenXboxController controlPanelTester = new ChickenXboxController(3);
 
     private TransformManager transformManager = new TransformManager();
 
@@ -101,6 +103,12 @@ public class RobotContainer {
 //        copilot.getButton(DPadAxis.DOWN).whenPressed(new InstCommand(() -> {
 //            controlPanel.setArmServo(true);
 //        }));
+//        copilot.getButton(X).whenPressed(new IndexerManualControl(indexer,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
+//        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
+//        copilot.getButton(A).whenPressed(new StageBallsForShooting(indexer));
+//        copilot.getButton(X).whenPressed(new ShooterSpinUp(shooter));
+//        copilot.getButton(BACK).toggleWhenPressed(new RunIntake(intake));
 //        copilot.getButton(X).toggleWhenPressed(new IndexerManualControl(indexer, driver.getAxis(LEFT_X).withDeadzone(0.1)));
 //        copilot.getButton(B).whenPressed(() -> {
 //            indexer.setEncoderTicks(0);
