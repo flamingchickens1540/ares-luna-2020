@@ -47,20 +47,20 @@ public class Climber extends SubsystemBase {
         climberMotor.setNeutralMode(NeutralMode.Coast);
 
         setRatchet(RatchetState.ENGAGED);
-        SmartDashboard.putNumber("climber/kP", kP);
-        SmartDashboard.putNumber("climber/kI", kI);
-        SmartDashboard.putNumber("climber/kD", kD);
-        SmartDashboard.putNumber("climber/kF", kF);
+        SmartDashboard.putNumber("climber/tuning/kP", kP);
+        SmartDashboard.putNumber("climber/tuning/kI", kI);
+        SmartDashboard.putNumber("climber/tuning/kD", kD);
+        SmartDashboard.putNumber("climber/tuning/kF", kF);
 
         updatePIDs();
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     private void updatePIDs() {
-        climberMotor.config_kP(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kP", kP));
-        climberMotor.config_kI(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kI", kI));
-        climberMotor.config_kD(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kD", kD));
-        climberMotor.config_kF(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/kF", kF));
+        climberMotor.config_kP(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kP", kP));
+        climberMotor.config_kI(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kI", kI));
+        climberMotor.config_kD(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kD", kD));
+        climberMotor.config_kF(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kF", kF));
     }
 
     public void zero() {

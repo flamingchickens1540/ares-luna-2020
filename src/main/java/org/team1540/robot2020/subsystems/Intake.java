@@ -26,18 +26,18 @@ public class Intake extends SubsystemBase {
         rollerMotor.setSmartCurrentLimit(50);
         rollerMotor.setSecondaryCurrentLimit(20, 20000);
 
-        SmartDashboard.putNumber("intake/kP", kP);
-        SmartDashboard.putNumber("intake/kD", kD);
-        SmartDashboard.putNumber("intake/kF", kF);
+        SmartDashboard.putNumber("intake/tuning/kP", kP);
+        SmartDashboard.putNumber("intake/tuning/kD", kD);
+        SmartDashboard.putNumber("intake/tuning/kF", kF);
 
         updatePIDs();
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/intake").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/intake/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     public void updatePIDs() {
-        pidController.setP(SmartDashboard.getNumber("intake/kP", kP));
-        pidController.setD(SmartDashboard.getNumber("intake/kD", kD));
-        pidController.setFF(SmartDashboard.getNumber("intake/kF", kF));
+        pidController.setP(SmartDashboard.getNumber("intake/tuning/kP", kP));
+        pidController.setD(SmartDashboard.getNumber("intake/tuning/kD", kD));
+        pidController.setFF(SmartDashboard.getNumber("intake/tuning/kF", kF));
     }
 
     @Override

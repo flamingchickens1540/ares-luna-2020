@@ -19,10 +19,10 @@ public class Hood extends SubsystemBase {
     public Hood() {
         MotorConfigUtils.setDefaultSparkMaxConfig(hoodMotor);
 
-        SmartDashboard.putNumber("hood/kP", kP);
-        SmartDashboard.putNumber("hood/kD", kD);
+        SmartDashboard.putNumber("hood/tuning/kP", kP);
+        SmartDashboard.putNumber("hood/tuning/kD", kD);
 
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/hood").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/hood/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class Hood extends SubsystemBase {
     }
 
     public void updatePIDs() {
-        hoodController.setP(SmartDashboard.getNumber("shooter/kP", kP));
-        hoodController.setD(SmartDashboard.getNumber("shooter/kD", kD));
+        hoodController.setP(SmartDashboard.getNumber("hood/tuning/kP", kP));
+        hoodController.setD(SmartDashboard.getNumber("hood/tuning/kD", kD));
     }
 
     public double getPosition() {
