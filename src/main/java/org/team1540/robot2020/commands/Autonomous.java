@@ -1,29 +1,24 @@
 package org.team1540.robot2020.commands;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.commands.cargomech.CargoMechIntake;
+import org.team1540.robot2020.shouldbeinrooster.BaseChickenRamseteCommand;
 import org.team1540.robot2020.shouldbeinrooster.ChickenRamseteCommand;
+import org.team1540.robot2020.shouldbeinrooster.ChickenTrajectoryGenerator;
 import org.team1540.robot2020.subsystems.CargoMech;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 
 import java.util.List;
-
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.X;
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.Y;
 
 public class Autonomous extends SequentialCommandGroup {
     private DriveTrain driveTrain;
@@ -89,24 +84,31 @@ public class Autonomous extends SequentialCommandGroup {
 //                driveTrain
 //        );
 
-        Command ramseteCommand = new ChickenRamseteCommand(
-                TrajectoryGenerator.generateTrajectory(
-                        new Pose2d(0, 0, new Rotation2d(0)),
-                        List.of(
-                                new Translation2d(0.9, 0.5),
-                                new Translation2d(1.9, -0.5)
-                        ),
-                        new Pose2d(2.9, 0, new Rotation2d(0)),
-                        config
-                ),
-                driveTrain
-        );
-
         addCommands(
                 new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
-                ramseteCommand,
-                new CargoMechIntake(cargoMech, driver.getButton(X)),
-                new InstantCommand(() -> driveTrain.tankDriveVelocity(0, 0))
+                new ChickenRamseteCommand(
+                        ChickenTrajectoryGenerator.generateTrajectory(
+                                List.of(
+                                        new Translation2d(0.5, 0.1),
+                                        new Translation2d(1, -0.1)
+                                ),
+                                new Pose2d(1.5, 0, new Rotation2d(0)),
+                                config
+                        ),
+                        driveTrain
+                ),
+                new CargoMechIntake(cargoMech),
+                new ChickenRamseteCommand(
+                        ChickenTrajectoryGenerator.generateTrajectory(
+                                List.of(
+                                    new Translation2d(2, 0.1),
+                                    new Translation2d(2.5, 0.2)
+                                ),
+                                new Pose2d(3, 0, new Rotation2d(0)),
+                                config
+                        ),
+                        driveTrain
+                )
         );
     }
 }

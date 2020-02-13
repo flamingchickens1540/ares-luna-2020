@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.shouldbeinrooster.Encoder;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
@@ -190,6 +191,10 @@ public class DriveTrain extends SubsystemBase {
 
         driveMotorLeftA.set(ControlMode.Velocity, leftMetersPerSecond / encoderMetersPerTick / 10);
         driveMotorRightA.set(ControlMode.Velocity, rightMetersPerSecond / encoderMetersPerTick / 10);
+    }
+
+    public void stop() {
+        tankDriveVelocity(0, 0);
     }
 
     public void tankDrivePercent(double leftSpeed, double rightSpeed) {
