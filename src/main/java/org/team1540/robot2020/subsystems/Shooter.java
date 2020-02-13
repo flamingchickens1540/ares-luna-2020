@@ -39,13 +39,13 @@ public class Shooter extends SubsystemBase {
     }
 
     private void setupPIDs() {
-        SmartDashboard.putNumber("shooter/kP", kP);
+        SmartDashboard.putNumber("shooter/tuning/kP", kP);
         SmartDashboard.putNumber("shooter/kI", kI);
         SmartDashboard.putNumber("shooter/iZone", iZone);
-        SmartDashboard.putNumber("shooter/kD", kD);
-        SmartDashboard.putNumber("shooter/kF", kF);
+        SmartDashboard.putNumber("shooter/tuning/kD", kD);
+        SmartDashboard.putNumber("shooter/tuning/kF", kF);
 
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     private boolean wasPositive = true;
@@ -76,11 +76,11 @@ public class Shooter extends SubsystemBase {
     }
 
     public void updatePIDs() {
-        shooterMotorA.config_kP(0, SmartDashboard.getNumber("shooter/kP", kP));
+        shooterMotorA.config_kP(0, SmartDashboard.getNumber("shooter/tuning/kP", kP));
         shooterMotorA.config_kI(0, SmartDashboard.getNumber("shooter/kI", kI));
         shooterMotorA.config_IntegralZone(0, (int) SmartDashboard.getNumber("shooter/iZone", iZone));
-        shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/kD", kD));
-        shooterMotorA.config_kF(0, SmartDashboard.getNumber("shooter/kF", kF));
+        shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/tuning/kD", kD));
+        shooterMotorA.config_kF(0, SmartDashboard.getNumber("shooter/tuning/kF", kF));
     }
 
     public void setPercent(double value) {

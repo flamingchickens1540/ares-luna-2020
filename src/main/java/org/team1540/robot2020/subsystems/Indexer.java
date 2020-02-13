@@ -53,14 +53,14 @@ public class Indexer extends SubsystemBase {
 
         setEncoderTicks(0);
 
-        SmartDashboard.putNumber("indexer/firstIndexingSpeed", firstIndexingSpeed);
-        SmartDashboard.putNumber("indexer/secondIndexingSpeed", secondIndexingSpeed);
-        SmartDashboard.putNumber("indexer/afterMoveBallUpDist", afterMoveBallUpDist);
+        SmartDashboard.putNumber("indexer/tuning/firstIndexingSpeed", firstIndexingSpeed);
+        SmartDashboard.putNumber("indexer/tuning/secondIndexingSpeed", secondIndexingSpeed);
+        SmartDashboard.putNumber("indexer/tuning/afterMoveBallUpDist", afterMoveBallUpDist);
 
-        NetworkTableInstance.getDefault().getTable("SmartDashboard/indexer").addEntryListener((table, key, entry, value, flags) -> {
-            Indexer.firstIndexingSpeed = SmartDashboard.getNumber("indexer/firstIndexingSpeed", Indexer.firstIndexingSpeed);
-            Indexer.secondIndexingSpeed = SmartDashboard.getNumber("indexer/secondIndexingSpeed", Indexer.secondIndexingSpeed);
-            Indexer.afterMoveBallUpDist = SmartDashboard.getNumber("indexer/afterMoveBallUpDist", Indexer.afterMoveBallUpDist);
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/indexer/tuning").addEntryListener((table, key, entry, value, flags) -> {
+            Indexer.firstIndexingSpeed = SmartDashboard.getNumber("indexer/tuning/firstIndexingSpeed", Indexer.firstIndexingSpeed);
+            Indexer.secondIndexingSpeed = SmartDashboard.getNumber("indexer/tuning/secondIndexingSpeed", Indexer.secondIndexingSpeed);
+            Indexer.afterMoveBallUpDist = SmartDashboard.getNumber("indexer/tuning/afterMoveBallUpDist", Indexer.afterMoveBallUpDist);
         }, EntryListenerFlags.kUpdate);
     }
 

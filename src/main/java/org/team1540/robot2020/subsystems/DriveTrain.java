@@ -36,14 +36,12 @@ public class DriveTrain extends SubsystemBase {
 
     // TODO need a wrapper for the odometry class that allows us to not reset the encoders-  should store its own relative offsets
 
-    // TODO calling getHeading in the field declaration here (before this.navx has been initialized in the constructor)
-    //  causes a NullPointerException, so we need to either initialize this field in the constructor or add some
-    //  fallback logic to getHeading (which we already have but it's kind of ugly)
-    private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    private final DifferentialDriveOdometry odometry;
 
     public DriveTrain(NavX navx) {
         initMotors();
         this.navx = navx;
+        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     }
 
     private void initMotors() {
@@ -132,7 +130,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return 0;
-//        return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360); //TODO: This line causes a nullpointer
+        return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
     }
 }
