@@ -30,6 +30,7 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("hood/position", hoodEncoder.getPosition());
         SmartDashboard.putNumber("hood/current", hoodMotor.getOutputCurrent());
         SmartDashboard.putBoolean("hood/limitSwitch", limitSwitch.get());
+        // TODO is this the value we want to be putting up
         SmartDashboard.putNumber("hood/error", hoodController.getSmartMotionAllowedClosedLoopError(0));
 
     }
