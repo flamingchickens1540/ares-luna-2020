@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
-    private final double kP = 2.5;
-    private final double kD = 2.3;
-    private final double kF = 0.0484;
+    private double kP = 0;
+    private double kD = 30;
+    private double kF = 0.0484;
+    private double kI = 3.0E-4;
+    private double iZone = 800.0;
 
     private TalonFX shooterMotorA = new TalonFX(9);
     private TalonFX shooterMotorB = new TalonFX(10);
@@ -29,6 +31,8 @@ public class Shooter extends SubsystemBase {
         shooterMotorB.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0));
         shooterMotorA.setNeutralMode(NeutralMode.Coast);
         shooterMotorB.setNeutralMode(NeutralMode.Coast);
+//        shooterMotorA.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_1Ms);
+//        shooterMotorA.configVelocityMeasurementWindow(4);
 
         shooterMotorB.follow(shooterMotorA);
         shooterMotorB.setInverted(TalonFXInvertType.OpposeMaster);
@@ -36,16 +40,26 @@ public class Shooter extends SubsystemBase {
 
     private void setupPIDs() {
         SmartDashboard.putNumber("shooter/kP", kP);
+        SmartDashboard.putNumber("shooter/kI", kI);
+        SmartDashboard.putNumber("shooter/iZone", iZone);
         SmartDashboard.putNumber("shooter/kD", kD);
         SmartDashboard.putNumber("shooter/kF", kF);
 
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
+    private boolean wasPositive = true;
+
     @Override
     public void periodic() {
+        boolean isPositive = shooterMotorA.getClosedLoopError() > 0;
+        if (isPositive != wasPositive) {
+//            shooterMotorA.setIntegralAccumulator(0);
+        }
+        wasPositive = isPositive;
+
         SmartDashboard.putNumber("shooter/current", shooterMotorA.getStatorCurrent() + shooterMotorB.getStatorCurrent());
-        SmartDashboard.putNumber("shooter/velocity", getVelocity());
+        SmartDashboard.putNumber("shooter/velocity", getVelocityRPM());
         SmartDashboard.putNumber("shooter/error", shooterMotorA.getClosedLoopError());
     }
 
@@ -53,16 +67,18 @@ public class Shooter extends SubsystemBase {
         shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
 
-    public double getVelocity() {
+    public double getVelocityRPM() {
         return (shooterMotorA.getSelectedSensorVelocity() / 2048.0) * 600;
     }
 
-    public void setVelocity(double velocity) {
+    public void setVelocityRPM(double velocity) {
         shooterMotorA.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 
     public void updatePIDs() {
         shooterMotorA.config_kP(0, SmartDashboard.getNumber("shooter/kP", kP));
+        shooterMotorA.config_kI(0, SmartDashboard.getNumber("shooter/kI", kI));
+        shooterMotorA.config_IntegralZone(0, (int) SmartDashboard.getNumber("shooter/iZone", iZone));
         shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/kD", kD));
         shooterMotorA.config_kF(0, SmartDashboard.getNumber("shooter/kF", kF));
     }

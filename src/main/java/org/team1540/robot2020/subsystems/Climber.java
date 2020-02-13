@@ -75,7 +75,6 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
-        SmartDashboard.putNumber("climber/target", climberMotor.getClosedLoopTarget());
     }
 
     public void setPercent(double percent) {

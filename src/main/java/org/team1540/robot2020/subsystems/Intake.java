@@ -14,6 +14,8 @@ public class Intake extends SubsystemBase {
     private double kF = 9.2E-5;
 
     private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax rollerMotorB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+
     private final CANPIDController pidController = rollerMotor.getPIDController();
     private CANEncoder rollerEncoder = rollerMotor.getEncoder();
 
@@ -25,6 +27,8 @@ public class Intake extends SubsystemBase {
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
         rollerMotor.setSmartCurrentLimit(50);
         rollerMotor.setSecondaryCurrentLimit(20, 20000);
+
+        rollerMotorB.follow(rollerMotor, true);
 
         SmartDashboard.putNumber("intake/kP", kP);
         SmartDashboard.putNumber("intake/kD", kD);

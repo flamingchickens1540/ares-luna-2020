@@ -85,16 +85,10 @@ public class Indexer extends SubsystemBase {
     }
 
     public void setPercent(double percent) {
-        // TODO: is it ok to config peak output every tick?
-        indexerMotor.configPeakOutputForward(1);
-        indexerMotor.configPeakOutputReverse(-1);
         indexerMotor.set(ControlMode.PercentOutput, percent);
     }
 
     public void setPositionMeters(double positionMeters, double speed) {
-        // TODO: is it ok to config peak output every tick?
-        indexerMotor.configPeakOutputForward(speed);
-        indexerMotor.configPeakOutputReverse(-speed);
         indexerMotor.set(ControlMode.Position, positionMeters * ticksPerMeter);
     }
 
@@ -105,7 +99,6 @@ public class Indexer extends SubsystemBase {
     public boolean getIndexerStagedSensor() {
         return !indexerStagedSensor.get();
     }
-
     public boolean getShooterStagedSensor() {
         return !shooterStagedSensor.get();
     }
