@@ -34,10 +34,10 @@ public class MoveClimberToPositionUnsafeMeters extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (climber.getCurrentDraw() > 40 && climber.getVelocityMeters() < 0.1 && ratchetBrokenDetectionTimer.hasPeriodPassed(0.25)) {
+        if (climber.getCurrent() > 40 && climber.getVelocityMeters() < 0.1 && ratchetBrokenDetectionTimer.hasPeriodPassed(0.25)) {
             System.out.println("Climber ratchet broken detected --------------------------------");
             SmartDashboard.putBoolean("climber/RatchetBrokenAlert", true);
-            climber.stop();
+            climber.disableMotors();
             return true;
         }
         return climber.atPositionMeters(goalMeters, 0.01) && Math.abs(climber.getVelocityMeters()) < 0.01;

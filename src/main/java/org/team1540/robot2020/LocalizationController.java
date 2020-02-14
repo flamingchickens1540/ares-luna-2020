@@ -7,12 +7,12 @@ import org.team1540.robot2020.utils.LIDARLite;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.wrappers.Limelight;
 
-public class TransformManager {
+public class LocalizationController {
     private Limelight limelight = new Limelight("limelight-a");
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
     private NavX navx = new NavX(SPI.Port.kMXP);
 
-    public TransformManager() {
+    public LocalizationController() {
     }
 
     public NavX getNavX() {

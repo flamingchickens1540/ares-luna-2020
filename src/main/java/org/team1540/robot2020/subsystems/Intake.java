@@ -58,6 +58,7 @@ public class Intake extends SubsystemBase {
 
     public void setVelocity(double velocity) {
         pidController.setReference(velocity, ControlType.kVelocity);
+        SmartDashboard.putNumber("intake/rollerError", getVelocity() - velocity);
     }
 
     public void stop() {
