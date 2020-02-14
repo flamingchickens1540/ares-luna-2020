@@ -63,7 +63,7 @@ public class DriveTrain extends SubsystemBase {
         driveMotorLeftB.follow(driveMotorLeftA);
         driveMotorRightB.follow(driveMotorRightA);
 
-        setBrakes(NeutralMode.Brake);
+        setBrakes(NeutralMode.Coast);
     }
 
     public void setBrakes(NeutralMode brake) {
