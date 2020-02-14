@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Hood extends SubsystemBase {
-    private final double kP = 2;
+    private final double kP = 0.5;
     private final double kD = 0;
 
     private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
