@@ -9,10 +9,9 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Funnel extends SubsystemBase {
 
-    // TODO: Map new funnel motor
-    //    private CANSparkMax funnelLeftMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+        private CANSparkMax funnelLeftMotor = new CANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelRightMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
-    //    private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
+        private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
     private CANEncoder funnelRightEncoder = funnelRightMotor.getEncoder();
 
     public static final double defaultFunnelLeftPercent = 1;
@@ -21,22 +20,22 @@ public class Funnel extends SubsystemBase {
     public Funnel() {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
-//        MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelRightMotor);
-//        funnelLeftMotor.setInverted(true);
+        funnelLeftMotor.setInverted(true);
 
     }
 
     @Override
     public void periodic() {
-//        SmartDashboard.putNumber("intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/funnelLeftVelocity", funnelLeftEncoder.getVelocity());
         SmartDashboard.putNumber("intake/funnelRightVelocity", funnelRightEncoder.getVelocity());
-//        SmartDashboard.putNumber("intake/funnelLeftCurrent", funnelLeftMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/funnelLeftCurrent", funnelLeftMotor.getOutputCurrent());
         SmartDashboard.putNumber("intake/funnelRightCurrent", funnelRightMotor.getOutputCurrent());
     }
 
     public void setPercent(double percentLeft, double percentRight) {
-//        funnelLeftMotor.set(percentLeft);
+        funnelLeftMotor.set(percentLeft);
         funnelRightMotor.set(percentRight);
     }
 

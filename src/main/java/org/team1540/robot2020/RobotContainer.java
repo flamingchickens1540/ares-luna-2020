@@ -5,29 +5,31 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
+import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodSetPosition;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
+import org.team1540.robot2020.commands.shooter.ShooterSequence;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.BACK;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 //import org.team1540.robot2020.commands.controlpanel.ControlPanelManualControl;
 
@@ -68,6 +70,15 @@ public class RobotContainer {
 
         testClimbController.getButton(BACK).whenPressed(new ClimberSequence(climber,
                 testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG)));
+        ParallelCommandGroup runIntake = new IntakeRun(intake).alongWith(new ScheduleCommand(new IndexerBallQueueSequence(indexer, funnel)));
+        copilotController.getButton(A).whenPressed(runIntake);
+        copilotController.getButton(B).cancelWhenPressed(runIntake);
+        copilotController.getButton(Y).whenPressed(funnel::stop, funnel);
+
+        copilotController.getButton(X).whenPressed(new HoodZeroSequence(hood));
+        copilotController.getButton(RIGHT_BUMPER).whenPressed(new HoodSetPosition(hood, -100));
+        copilotController.getButton(LEFT_BUMPER).whenPressed(new ShooterSequence(intake, funnel, indexer, shooter, hood));
+//        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
     }
 
     private void initDefaultCommands() {
@@ -81,9 +92,13 @@ public class RobotContainer {
 //        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
         intake.setDefaultCommand(new IntakeRun(intake));
-        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
+//        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
         shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
         hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
+
+        climber.setDefaultCommand(new ClimberManualControl(climber,
+                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+                testClimbController.getButton(A)));
 //        controlPanel.setDefaultCommand();
     }
 
@@ -106,6 +121,7 @@ public class RobotContainer {
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
+            shooter.disableMotors();
         });
 
         disabled.whenActive(new WaitCommand(2)
@@ -138,9 +154,13 @@ public class RobotContainer {
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
 //                copilotController.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 //        intake.setDefaultCommand(new IntakeManualControl(intake,
-//                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-//        climber.setDefaultCommand(new ClimberManualControl(climber,
-//                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-//                testClimbController.getButton(org.checkerframework.checker.units.qual.A)));
-//    }
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        intake.setDefaultCommand(new RunIntake(intake));
+
+//        shooter.setDefaultCommand(new FunctionalCommand(() -> {
+//        }, () -> shooter.setPercent(0), (interrupted) -> {
+//        }, () -> false, shooter));
+//        hood.setDefaultCommand(new HoodManualControl(hood,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
+
 }

@@ -25,6 +25,10 @@ public class ShooterSpinUp extends CommandBase {
         shooter.setVelocityRPM(velocityRateLimiter.calculate(FLYWHEEL_RPM));
     }
 
+        @Override
+    public boolean isFinished() {
+        return Math.abs(shooter.getVelocityRPM() - FLYWHEEL_RPM) < 100;
+    }
     @Override
     public void end(boolean interrupted) {
         shooter.disableMotors();

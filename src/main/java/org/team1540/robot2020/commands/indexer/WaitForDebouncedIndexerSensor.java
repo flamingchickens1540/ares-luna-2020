@@ -3,13 +3,13 @@ package org.team1540.robot2020.commands.indexer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.utils.Timer;
 
-public class IndexerStagedForAWhile extends CommandBase {
+public class WaitForDebouncedIndexerSensor extends CommandBase {
 
     private Indexer indexer;
     private Timer timer;
     private double period;
 
-    protected IndexerStagedForAWhile(Indexer indexer, double period) {
+    protected WaitForDebouncedIndexerSensor(Indexer indexer, double period) {
         this.period = period;
         this.indexer = indexer;
         timer = new Timer();

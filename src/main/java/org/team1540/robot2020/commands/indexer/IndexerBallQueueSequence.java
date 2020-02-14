@@ -1,12 +1,8 @@
 package org.team1540.robot2020.commands.indexer;
 
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2020.commands.funnel.Funnel;
-import org.team1540.robot2020.commands.funnel.FunnelRun;
-import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.commands.funnel.RunFunnel;
 
 public class IndexerBallQueueSequence extends SequentialCommandGroup {
     private boolean endFlag;
@@ -14,46 +10,22 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
     public IndexerBallQueueSequence(Indexer indexer, Funnel funnel) {
         addRequirements(indexer, funnel);
         addCommands(
-                race(
-                        sequence(
-                                new InstantCommand(() -> indexer.setPercent(0)),
-                                new IndexerStagedForAWhile(indexer, 0.1),
-                                new FunctionalCommand(
-                                        () -> indexer.setPercent(Indexer.firstIndexingSpeed),
-                                        () -> {},
-                                        (interrupted) -> indexer.setPercent(0),
-                                        () -> !indexer.getIndexerStagedSensor()
-                                ),
-                                new InstCommand(indexer::ballAdded)
-//                                new IndexerMoveToPosition(indexer, () -> indexer.ballPositions.get(0) + 0.2, 0.3, 0.001)
-                        ),
-                        new FunnelRun(funnel),
-                        new FunctionalCommand(
-                                () -> {},
-                                () -> {},
-                                (interrupted) -> endFlag = !interrupted,
-                                indexer::getShooterStagedSensor
-                        )
-                ),
-                new ConditionalCommand(
-                        new IndexerBallsToTop(indexer, Indexer.secondIndexingSpeed),
-                        new InstCommand(),
-                        () -> endFlag
-                )
+                new ConditionalCommand(new PrintCommand("Indexer not running because top sensor is tripped"),
+                        race(
+                                new WaitUntilCommand(indexer::getShooterStagedSensor)
+                                        .andThen(new ScheduleCommand(
+                                                new IndexerBallsToTop(indexer, Indexer.secondIndexingSpeed)
+                                                        .andThen(new StartEndCommand(() -> indexer.setPercent(Indexer.secondIndexingSpeed), () -> indexer.setPercent(0)).withTimeout(0.1))
+                                        )),
+                                new InstantCommand(() -> indexer.setPercent(0))
+                                        .andThen(new WaitForDebouncedIndexerSensor(indexer, 0.25))
+                                        .andThen(new RunCommand(() -> indexer.setPercent(Indexer.firstIndexingSpeed))
+                                                .withInterrupt(() -> !indexer.getIndexerStagedSensor())
+                                                .andThen(() -> indexer.setPercent(0))
+                                                .andThen(indexer::ballAdded))
+                                        .andThen(new InstantCommand(() -> new IndexerBallQueueSequence(indexer, funnel).schedule())) // not a schedule command to avoid stack overflow
+                                        .raceWith(new RunFunnel(funnel, indexer))
+                        ), indexer::getShooterStagedSensor)
         );
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        endFlag = false;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-        if (!interrupted && !endFlag) {
-            this.schedule();
-        }
     }
 }
