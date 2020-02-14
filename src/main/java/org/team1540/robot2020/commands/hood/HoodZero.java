@@ -1,13 +1,12 @@
 package org.team1540.robot2020.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.team1540.robot2020.subsystems.Hood;
 
-public class ZeroHood extends CommandBase {
+public class HoodZero extends CommandBase {
     private final double speed;
     private Hood hood;
 
-    public ZeroHood(Hood hood, double speed) {
+    public HoodZero(Hood hood, double speed) {
         this.hood = hood;
         this.speed = speed;
         addRequirements(hood);

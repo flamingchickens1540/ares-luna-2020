@@ -1,4 +1,4 @@
-package org.team1540.robot2020.subsystems;
+package org.team1540.robot2020.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -118,6 +118,14 @@ public class DriveTrain extends SubsystemBase {
     public void setPercent(double leftPercent, double rightPercent) {
         driveMotorLeftA.setPercent(leftPercent);
         driveMotorRightA.setPercent(rightPercent);
+    }
+
+    public double getDistanceLeft() {
+        return driveMotorRightA.getDistanceMeters();
+    }
+
+    public double getDistanceRight() {
+        return driveMotorRightA.getDistanceMeters();
     }
 
     public double getHeading() {

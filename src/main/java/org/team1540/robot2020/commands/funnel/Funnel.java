@@ -1,4 +1,4 @@
-package org.team1540.robot2020.subsystems;
+package org.team1540.robot2020.commands.funnel;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
@@ -9,6 +9,7 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Funnel extends SubsystemBase {
 
+    // TODO: Map new funnel motor
     //    private CANSparkMax funnelLeftMotor = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelRightMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
     //    private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();

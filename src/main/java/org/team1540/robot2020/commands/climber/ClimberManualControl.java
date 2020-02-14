@@ -2,7 +2,6 @@ package org.team1540.robot2020.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import org.team1540.robot2020.subsystems.Climber;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
 public class ClimberManualControl extends CommandBase {
@@ -19,7 +18,7 @@ public class ClimberManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        climber.setPercent(joystickAxis.value());
+        climber.setPercent(joystickAxis.withDeadzone(0.1).value());
         climber.setRatchet(ratchetButton.get() ? Climber.RatchetState.DISENGAGED : Climber.RatchetState.ENGAGED);
     }
 }
