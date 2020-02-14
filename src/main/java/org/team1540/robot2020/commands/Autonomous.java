@@ -24,6 +24,7 @@ public class Autonomous extends SequentialCommandGroup {
                         new IntakeRun(intake),
                         deadline(
                             new ChickenRamseteCommand(
+//                                    y is just an estimate, see https://firstfrc.blob.core.windows.net/frc2020/PlayingField/LayoutandMarkingDiagram.pdf for actual measurements
                                     new Pose2d(0, 3, new Rotation2d(0)),
                                     driveTrain
                             ),
