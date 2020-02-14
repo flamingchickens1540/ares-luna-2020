@@ -52,12 +52,6 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        boolean isPositive = shooterMotorA.getClosedLoopError() > 0;
-        if (isPositive != wasPositive) {
-//            shooterMotorA.setIntegralAccumulator(0);
-        }
-        wasPositive = isPositive;
-
         SmartDashboard.putNumber("shooter/current", shooterMotorA.getStatorCurrent() + shooterMotorB.getStatorCurrent());
         SmartDashboard.putNumber("shooter/velocity", getVelocityRPM());
         SmartDashboard.putNumber("shooter/error", shooterMotorA.getClosedLoopError());
