@@ -97,10 +97,6 @@ public class Climber extends SubsystemBase {
         return meters * climberTicksPerMeter;
     }
 
-    public void setPositionMeters(double meters) {
-        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
-    }
-
     public double getCurrentDraw() {
         return climberMotor.getStatorCurrent();
     }
@@ -113,19 +109,12 @@ public class Climber extends SubsystemBase {
         return climberTicksToMeters(climberMotor.getSelectedSensorPosition() + offset);
     }
 
-    public boolean atPositionMeters(double position, double toleranceMeters) {
-        return Math.abs(getPositionMeters() - position) <= toleranceMeters;
+    public void setPositionMeters(double meters) {
+        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
     }
 
-    public enum RatchetState {
-        ENGAGED(0),
-        DISENGAGED(0.372);
-
-        private double servoPosition;
-
-        RatchetState(double servoPosition) {
-            this.servoPosition = servoPosition;
-        }
+    public boolean atPositionMeters(double position, double toleranceMeters) {
+        return Math.abs(getPositionMeters() - position) <= toleranceMeters;
     }
 
     public void setRatchet(RatchetState state) {
@@ -139,5 +128,16 @@ public class Climber extends SubsystemBase {
 
     public void setBrake(NeutralMode state) {
         climberMotor.setNeutralMode(state);
+    }
+
+    public enum RatchetState {
+        ENGAGED(0),
+        DISENGAGED(0.372);
+
+        private double servoPosition;
+
+        RatchetState(double servoPosition) {
+            this.servoPosition = servoPosition;
+        }
     }
 }
