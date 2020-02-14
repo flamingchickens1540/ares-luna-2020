@@ -12,9 +12,7 @@ public class MotorConfigUtils {
     public static final int POSITION_SLOT_IDX = 0;
     public static final int VELOCITY_SLOT_IDX = 1;
 
-    @NotNull
-    public static void
-    setDefaultTalonFXConfig(TalonFX talonFX) {
+    public static void setDefaultTalonFXConfig(TalonFX talonFX) {
         TalonFXConfiguration defaultConfig = new TalonFXConfiguration();
         defaultConfig.voltageCompSaturation = 12;
         defaultConfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 0, 0, 0);
