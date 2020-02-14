@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Shooter extends SubsystemBase {
-    private double kP = 0;
+    private double kP = 0.5;
     private double kD = 30;
     private double kF = 0.0484;
-    private double kI = 3.0E-4;
+    private double kI = 0;
     private double iZone = 800.0;
 
     private TalonFX shooterMotorA = new TalonFX(9);

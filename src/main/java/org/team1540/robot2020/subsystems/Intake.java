@@ -46,17 +46,18 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("intake/rollerVelocity", rollerEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/rollerVelocity", getVelocity());
         SmartDashboard.putNumber("intake/rollerCurrent", rollerMotor.getOutputCurrent());
         SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
-    }
-
-    public void setVelocity(double velocity) {
-        pidController.setReference(velocity, ControlType.kVelocity);
+        SmartDashboard.putNumber("intake/error", getPIDError());
     }
 
     public void setPercent(double percent) {
         rollerMotor.set(percent);
+    }
+
+    public void setVelocity(double velocity) {
+        pidController.setReference(velocity, ControlType.kVelocity);
     }
 
     public void stop() {
@@ -65,5 +66,9 @@ public class Intake extends SubsystemBase {
 
     public double getVelocity() {
         return rollerEncoder.getVelocity();
+    }
+
+    public double getPIDError() {
+        return pidController.getSmartMotionAllowedClosedLoopError(0);
     }
 }

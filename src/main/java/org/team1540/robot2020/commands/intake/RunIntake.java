@@ -24,6 +24,8 @@ public class RunIntake extends CommandBase {
     public void execute() {
         intake.setVelocity(targetRPM);
         SmartDashboard.putNumber("intake/rollerError", intake.getVelocity() - targetRPM);
+
+
     }
 
     @Override

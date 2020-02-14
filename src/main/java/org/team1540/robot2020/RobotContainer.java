@@ -17,8 +17,10 @@ import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
+import org.team1540.robot2020.commands.indexer.BallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.intake.IntakeManualControl;
+import org.team1540.robot2020.commands.intake.RunIntake;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -150,35 +152,30 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, transformManager.getNavX(),
-                driver.getAxis2D(ChickenXboxController.Hand.RIGHT),
-                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                driver.getButton(ChickenXboxController.XboxButton.Y)));
+//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, transformManager.getNavX(),
+//                driver.getAxis2D(ChickenXboxController.Hand.RIGHT),
+//                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+//                driver.getButton(ChickenXboxController.XboxButton.Y)));
+        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 
 //        driveTrain.setDefaultCommand(new PointToTarget(transformManager.getNavX(), driveTrain, driver, transformManager.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
+//        funnel.setDefaultCommand(new FunnelManualControl(funnel,
+//                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 //        indexer.setDefaultCommand(new IndexerManualControl(indexer,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-        funnel.setDefaultCommand(new FunnelManualControl(funnel,
-                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
-        indexer.setDefaultCommand(new IndexerManualControl(indexer,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        indexer.setDefaultCommand(new BallQueueSequence(indexer, funnel));
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
 //                copilot.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 
-//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, navx,
-//                driver.getAxis2D(RIGHT),
-//                driver.getAxis(LEFT_X).withDeadzone(.1),
-//                driver.getButton(Y)
-//        ));
-//        indexer.setDefaultCommand(new IndexSequence(indexer));
-        intake.setDefaultCommand(new IntakeManualControl(intake,
-                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        intake.setDefaultCommand(new IntakeManualControl(intake,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+        intake.setDefaultCommand(new RunIntake(intake));
 
-        shooter.setDefaultCommand(new FunctionalCommand(() -> {
-        }, () -> shooter.setPercent(0), (interrupted) -> {
-        }, () -> false, shooter));
-        hood.setDefaultCommand(new HoodManualControl(hood,
-                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
+//        shooter.setDefaultCommand(new FunctionalCommand(() -> {
+//        }, () -> shooter.setPercent(0), (interrupted) -> {
+//        }, () -> false, shooter));
+//        hood.setDefaultCommand(new HoodManualControl(hood,
+//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
     }
 }
