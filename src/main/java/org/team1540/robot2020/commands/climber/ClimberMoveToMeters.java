@@ -7,9 +7,9 @@ import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.function.DoubleSupplier;
 
-public class ClimberMoveToPositionMeters extends SequentialCommandGroup {
+public class ClimberMoveToMeters extends SequentialCommandGroup {
 
-    public ClimberMoveToPositionMeters(Climber climber, DoubleSupplier positionMeters) {
+    public ClimberMoveToMeters(Climber climber, DoubleSupplier positionMeters) {
         addRequirements(climber);
         addCommands(
                 new ConditionalCommand(

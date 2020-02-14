@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.BACK;
 
-//import org.team1540.robot2020.commands.controlpanel.ControlPanelServoManualControl;
+//import org.team1540.robot2020.commands.controlpanel.ControlPanelManualControl;
 
 public class RobotContainer {
 
@@ -43,9 +43,9 @@ public class RobotContainer {
     private ChickenXboxController testClimbController = new ChickenXboxController(2);
     private ChickenXboxController testControlPanelController = new ChickenXboxController(3);
 
-    private LocalizationController localizationController = new LocalizationController();
+    private LocalizationManager localizationManager = new LocalizationManager();
 
-    private DriveTrain driveTrain = new DriveTrain(localizationController.getNavX());
+    private DriveTrain driveTrain = new DriveTrain(localizationManager.getNavX());
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
     private Indexer indexer = new Indexer();
@@ -73,12 +73,12 @@ public class RobotContainer {
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationController.getNavX(),
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager.getNavX(),
                 driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
 
-//        driveTrain.setDefaultCommand(new PointToTarget(localizationController.getNavX(), driveTrain, driverController, localizationController.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
+//        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
         intake.setDefaultCommand(new IntakeRun(intake));
         indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));

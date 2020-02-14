@@ -7,7 +7,7 @@ public class ClimberSequence extends SequentialCommandGroup {
 
     public ClimberSequence(Climber climber, ChickenXboxController.Axis axis) {
         addCommands(
-                new ClimberMoveToPositionMeters(climber, () -> 0.72),
+                new ClimberMoveToMeters(climber, () -> 0.72),
                 new ClimberTriggerClimb(climber, axis)
         );
     }

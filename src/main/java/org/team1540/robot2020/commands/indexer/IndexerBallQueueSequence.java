@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.commands.funnel.Funnel;
-import org.team1540.robot2020.commands.funnel.FunnelWhileNotFull;
+import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.utils.InstCommand;
 
 public class IndexerBallQueueSequence extends SequentialCommandGroup {
@@ -27,7 +27,7 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
                                 new InstCommand(indexer::ballAdded)
 //                                new IndexerMoveToPosition(indexer, () -> indexer.ballPositions.get(0) + 0.2, 0.3, 0.001)
                         ),
-                        new FunnelWhileNotFull(funnel, indexer),
+                        new FunnelRun(funnel),
                         new FunctionalCommand(
                                 () -> {},
                                 () -> {},

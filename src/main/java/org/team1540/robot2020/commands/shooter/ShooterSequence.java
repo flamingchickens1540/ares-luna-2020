@@ -7,10 +7,12 @@ import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.indexer.IndexerStageBallsForShooting;
 import org.team1540.robot2020.commands.intake.Intake;
 
-public class ShootSequence extends SequentialCommandGroup {
+public class ShooterSequence extends SequentialCommandGroup {
     private Shooter shooter;
 
-    public ShootSequence(Intake intake, Indexer indexer, Shooter shooter) {
+    // TODO: Shoot sequence
+
+    public ShooterSequence(Intake intake, Indexer indexer, Shooter shooter) {
         this.shooter = shooter;
         addRequirements(indexer);
         addCommands(
