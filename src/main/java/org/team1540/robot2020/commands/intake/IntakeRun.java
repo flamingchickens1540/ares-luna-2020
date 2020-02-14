@@ -2,13 +2,12 @@ package org.team1540.robot2020.commands.intake;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.team1540.robot2020.subsystems.Intake;
 
-public class RunIntake extends CommandBase {
+public class IntakeRun extends CommandBase {
     private Intake intake;
     private double targetRPM;
 
-    public RunIntake(Intake intake) {
+    public IntakeRun(Intake intake) {
         this.intake = intake;
         addRequirements(intake);
 
@@ -23,9 +22,6 @@ public class RunIntake extends CommandBase {
     @Override
     public void execute() {
         intake.setVelocity(targetRPM);
-        SmartDashboard.putNumber("intake/rollerError", intake.getVelocity() - targetRPM);
-
-
     }
 
     @Override

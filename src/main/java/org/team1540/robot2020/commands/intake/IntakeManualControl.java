@@ -1,7 +1,6 @@
 package org.team1540.robot2020.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.team1540.robot2020.subsystems.Intake;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
 public class IntakeManualControl extends CommandBase {

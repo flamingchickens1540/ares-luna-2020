@@ -21,7 +21,7 @@ public class MotorConfigUtils {
 
         talonFX.configFactoryDefault();
         talonFX.configAllSettings(defaultConfig);
-        talonFX.setNeutralMode(NeutralMode.Brake);
+        talonFX.setNeutralMode(NeutralMode.Coast);
         talonFX.enableVoltageCompensation(true);
     }
 
