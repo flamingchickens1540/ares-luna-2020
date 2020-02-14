@@ -9,6 +9,8 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.apache.log4j.Logger;
@@ -17,7 +19,6 @@ public class Robot extends TimedRobot {
 
     private static final Logger logger = Logger.getLogger(Robot.class);
 
-    private Command m_autonomousCommand;
     private RobotContainer container;
 
     @Override
@@ -29,7 +30,7 @@ public class Robot extends TimedRobot {
 
         logger.info("Setting up command logging hooks...");
         CommandScheduler.getInstance().onCommandInitialize(command -> {
-            logger.debug("Starting command: " + command.getName() + " " + command.getRequirements());
+            logger.debug("Starting command: " + command.getName() + " - Requires: " + command.getRequirements());
         });
         CommandScheduler.getInstance().onCommandFinish(command -> {
             logger.debug("Command finished: " + command.getName());
@@ -57,9 +58,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = container.getAutoCommand();
-
-        // schedule the autonomous command (example)
+        Command m_autonomousCommand = container.getAutoCommand();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
@@ -75,5 +74,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+    }
+
+    @Override
+    public void testInit() {
+        // *** Disable LiveWindow and ActuatorWidgets so testInit is just like teleopInit
+        LiveWindow.setEnabled(false);
+        Shuffleboard.disableActuatorWidgets();
+        // ***
+    }
+
+    @Override
+    public void testPeriodic() {
     }
 }
