@@ -1,4 +1,4 @@
-package org.team1540.robot2020.subsystems;
+package org.team1540.robot2020.commands.funnel;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;

@@ -1,7 +1,6 @@
 package org.team1540.robot2020.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.team1540.robot2020.subsystems.Hood;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
 public class HoodManualControl extends CommandBase {

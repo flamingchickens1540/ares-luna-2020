@@ -10,12 +10,18 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.climber.ClimbSequence;
+import org.team1540.robot2020.commands.climber.Climber;
+import org.team1540.robot2020.commands.climber.ClimberSequence;
+import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
-import org.team1540.robot2020.commands.indexer.BallQueueSequence;
-import org.team1540.robot2020.commands.intake.RunIntake;
-import org.team1540.robot2020.subsystems.*;
+import org.team1540.robot2020.commands.funnel.Funnel;
+import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.indexer.Indexer;
+import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
+import org.team1540.robot2020.commands.intake.Intake;
+import org.team1540.robot2020.commands.intake.IntakeRun;
+import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 
@@ -23,7 +29,7 @@ import java.util.List;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.BACK;
 
-//import org.team1540.robot2020.commands.panel.ControlPanelServoManualControl;
+//import org.team1540.robot2020.commands.controlpanel.ControlPanelServoManualControl;
 
 public class RobotContainer {
 
@@ -60,7 +66,7 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        testClimbController.getButton(BACK).whenPressed(new ClimbSequence(climber,
+        testClimbController.getButton(BACK).whenPressed(new ClimberSequence(climber,
                 testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG)));
     }
 
@@ -74,8 +80,8 @@ public class RobotContainer {
 
 //        driveTrain.setDefaultCommand(new PointToTarget(localizationController.getNavX(), driveTrain, driverController, localizationController.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
-        intake.setDefaultCommand(new RunIntake(intake));
-        indexer.setDefaultCommand(new BallQueueSequence(indexer, funnel));
+        intake.setDefaultCommand(new IntakeRun(intake));
+        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
         shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
         hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
 //        controlPanel.setDefaultCommand();

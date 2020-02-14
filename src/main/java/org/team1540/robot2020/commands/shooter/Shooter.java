@@ -1,4 +1,4 @@
-package org.team1540.robot2020.subsystems;
+package org.team1540.robot2020.commands.shooter;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;

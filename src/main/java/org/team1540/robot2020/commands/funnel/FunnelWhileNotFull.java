@@ -1,8 +1,7 @@
 package org.team1540.robot2020.commands.funnel;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.team1540.robot2020.subsystems.Funnel;
-import org.team1540.robot2020.subsystems.Indexer;
+import org.team1540.robot2020.commands.indexer.Indexer;
 
 public class FunnelWhileNotFull extends CommandBase {
     private Funnel funnel;

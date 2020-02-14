@@ -1,4 +1,4 @@
-package org.team1540.robot2020.subsystems;
+package org.team1540.robot2020.commands.intake;
 
 import com.revrobotics.*;
 import edu.wpi.first.networktables.EntryListenerFlags;

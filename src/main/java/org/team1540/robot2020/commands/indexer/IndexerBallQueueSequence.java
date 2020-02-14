@@ -4,15 +4,14 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelWhileNotFull;
-import org.team1540.robot2020.subsystems.Funnel;
-import org.team1540.robot2020.subsystems.Indexer;
 import org.team1540.robot2020.utils.InstCommand;
 
-public class BallQueueSequence extends SequentialCommandGroup {
+public class IndexerBallQueueSequence extends SequentialCommandGroup {
     private boolean endFlag;
 
-    public BallQueueSequence(Indexer indexer, Funnel funnel) {
+    public IndexerBallQueueSequence(Indexer indexer, Funnel funnel) {
         addRequirements(indexer, funnel);
         addCommands(
                 race(
