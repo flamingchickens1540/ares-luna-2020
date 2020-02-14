@@ -10,9 +10,9 @@ import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 
 import java.util.List;
 
-public class Autonomous extends SequentialCommandGroup {
+public class AutonomousTest extends SequentialCommandGroup {
 
-    public Autonomous(DriveTrain driveTrain) {
+    public AutonomousTest(DriveTrain driveTrain) {
         addCommands(
                 new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
                 new ChickenRamseteCommand(

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.Autonomous;
+import org.team1540.robot2020.commands.AutonomousTest;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
@@ -116,7 +116,7 @@ public class RobotContainer {
     }
 
     Command getAutoCommand() {
-        return new Autonomous(driveTrain);
+        return new AutonomousTest(driveTrain);
     }
 
     private void initDashboard() {
