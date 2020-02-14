@@ -19,7 +19,7 @@ public class ClimberManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        climber.setPercent(joystickAxis.value());
+        climber.setPercent(joystickAxis.withDeadzone(0.1).value());
         climber.setRatchet(ratchetButton.get() ? Climber.RatchetState.DISENGAGED : Climber.RatchetState.ENGAGED);
     }
 }

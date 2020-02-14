@@ -18,14 +18,13 @@ public class Climber extends SubsystemBase {
     public static final double climberTicksPerMeter = 175289.47806139;
     public static final double climberTopPositionMeters = 0.7;
 
-    private double kP;
-    private double kI;
+    private double kP = 0.01;
+    private double kI = 0;
     private double kD;
-    private double kF;
+    private double kF = 0.04938;
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
-    private double offset = 0;
 
 
     public Climber() {
@@ -42,29 +41,36 @@ public class Climber extends SubsystemBase {
 
         climberMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 0, 0, 0));
 
+
         climberMotor.setInverted(true);
 
-        climberMotor.setNeutralMode(NeutralMode.Coast);
+        climberMotor.setNeutralMode(NeutralMode.Brake);
 
-        setRatchet(RatchetState.ENGAGED);
+        setRatchet(RatchetState.DISENGAGED);
         SmartDashboard.putNumber("climber/tuning/kP", kP);
         SmartDashboard.putNumber("climber/tuning/kI", kI);
         SmartDashboard.putNumber("climber/tuning/kD", kD);
         SmartDashboard.putNumber("climber/tuning/kF", kF);
+        SmartDashboard.putNumber("climber/tuning/closedLoopRamp", 0.1);
+        SmartDashboard.putNumber("climber/tuning/configMotionAcceleration", 100000);
+        SmartDashboard.putNumber("climber/tuning/configMotionCruiseVelocity", 20000);
 
         updatePIDs();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
     private void updatePIDs() {
+        climberMotor.configClosedloopRamp(SmartDashboard.getNumber("climber/tuning/closedLoopRamp", 0));
         climberMotor.config_kP(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kP", kP));
         climberMotor.config_kI(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kI", kI));
         climberMotor.config_kD(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kD", kD));
         climberMotor.config_kF(POSITION_SLOT_IDX, SmartDashboard.getNumber("climber/tuning/kF", kF));
+        climberMotor.configMotionAcceleration((int) SmartDashboard.getNumber("climber/tuning/configMotionAcceleration", 0));
+        climberMotor.configMotionCruiseVelocity((int) SmartDashboard.getNumber("climber/tuning/configMotionCruiseVelocity", 0));
     }
 
     public void zero() {
-        offset = -climberMotor.getSelectedSensorPosition();
+        climberMotor.setSelectedSensorPosition(0);
     }
 
     @Override
@@ -98,7 +104,7 @@ public class Climber extends SubsystemBase {
     }
 
     public void setPositionMeters(double meters) {
-        climberMotor.set(ControlMode.Position, climberMetersToTicks(meters));
+        climberMotor.set(ControlMode.MotionMagic, climberMetersToTicks(meters));
     }
 
     public double getCurrentDraw() {
@@ -110,7 +116,7 @@ public class Climber extends SubsystemBase {
     }
 
     public double getPositionMeters() {
-        return climberTicksToMeters(climberMotor.getSelectedSensorPosition() + offset);
+        return climberTicksToMeters(climberMotor.getSelectedSensorPosition());
     }
 
     public boolean atPositionMeters(double position, double toleranceMeters) {
