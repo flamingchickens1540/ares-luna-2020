@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.I2CTest;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
+import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.commands.funnel.FunnelManualControl;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
@@ -23,6 +23,7 @@ import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
 import org.team1540.robot2020.subsystems.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.PIDConfig;
 
 import java.util.List;
 
@@ -150,10 +151,12 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, transformManager.getNavX(),
-                driver.getAxis2D(ChickenXboxController.Hand.RIGHT),
-                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                driver.getButton(ChickenXboxController.XboxButton.Y)));
+//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, transformManager.getNavX(),
+//                driver.getAxis2D(ChickenXboxController.Hand.RIGHT),
+//                driver.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+//                driver.getButton(ChickenXboxController.XboxButton.Y)));
+
+        driveTrain.setDefaultCommand(new PointToTarget(transformManager.getNavX(), driveTrain, driver, transformManager.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
 //        indexer.setDefaultCommand(new IndexerManualControl(indexer,
 //                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));

@@ -63,7 +63,7 @@ public class DriveTrain extends SubsystemBase {
         driveMotorLeftB.follow(driveMotorLeftA);
         driveMotorRightB.follow(driveMotorRightA);
 
-        setBrakes(NeutralMode.Brake);
+        setBrakes(NeutralMode.Coast);
     }
 
     public void setBrakes(NeutralMode brake) {
@@ -118,6 +118,14 @@ public class DriveTrain extends SubsystemBase {
     public void setPercent(double leftPercent, double rightPercent) {
         driveMotorLeftA.setPercent(leftPercent);
         driveMotorRightA.setPercent(rightPercent);
+    }
+
+    public double getDistanceLeft() {
+        return driveMotorRightA.getDistanceMeters();
+    }
+
+    public double getDistanceRight() {
+        return driveMotorRightA.getDistanceMeters();
     }
 
     public double getHeading() {

@@ -24,4 +24,8 @@ public class NavX {
     public double getAngleRadians() {
         return -Math.toRadians(navx.getAngle());
     }
+
+    public double getRate() {
+        return -Math.toRadians(navx.getRate());
+    }
 }
