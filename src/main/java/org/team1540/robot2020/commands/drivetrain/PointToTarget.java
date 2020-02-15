@@ -27,36 +27,25 @@ public class PointToTarget extends CommandBase {
 
     private double finishedDegreesPerSecond = 0.1;
     private double finishedDegrees = 0.2;
+    private double lastError = Double.NEGATIVE_INFINITY;
 
-    public PointToTarget(NavX navx, DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight, PIDConfig config) {
+    public PointToTarget(NavX navx, DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight) {
         this.navx = navx;
         this.driveTrain = driveTrain;
         this.driver = driver;
         this.limelight = limelight;
 
-        setPID(config);
+        setPID(new PIDConfig(0.4, 0.07, 1.0, 0.003, 0.3, 0.012));
         addRequirements(driveTrain);
 
         SmartDashboard.putNumber("pointToTarget/finishedDegrees", finishedDegrees);
         SmartDashboard.putNumber("pointToTarget/finishedDegreesPerSecond", finishedDegreesPerSecond);
         SmartDashboard.putNumber("distanceCalibration/initialDistanceMeters", 0);
-
-//        NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("pointToTarget").addEntryListener((table, key, entry, value, flags) -> {
-//
-//        }, kUpdate);
     }
 
     @Override
     public void initialize() {
-        double leftEncoderDistance = driveTrain.getDistanceLeft();
-        double rightEncoderDistance = driveTrain.getDistanceRight();
-//        calibrationString = "";
-//        initialDistanceLeft = leftEncoderDistance;
-//        initialDistanceRight = rightEncoderDistance;
         lastTargetAngle = navx.getAngleRadians();
-//        actualDistances.clear();
-//        measuredDistances.clear();
-
 
         double p = SmartDashboard.getNumber("pointToTarget/P", 0);
         double i = SmartDashboard.getNumber("pointToTarget/I", 0);
@@ -93,62 +82,32 @@ public class PointToTarget extends CommandBase {
         rightMotors += triggerValues;
 
         double pidOutput = pointController.getOutput(calculateError());
-//        leftMotors += pidOutput;
-//        rightMotors -= pidOutput;
 
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
         driveTrain.setPercent(leftMotors + pidOutput, rightMotors - pidOutput);
     }
 
-//    private String calibrationString;
-//    private double initialDistanceLeft;
-//    private double initialDistanceRight;
-//    private double counter;
-
-//    private List<Double> actualDistances = new ArrayList<Double>();
-//    private List<Double> measuredDistances = new ArrayList<Double>();
-
     private double calculateError() {
-//        double leftEncoderDistance = driveTrain.getDistanceLeft();
-//        double rightEncoderDistance = driveTrain.getDistanceRight();
-        if (limelight.isTargetFound()) {
+        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-18)) {
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
-
-//            final double limelightHeight = 49;
-//            final double targetHeight = 89.5;
-
-//            double offsetAngle = Math.toRadians(0);
-//            double distanceToTarget = UnitsUtils.inchesToMeters(targetHeight - limelightHeight) / Math.tan(targetAngles.getY() + offsetAngle);
-
-//            double initialDistance = UnitsUtils.inchesToMeters(18);
-//            double actualDistance = initialDistance + (Math.abs(initialDistanceLeft - leftEncoderDistance) + Math.abs(initialDistanceRight - rightEncoderDistance)) / 2;
-
-//            counter++;
-//            if (counter % 10 == 0 && actualDistance > UnitsUtils.inchesToMeters(100)) {
-//                calibrationString += actualDistance + "," + distanceToTarget + "n";
-//                actualDistances.add(actualDistance);
-//                measuredDistances.add(distanceToTarget);
-//                SmartDashboard.putString("distanceCalibration/calibrationString", calibrationString);
-//            }
-
-//            SmartDashboard.putNumber("distanceCalibration/distanceToTarget", distanceToTarget);
-//            SmartDashboard.putNumber("distanceCalibration/actualDistance", actualDistance);
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
         }
 
         double error = TrigUtils.signedAngleError(lastTargetAngle, navx.getAngleRadians());
 
+        lastError = error;
+
         SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(navx.getYawRadians()));
         SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(error));
-        SmartDashboard.putBoolean("pointToTarget/reachedGoal", isPointingAtGoalAndStopped(error));
+        SmartDashboard.putBoolean("pointToTarget/reachedGoal", isPointingAtGoalAndStopped());
 
         return error;
     }
 
-    public boolean isPointingAtGoalAndStopped(double error) {
-        return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(error)) < finishedDegrees;
+    public boolean isPointingAtGoalAndStopped() {
+        return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
     }
 
     @Override
@@ -158,11 +117,6 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-//        PolyTrendLine t = new PolyTrendLine(1);
-//        t.setValues(measuredDistances.toArray(new Double[0]), actualDistances.toArray(new Double[0]));
-//        SmartDashboard.putString("distanceCalibration/resultsString", t.getCoef().toString());
-//        SmartDashboard.putString("distanceCalibration/desmosString", coefsToLatexString(t.getCoef()));
-//        SmartDashboard.putNumberArray("distanceCalibration/results", t.getCoef().toArray(new Double[0]));
     }
 
     private String coefsToLatexString(List<Double> coefs) {

@@ -1,12 +1,10 @@
 package org.team1540.robot2020.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.NavX;
-import org.team1540.robot2020.utils.PIDConfig;
 import org.team1540.rooster.wrappers.Limelight;
 
 import java.util.function.BooleanSupplier;
@@ -20,7 +18,8 @@ public class ShooterLineUpSequence extends SequentialCommandGroup {
         this.shooter = shooter;
 
         addCommands(parallel(
-                this.pointingCommand = new PointToTarget(navx, driveTrain, driverController, limelight, new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01))),
+                this.pointingCommand = new PointToTarget(navx, driveTrain, driverController, limelight)
+                ),
                 this.shootingCommand = new ShooterSpinUp(shooter, 5000) //TODO: RPM constant
         );
     }
@@ -30,7 +29,7 @@ public class ShooterLineUpSequence extends SequentialCommandGroup {
             if (!isScheduled()) {
                 return false;
             } else {
-                return (pointingCommand.isPointingAtGoalAndStopped(100)) && (Math.abs(shooter.getClosedLoopError()) < 100);
+                return (pointingCommand.isPointingAtGoalAndStopped()) && (Math.abs(shooter.getClosedLoopError()) < 100);
             }
         };
     }
