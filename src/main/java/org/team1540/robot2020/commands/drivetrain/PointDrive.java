@@ -33,7 +33,7 @@ public class PointDrive extends CommandBase {
         this.navx = navx;
 
         this.pointAxis = pointAxis.withDeadzone(0.2);
-        this.throttleAxis = throttleAxis.withDeadzone(0.1);
+        this.throttleAxis = throttleAxis.withDeadzone(0.12);
         this.resetNavXButton = resetNavXButton;
 
         addRequirements(driveTrain);
