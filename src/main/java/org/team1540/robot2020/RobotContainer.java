@@ -20,10 +20,7 @@ import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
-import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
-import org.team1540.robot2020.commands.shooter.ShooterSequence;
-import org.team1540.robot2020.commands.shooter.WaitThenShoot;
+import org.team1540.robot2020.commands.shooter.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NatesPolynomialRegression;
@@ -67,7 +64,9 @@ public class RobotContainer {
         initDefaultCommands();
         initDashboard();
 
-        new FunctionalCommand(() -> {}, () -> localizationManager.periodic(), (interrupted) -> {}, () -> false).schedule();
+        new FunctionalCommand(() -> {
+        }, () -> localizationManager.periodic(), (interrupted) -> {
+        }, () -> false).schedule();
     }
 
     private void initButtonBindings() {
@@ -78,13 +77,16 @@ public class RobotContainer {
         testingController.getButton(A).whenPressed(new IndexerBallQueueSequence(indexer, funnel));
 
         testingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+                testingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
 
         testingController.getButton(BACK).whenPressed(new InstantCommand(() -> regression.add(localizationManager.getLidar().getDistance(), hood.getPosition())));
         testingController.getButton(START).whenPressed(new InstantCommand(() -> {
             regression.run();
             System.out.println(Arrays.toString(regression.get()));
         }));
+
+        testingController.getButton(X).whenPressed(new ShooterManualSetpoint(shooter,
+                testingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y)));
 
 
         // Copilot
@@ -94,7 +96,7 @@ public class RobotContainer {
 
         copilotController.getButton(X).whenPressed(new ShooterSequence(intake, funnel, indexer, shooter, hood));
 
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(-130, 5000, localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter);
+        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(-130, 5000, localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter, hood);
         copilotController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
         copilotController.getButton(RIGHT_BUMPER).whileHeld(new WaitThenShoot(shooterLineUpSequence.isLinedUp(), indexer));
     }
