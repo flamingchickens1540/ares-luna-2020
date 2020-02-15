@@ -22,6 +22,8 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("hood/tuning/kP", kP);
         SmartDashboard.putNumber("hood/tuning/kD", kD);
 
+        updatePIDs();
+
         NetworkTableInstance.getDefault().getTable("SmartDashboard/hood/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 

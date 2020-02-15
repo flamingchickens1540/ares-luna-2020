@@ -25,8 +25,11 @@ public class Intake extends SubsystemBase {
         // TODO figure out brake mode on all motors
         // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorB);
         rollerMotor.setSmartCurrentLimit(50);
         rollerMotor.setSecondaryCurrentLimit(20, 20000);
+        rollerMotorB.setSmartCurrentLimit(50);
+        rollerMotorB.setSecondaryCurrentLimit(20, 20000);
 
         rollerMotorB.follow(rollerMotor, true);
 
