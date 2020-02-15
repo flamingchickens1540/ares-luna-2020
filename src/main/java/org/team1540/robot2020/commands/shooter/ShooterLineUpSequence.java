@@ -9,8 +9,7 @@ import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.utils.ChickenXboxController;
-import org.team1540.robot2020.utils.NavX;
-import org.team1540.rooster.wrappers.Limelight;
+import org.team1540.robot2020.utils.LookupTableUtils;
 
 public class ShooterLineUpSequence extends ParallelCommandGroup {
     private LocalizationManager localization;
@@ -24,13 +23,13 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
 
     private double lastLidarDistance = 200;
 
-    public ShooterLineUpSequence(NavX navx, DriveTrain driveTrain, ChickenXboxController driverController, Limelight limelight, Shooter shooter, Hood hood, LocalizationManager localization) {
+    public ShooterLineUpSequence(DriveTrain driveTrain, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localization) {
         this.localization = localization;
 
         // TODO: fix D constant for flywheel
-        this.pointingCommand = new PointToTarget(navx, driveTrain, driverController, limelight);
-        this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> MathUtil.clamp(getDoubleLookupTable(lastLidarDistance, DISTANCE, FLYWHEEL), 1000, 5800));
-        this.hoodCommand = new HoodSetPositionContinuous(hood, () -> MathUtil.clamp(getDoubleLookupTable(lastLidarDistance, DISTANCE, HOOD), -230, -1));
+        this.pointingCommand = new PointToTarget(localization.getNavX(), driveTrain, driverController, localization.getLimelight());
+        this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, FLYWHEEL), 1000, 5800));
+        this.hoodCommand = new HoodSetPositionContinuous(hood, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, HOOD), -230, -1));
 
         addCommands(
                 pointingCommand,
@@ -48,50 +47,6 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
         }
 
         SmartDashboard.putNumber("ShooterLineUpSequence/lastLidarDistance", lastLidarDistance);
-    }
-
-    private static double line(double x1, double y1, double x2, double y2, double x) {
-        return ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
-    }
-
-    /**
-     * @param input x-value to calculate
-     * @param xarr  sorted (smallest to largest) array of x-values
-     * @param yarr  sorted (smallest to largest) array of y-values
-     * @return the best y-value for the lookup table
-     * TODO simplify this logic
-     */
-    private static double getDoubleLookupTable(double input, double[] xarr, double[] yarr) {
-        if (input < xarr[0]) { // If distance less than smallest recorded distance
-            double lowerX = xarr[0];
-            double lowerY = yarr[0];
-
-            double upperX = xarr[1];
-            double upperY = yarr[1];
-
-            return line(lowerX, lowerY, upperX, upperY, input);
-        } else if (input > xarr[xarr.length - 1]) { // If distance greater than largest recorded value
-            double lowerX = xarr[xarr.length - 2];
-            double lowerY = yarr[yarr.length - 2];
-
-            double upperX = xarr[xarr.length - 1];
-            double upperY = yarr[yarr.length - 1];
-
-            return line(lowerX, lowerY, upperX, upperY, input);
-        } else { // If distance somewhere in the middle
-            for (int i = 0; i < xarr.length - 1; i++) {
-                double lowerX = xarr[i];
-                double lowerY = yarr[i];
-
-                double upperX = xarr[i + 1];
-                double upperY = yarr[i + 1];
-
-                if (lowerX < input) { // HOOD[i-1] < distance < HOOD[i+1]
-                    return line(lowerX, lowerY, upperX, upperY, input);
-                }
-            }
-        }
-        return 0;
     }
 
     public boolean isLinedUp() {

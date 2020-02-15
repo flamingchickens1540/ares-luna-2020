@@ -69,6 +69,7 @@ public class RobotContainer {
 //        }, () -> false).schedule();
     }
 
+    @SuppressWarnings("DanglingJavadoc")
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
@@ -91,10 +92,8 @@ public class RobotContainer {
          **************************************************************************************************/
 
         // Driver
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter, hood, localizationManager);
-        copilotController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
+        copilotController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
         copilotController.getButton(RIGHT_BUMPER).whileHeld(new IndexerPercent(indexer, 1.0));
-
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
