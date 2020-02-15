@@ -88,8 +88,8 @@ public class RobotContainer {
          **************************************************************************************************/
 
         // Driver
-        copilotController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        copilotController.getButton(RIGHT_BUMPER).whileHeld(indexer.commandPercent(1));
+        driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
+        driverController.getButton(RIGHT_BUMPER).whileHeld(indexer.commandPercent(1));
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
