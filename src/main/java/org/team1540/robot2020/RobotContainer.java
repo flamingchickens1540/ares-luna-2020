@@ -13,6 +13,7 @@ import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
+import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
@@ -30,6 +31,7 @@ import org.team1540.robot2020.utils.InstCommand;
 import java.util.ArrayList;
 import java.util.List;
 
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.parallel;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
@@ -89,7 +91,7 @@ public class RobotContainer {
 
         // Driver
         driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        driverController.getButton(RIGHT_BUMPER).whileHeld(indexer.commandPercent(1));
+        driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
