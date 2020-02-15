@@ -77,24 +77,6 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        /**************************************************************************************************
-         *                                                                                                *
-         *               -= Driver =-                                        -= COPILOT =-                *
-         *                                                                                                *
-         *            ↓------------------------- Shooter Lineup            ↓-------------------------- Climber
-         *         BUMPER            BUMPER <--- Run Indexer            BUMPER            BUMPER          *
-         *       /--------\       /---------\                         /--------\       /---------\        *
-         *     /    (+)   '-----'      Y     \                      /    (+)   '-----'    Y       \       *
-         *    /            o O o    X     B   \                   /             o O o   X    B <--\--- Stop intake
-         *   /      ↑                  A      |                  /      ↑       ^   ^     A <-----|--- Start intake
-         *  |     ← + →         (+)           |                 |    ← + →      '---'--(+)--------|--- Climber
-         *  |       ↓    _________            |                 |      ↓     _________            |       *
-         *  |          /          \           |                 |          /          \           |       *
-         *  |         /            \          |                 |         /            \          |       *
-         *  \________/              \________/                  \________/              \________/        *
-         *                                                                                                *
-         **************************************************************************************************/
-
         // Driver
         driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
         driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
@@ -105,8 +87,9 @@ public class RobotContainer {
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
-        copilotController.getButton(DPadAxis.DOWN).whileHeld(
-                parallel(intake.commandPercent(-1), indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
+        copilotController.getButton(DPadAxis.DOWN).whileHeld(intake.commandPercent(-1));
+        copilotController.getButton(DPadAxis.UP).whileHeld(
+                parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
 
         ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));

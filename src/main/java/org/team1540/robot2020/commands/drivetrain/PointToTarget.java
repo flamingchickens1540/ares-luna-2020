@@ -103,7 +103,7 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-20)) {
+        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-21)) {
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());

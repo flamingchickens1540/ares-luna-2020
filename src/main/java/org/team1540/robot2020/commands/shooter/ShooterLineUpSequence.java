@@ -45,7 +45,10 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
         }
 
         SmartDashboard.putNumber("ShooterLineUpSequence/lastLidarDistance", lastLidarDistance);
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isLinedUp", isLinedUp());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", pointingCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());
 
         super.execute();
     }
