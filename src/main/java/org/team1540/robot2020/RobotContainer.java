@@ -146,12 +146,12 @@ public class RobotContainer {
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
 
-        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
-        funnel.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
-        indexer.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
-        shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
-        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
-        climber.setDefaultCommand(new InstCommand(() -> climber.setPercent(0), climber).perpetually());
+        intake.setDefaultCommand(intake.commandStop().perpetually());
+        funnel.setDefaultCommand(funnel.commandStop().perpetually());
+        indexer.setDefaultCommand(indexer.commandStop().perpetually());
+        shooter.setDefaultCommand(shooter.commandStop().perpetually());
+        hood.setDefaultCommand(hood.commandStop().perpetually());
+        climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 
     private void initModeTransitionBindings() {
