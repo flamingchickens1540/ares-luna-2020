@@ -36,7 +36,7 @@ public class ClimberMoveToMetersUnsafe extends CommandBase {
         if (climber.getCurrent() > 40 && climber.getVelocityMeters() < 0.1 && ratchetBrokenDetectionTimer.hasPeriodPassed(0.25)) {
             System.out.println("Climber ratchet broken detected --------------------------------");
             SmartDashboard.putBoolean("climber/RatchetBrokenAlert", true);
-            climber.disableMotors();
+            climber.stop();
             return true;
         }
         return climber.atPositionMeters(goalMeters, 0.01) && Math.abs(climber.getVelocityMeters()) < 0.01;

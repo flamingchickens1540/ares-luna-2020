@@ -79,7 +79,7 @@ public class Climber extends SubsystemBase {
         climberMotor.set(ControlMode.PercentOutput, percent);
     }
 
-    public void disableMotors() {
+    public void stop() {
         setPercent(0);
     }
 
@@ -137,5 +137,9 @@ public class Climber extends SubsystemBase {
 
     public void setBrake(NeutralMode state) {
         climberMotor.setNeutralMode(state);
+    }
+
+    public Command commandStop() {
+        return new InstantCommand(this::stop, this);
     }
 }

@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
@@ -55,7 +57,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
     }
 
-    public void disableMotors() {
+    public void stop() {
         shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
 
@@ -85,5 +87,9 @@ public class Shooter extends SubsystemBase {
 
     public void config_kD(double kD) {
         shooterMotorA.config_kD(0, kD);
+    }
+
+    public Command commandStop() {
+        return new InstantCommand(this::stop, this);
     }
 }

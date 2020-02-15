@@ -59,7 +59,7 @@ public class ShooterSetVelocityContinuous extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.disableMotors();
+        shooter.stop();
         shooter.config_kD(HIGH_RPM_kD);
     }
 }

@@ -4,6 +4,8 @@ import com.revrobotics.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
@@ -40,7 +42,7 @@ public class Hood extends SubsystemBase {
 
     }
 
-    public void disableMotors() {
+    public void stop() {
         hoodMotor.set(0);
     }
 
@@ -77,7 +79,8 @@ public class Hood extends SubsystemBase {
 //        return () -> (hoodController.getSmartMotionAllowedClosedLoopError(0) < 10);
 //    }
 
-    public BooleanSupplier isReady() {
-        return () -> (hoodController.getSmartMotionAllowedClosedLoopError(0) < 10);
+
+    public Command commandStop() {
+        return new InstantCommand(this::stop, this);
     }
 }
