@@ -37,9 +37,6 @@ public class RobotContainer {
 
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
-
-    private static final boolean TEST_MODE = false;
-
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
@@ -110,7 +107,6 @@ public class RobotContainer {
             climberSequence.schedule();
         });
 
-
         // Testing Controller - Distance offset tuning
         distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
 
@@ -130,9 +126,9 @@ public class RobotContainer {
             distanceList.add(localizationManager.getLidar().getDistance());
             hoodList.add(hood.getPosition());
             flywheelList.add(shooterManualSetpoint.getSetpoint());
-            SmartDashboard.putNumberArray("regression/DISTANCE", distanceList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("regression/HOOD", hoodList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("regression/FLYWHEEL", flywheelList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
         }));
 
         distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
@@ -149,25 +145,18 @@ public class RobotContainer {
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
 
-//        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
-//        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
-
+        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
+        funnel.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
+        indexer.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
         shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
-//        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
-
-        hood.setDefaultCommand(new HoodManualControl(hood, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
+        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
         climber.setDefaultCommand(new InstCommand(() -> climber.setPercent(0), climber).perpetually());
-
-//        controlPanel.setDefaultCommand();
     }
 
     private void initModeTransitionBindings() {
         logger.info("Initializing mode transition bindings...");
 
         // TODO: Figure out why inTeleop inAuto and inTest are broken
-        var inTeleop = new Trigger(RobotState::isOperatorControl);
-        var inAuto = new Trigger(RobotState::isAutonomous);
-        var inTest = new Trigger(RobotState::isTest);
         var enabled = new Trigger(RobotState::isEnabled);
         var disabled = new Trigger(RobotState::isDisabled);
 
@@ -191,7 +180,6 @@ public class RobotContainer {
     }
 
     Command getAutoCommand() {
-        // TODO logic for selecting an auto command
         return new InstantCommand(() -> {
             climber.zero();
             climber.setRatchet(Climber.RatchetState.DISENGAGED);
@@ -199,7 +187,6 @@ public class RobotContainer {
     }
 
     private void initDashboard() {
-        SmartDashboard.putData(new InstCommand(() -> climber.zero(), true));
     }
 //
 //    if (TEST_MODE){
@@ -215,6 +202,7 @@ public class RobotContainer {
 //        climber.setDefaultCommand(new ClimberManualControl(climber,
 //                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
 //                testClimbController.getButton(org.checkerframework.checker.units.qual.A)));
+//            hood.setDefaultCommand(new HoodManualControl(hood, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
 //    }
 //
 }
