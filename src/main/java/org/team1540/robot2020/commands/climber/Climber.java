@@ -8,6 +8,8 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
@@ -123,6 +125,10 @@ public class Climber extends SubsystemBase {
     public void setRatchet(RatchetState state) {
         climberMotor.configPeakOutputForward(state == RatchetState.ENGAGED ? 0 : 1);
         ratchetServo.set(state.servoPosition);
+    }
+
+    public Command commandRatchet(RatchetState state) {
+        return new InstantCommand(() -> setRatchet(state));
     }
 
     public void setRatchet(double position) {

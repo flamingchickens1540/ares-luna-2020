@@ -1,6 +1,7 @@
 package org.team1540.robot2020;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -10,20 +11,24 @@ import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
+import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
-import org.team1540.robot2020.commands.indexer.IndexerPercent;
+import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
+import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
-import org.team1540.robot2020.utils.NatesPolynomialRegression;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
@@ -39,12 +44,9 @@ public class RobotContainer {
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController testingController = new ChickenXboxController(2);
-//    private ChickenXboxController testClimbController = new ChickenXboxController(2);
-//    private ChickenXboxController testControlPanelController = new ChickenXboxController(3);
+    private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
 
     private LocalizationManager localizationManager = new LocalizationManager();
-    private NatesPolynomialRegression regression = new NatesPolynomialRegression(3);
 
     private DriveTrain driveTrain = new DriveTrain(localizationManager.getNavX());
     private Intake intake = new Intake();
@@ -63,11 +65,8 @@ public class RobotContainer {
         initDefaultCommands();
         initDashboard();
 
-
+        // TODO: Replace with a notifier that runs more often than commands
         new LocalizationManager().schedule();
-//        new FunctionalCommand(() -> {
-//        }, () -> localizationManager.periodic(), (interrupted) -> {
-//        }, () -> false).schedule();
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -94,7 +93,7 @@ public class RobotContainer {
 
         // Driver
         copilotController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        copilotController.getButton(RIGHT_BUMPER).whileHeld(new IndexerPercent(indexer, 1.0));
+        copilotController.getButton(RIGHT_BUMPER).whileHeld(indexer.commandPercent(1));
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
@@ -103,7 +102,6 @@ public class RobotContainer {
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
 
-//        ShooterSequence(intake, funnel, indexer, shooter, hood)
         ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {
             if (climberSequence.isScheduled()) {
@@ -113,34 +111,34 @@ public class RobotContainer {
         });
 
 
-        // Testing
-//        testingController.getButton(LEFT_BUMPER).whileHeld();
+        // Testing Controller - Distance offset tuning
+        distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
 
-//        testingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-//                testingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
-//
-//        testingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
-//
-//        // Regression
-//        testingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-//            regression.add(localizationManager.getLidar().getDistance(), hood.getPosition());
-//            SmartDashboard.putNumberArray("regression/Xarr", regression.getX());
-//            SmartDashboard.putNumberArray("regression/Yarr", regression.getY());
-//        }));
-//
-//        testingController.getButton(START).whenPressed(new InstantCommand(() -> {
-//            regression.run();
-//            System.out.println(Arrays.toString(regression.get()));
-//        }));
-//
-//        testingController.getButton(X).toggleWhenPressed(new ShooterManualSetpoint(shooter,
-//                testingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
-//
-//        testingController.getButton(DPadAxis.UP).toggleWhenPressed(new HoodManualControl(hood,
-//                testingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
-//
-//        testingController.getButton(DPadAxis.DOWN).toggleWhenPressed(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
+        distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
 
+        distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
+
+        ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
+        distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
+
+        List<Double> distanceList = new ArrayList<>();
+        List<Double> hoodList = new ArrayList<>();
+        List<Double> flywheelList = new ArrayList<>();
+        distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
+            distanceList.add(localizationManager.getLidar().getDistance());
+            hoodList.add(hood.getPosition());
+            flywheelList.add(shooterManualSetpoint.getSetpoint());
+            SmartDashboard.putNumberArray("regression/DISTANCE", distanceList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("regression/HOOD", hoodList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("regression/FLYWHEEL", flywheelList.toArray(new Double[]{}));
+        }));
+
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
+
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController));
     }
 
     private void initDefaultCommands() {
@@ -150,8 +148,6 @@ public class RobotContainer {
                 driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
-
-//        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
 
 //        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
 //        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
@@ -168,30 +164,26 @@ public class RobotContainer {
     private void initModeTransitionBindings() {
         logger.info("Initializing mode transition bindings...");
 
+        // TODO: Figure out why inTeleop inAuto and inTest are broken
         var inTeleop = new Trigger(RobotState::isOperatorControl);
         var inAuto = new Trigger(RobotState::isAutonomous);
         var inTest = new Trigger(RobotState::isTest);
         var enabled = new Trigger(RobotState::isEnabled);
         var disabled = new Trigger(RobotState::isDisabled);
 
-//        inAuto.whenActive(() -> {
-//            ;
-//        });
-
         enabled.whenActive(() -> {
-            // enable brakes
             driveTrain.setBrakes(NeutralMode.Brake);
+            intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
-            shooter.disableMotors();
         });
 
         disabled.whenActive(new WaitCommand(2)
                 .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-                    // disable brakes
                     driveTrain.setBrakes(NeutralMode.Coast);
+                    intake.setBrake(CANSparkMax.IdleMode.kCoast);
                     indexer.setBrake(NeutralMode.Coast);
                     climber.setBrake(NeutralMode.Coast);
                     logger.info("Mechanism brakes disabled");
@@ -204,7 +196,6 @@ public class RobotContainer {
             climber.zero();
             climber.setRatchet(Climber.RatchetState.DISENGAGED);
         }).andThen(new HoodZeroSequence(hood));
-//        return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
     }
 
     private void initDashboard() {

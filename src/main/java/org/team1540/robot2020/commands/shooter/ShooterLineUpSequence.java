@@ -27,7 +27,7 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
         this.localization = localization;
 
         // TODO! fix D constant for flywheel
-        this.pointingCommand = new PointToTarget(localization.getNavX(), driveTrain, driverController, localization.getLimelight());
+        this.pointingCommand = new PointToTarget(driveTrain, localization.getNavX(), localization.getLimelight(), driverController);
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, FLYWHEEL), 1000, 5800));
         this.hoodCommand = new HoodSetPositionContinuous(hood, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, HOOD), -230, -1));
 

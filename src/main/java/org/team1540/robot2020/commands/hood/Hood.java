@@ -20,6 +20,7 @@ public class Hood extends SubsystemBase {
 
     public Hood() {
         MotorConfigUtils.setDefaultSparkMaxConfig(hoodMotor);
+        hoodMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         SmartDashboard.putNumber("hood/tuning/kP", kP);
         SmartDashboard.putNumber("hood/tuning/kD", kD);

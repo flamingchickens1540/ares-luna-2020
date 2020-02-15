@@ -21,4 +21,8 @@ public class ShooterManualSetpoint extends CommandBase {
         SmartDashboard.putNumber("shooter/manualSetpointRPM", rpm);
         shooter.setVelocityRPM(rpm);
     }
+
+    public double getSetpoint() {
+        return rpm;
+    }
 }

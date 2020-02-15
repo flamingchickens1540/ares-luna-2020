@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.revrobotics.CANSparkMax;
-import org.jetbrains.annotations.NotNull;
 
 public class MotorConfigUtils {
     public static final int POSITION_SLOT_IDX = 0;
@@ -26,7 +25,7 @@ public class MotorConfigUtils {
     }
 
     public static void setDefaultSparkMaxConfig(CANSparkMax sparkMax) {
-        sparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        sparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
         sparkMax.restoreFactoryDefaults();
         sparkMax.setSmartCurrentLimit(20);
     }

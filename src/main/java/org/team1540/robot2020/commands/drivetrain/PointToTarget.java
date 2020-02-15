@@ -31,7 +31,7 @@ public class PointToTarget extends CommandBase {
     private double lastError = Double.NEGATIVE_INFINITY;
 
 
-    public PointToTarget(NavX navx, DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight) {
+    public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver) {
         this.navx = navx;
         this.driveTrain = driveTrain;
         this.driver = driver;

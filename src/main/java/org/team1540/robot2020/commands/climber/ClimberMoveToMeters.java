@@ -14,14 +14,14 @@ public class ClimberMoveToMeters extends SequentialCommandGroup {
         addCommands(
                 new ConditionalCommand(
                         sequence(
-                                new ClimberRatchetOff(climber),
+                                climber.commandRatchet(Climber.RatchetState.DISENGAGED),
                                 new WaitCommand(0.35)
                         ),
                         new InstCommand(),
                         () -> positionMeters.getAsDouble() >= climber.getPositionMeters()
                 ),
                 new ClimberMoveToMetersUnsafe(climber, positionMeters),
-                new ClimberRatchetOn(climber)
+                climber.commandRatchet(Climber.RatchetState.ENGAGED)
         );
     }
 }

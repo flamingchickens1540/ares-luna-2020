@@ -13,25 +13,21 @@ public class Intake extends SubsystemBase {
     private double kD = 0;
     private double kF = 9.2E-5;
 
-    private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax rollerMotorA = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax rollerMotorB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    private final CANPIDController pidController = rollerMotor.getPIDController();
-    private CANEncoder rollerEncoder = rollerMotor.getEncoder();
-
-    public static final double defaultRollerPercent = 1;
+    private final CANPIDController pidController = rollerMotorA.getPIDController();
+    private CANEncoder rollerEncoder = rollerMotorA.getEncoder();
 
     public Intake() {
-        // TODO figure out brake mode on all motors
-        // TODO figure out current limit on all motors
-        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotor);
+        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorA);
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorB);
-        rollerMotor.setSmartCurrentLimit(50);
-        rollerMotor.setSecondaryCurrentLimit(20, 20000);
+        rollerMotorA.setSmartCurrentLimit(50);
+        rollerMotorA.setSecondaryCurrentLimit(20, 20000);
         rollerMotorB.setSmartCurrentLimit(50);
         rollerMotorB.setSecondaryCurrentLimit(20, 20000);
 
-        rollerMotorB.follow(rollerMotor, true);
+        rollerMotorB.follow(rollerMotorA, true);
 
         SmartDashboard.putNumber("intake/tuning/kP", kP);
         SmartDashboard.putNumber("intake/tuning/kD", kD);
@@ -50,14 +46,14 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake/rollerVelocity", getVelocity());
-        SmartDashboard.putNumber("intake/rollerCurrentA", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/rollerCurrentA", rollerMotorA.getOutputCurrent());
         SmartDashboard.putNumber("intake/rollerCurrentB", rollerMotorB.getOutputCurrent());
-        SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
-        SmartDashboard.putNumber("intake/error", getPIDError());
+        SmartDashboard.putNumber("intake/rollerTemperatureA", rollerMotorA.getMotorTemperature());
+        SmartDashboard.putNumber("intake/rollerTemperatureB", rollerMotorB.getMotorTemperature());
     }
 
     public void setPercent(double percent) {
-        rollerMotor.set(percent);
+        rollerMotorA.set(percent);
     }
 
     public void setVelocity(double velocity) {
@@ -73,7 +69,8 @@ public class Intake extends SubsystemBase {
         return rollerEncoder.getVelocity();
     }
 
-    public double getPIDError() {
-        return pidController.getSmartMotionAllowedClosedLoopError(0);
+    public void setBrake(CANSparkMax.IdleMode mode) {
+        rollerMotorA.setIdleMode(mode);
+        rollerMotorB.setIdleMode(mode);
     }
 }
