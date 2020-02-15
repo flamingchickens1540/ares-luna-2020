@@ -19,8 +19,8 @@ public class Climber extends SubsystemBase {
 
     private static final double climberTicksPerMeter = 175289.47806139;
     private static final double closedLoopRamp = 0.1;
-    private static final int maxAcceleration = 10_000;
-    private static final int maxVelocity = 5_000;
+    private static final int maxAcceleration = 15000;
+    private static final int maxVelocity = 10000;
 
     private static final double kP = 0.01;
     private static final double kI = 0;
