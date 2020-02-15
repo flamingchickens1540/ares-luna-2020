@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
+import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
@@ -67,7 +68,6 @@ public class RobotContainer {
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
-
         // Testing
 
         testingController.getButton(A).whenPressed(new IndexerBallQueueSequence(indexer, funnel));
@@ -113,7 +113,7 @@ public class RobotContainer {
 //                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
 //                driverController.getButton(ChickenXboxController.XboxButton.Y)));
 
-//        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
+        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
 
 //        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
 //        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));

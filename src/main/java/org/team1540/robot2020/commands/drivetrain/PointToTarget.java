@@ -38,7 +38,7 @@ public class PointToTarget extends CommandBase {
         this.limelight = limelight;
         this.throttleAxis = driver.getAxis(LEFT_X).withDeadzone(0.12);
 
-        setPID(new PIDConfig(0.4, 0.07, 1.0, 0.003, 0.3, 0.012));
+        setPID(new PIDConfig(0.4, 0.07, 1.0, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
 
         SmartDashboard.putNumber("pointToTarget/finishedDegrees", finishedDegrees);
