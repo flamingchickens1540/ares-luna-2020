@@ -27,6 +27,7 @@ import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,9 @@ public class RobotContainer {
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
+        copilotController.getButton(DPadAxis.DOWN).whileHeld(
+                parallel(intake.commandPercent(-1), indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
+        );
 
         ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {
