@@ -18,6 +18,22 @@ public class NatesPolynomialRegression {
         this.coeffs = new double[degree];
     }
 
+    public double[] getX() {
+        double[] xarr = new double[x.size()];
+        for (int kX = 0; kX < x.size(); kX++) {
+            xarr[kX] = x.get(kX);
+        }
+        return xarr;
+    }
+
+    public double[] getY() {
+        double[] yarr = new double[y.size()];
+        for (int kY = 0; kY < y.size(); kY++) {
+            yarr[kY] = y.get(kY);
+        }
+        return yarr;
+    }
+
     public void add(double x, double y) {
         this.x.add(x);
         this.y.add(y);
