@@ -9,29 +9,33 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
-import org.team1540.robot2020.commands.climber.ClimberManualControl;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
+import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodSetPosition;
-import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
+import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.indexer.IndexerStageBallsForShooting;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
-import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.commands.shooter.ShooterSequence;
+import org.team1540.robot2020.commands.shooter.*;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.NatesPolynomialRegression;
+import org.team1540.robot2020.utils.PIDConfig;
+import org.team1540.rooster.wrappers.Limelight;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
-//import org.team1540.robot2020.commands.controlpanel.ControlPanelManualControl;
 
 public class RobotContainer {
 
@@ -42,10 +46,12 @@ public class RobotContainer {
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController testClimbController = new ChickenXboxController(2);
-    private ChickenXboxController testControlPanelController = new ChickenXboxController(3);
+    private ChickenXboxController testingController = new ChickenXboxController(1);
+//    private ChickenXboxController testClimbController = new ChickenXboxController(2);
+//    private ChickenXboxController testControlPanelController = new ChickenXboxController(3);
 
     private LocalizationManager localizationManager = new LocalizationManager();
+    private NatesPolynomialRegression regression = new NatesPolynomialRegression(3);
 
     private DriveTrain driveTrain = new DriveTrain(localizationManager.getNavX());
     private Intake intake = new Intake();
@@ -63,22 +69,37 @@ public class RobotContainer {
         initModeTransitionBindings();
         initDefaultCommands();
         initDashboard();
+
+        new FunctionalCommand(() -> {}, () -> localizationManager.periodic(), (interrupted) -> {}, () -> false).schedule();
     }
 
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-        testClimbController.getButton(BACK).whenPressed(new ClimberSequence(climber,
-                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG)));
-        ParallelCommandGroup runIntake = new IntakeRun(intake).alongWith(new ScheduleCommand(new IndexerBallQueueSequence(indexer, funnel)));
-        copilotController.getButton(A).whenPressed(runIntake);
-        copilotController.getButton(B).cancelWhenPressed(runIntake);
-        copilotController.getButton(Y).whenPressed(funnel::stop, funnel);
+        // Testing
 
-        copilotController.getButton(X).whenPressed(new HoodZeroSequence(hood));
-        copilotController.getButton(RIGHT_BUMPER).whenPressed(new HoodSetPosition(hood, -100));
-        copilotController.getButton(LEFT_BUMPER).whenPressed(new ShooterSequence(intake, funnel, indexer, shooter, hood));
-//        copilot.getButton(B).whenPressed(new BallQueueSequence(indexer, funnel));
+        testingController.getButton(A).whenPressed(new IndexerBallQueueSequence(indexer, funnel));
+
+        testingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
+                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+
+        testingController.getButton(BACK).whenPressed(new InstantCommand(() -> regression.add(localizationManager.getLidar().getDistance(), hood.getPosition())));
+        testingController.getButton(START).whenPressed(new InstantCommand(() -> {
+            regression.run();
+            System.out.println(Arrays.toString(regression.get()));
+        }));
+
+
+        // Copilot
+        Command intakeCommand = new IntakeRun(intake);
+        copilotController.getButton(A).whenPressed(intakeCommand);
+        copilotController.getButton(B).cancelWhenPressed(intakeCommand);
+
+        copilotController.getButton(X).whenPressed(new ShooterSequence(intake, funnel, indexer, shooter, hood));
+
+        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(-130, 5000, localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter);
+        copilotController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
+        copilotController.getButton(RIGHT_BUMPER).whileHeld(new WaitThenShoot(shooterLineUpSequence.isLinedUp(), indexer));
     }
 
     private void initDefaultCommands() {
@@ -91,14 +112,14 @@ public class RobotContainer {
 
 //        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), new PIDConfig(0.4, 0.07, 1.0, 0.0025, 0.2, 0.01)));
 
-        intake.setDefaultCommand(new IntakeRun(intake));
+        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
 //        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
-        shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
-        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
 
-        climber.setDefaultCommand(new ClimberManualControl(climber,
-                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                testClimbController.getButton(A)));
+        shooter.setDefaultCommand(new InstCommand(() -> shooter.setPercent(0), shooter).perpetually());
+//        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
+
+        hood.setDefaultCommand(new HoodManualControl(hood, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
+
 //        controlPanel.setDefaultCommand();
     }
 
@@ -154,13 +175,9 @@ public class RobotContainer {
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
 //                copilotController.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
 //        intake.setDefaultCommand(new IntakeManualControl(intake,
-//                copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-//        intake.setDefaultCommand(new RunIntake(intake));
-
-//        shooter.setDefaultCommand(new FunctionalCommand(() -> {
-//        }, () -> shooter.setPercent(0), (interrupted) -> {
-//        }, () -> false, shooter));
-//        hood.setDefaultCommand(new HoodManualControl(hood,
-//                copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_X).withDeadzone(0.15)));
-
+//                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
+//        climber.setDefaultCommand(new ClimberManualControl(climber,
+//                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+//                testClimbController.getButton(org.checkerframework.checker.units.qual.A)));
+//    }
 }

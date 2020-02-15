@@ -17,6 +17,7 @@ public class Shooter extends SubsystemBase {
 
     private TalonFX shooterMotorA = new TalonFX(9);
     private TalonFX shooterMotorB = new TalonFX(10);
+    private boolean wasPositive = true;
 
     public Shooter() {
         setupFlywheelMotors();
@@ -48,8 +49,6 @@ public class Shooter extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }
 
-    private boolean wasPositive = true;
-
     @Override
     public void periodic() {
         SmartDashboard.putNumber("shooter/current", shooterMotorA.getStatorCurrent() + shooterMotorB.getStatorCurrent());
@@ -79,5 +78,9 @@ public class Shooter extends SubsystemBase {
 
     public void setPercent(double value) {
         shooterMotorA.set(ControlMode.PercentOutput, value);
+    }
+
+    public double getClosedLoopError() {
+        return shooterMotorA.getClosedLoopError();
     }
 }

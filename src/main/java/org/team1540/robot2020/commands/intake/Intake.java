@@ -9,8 +9,8 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Intake extends SubsystemBase {
 
-    private double kP = 2.0E-4;
-    private double kD = 100.0;
+    private double kP = 1.0E-4;
+    private double kD = 0;
     private double kF = 9.2E-5;
 
     private CANSparkMax rollerMotor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -50,7 +50,8 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("intake/rollerVelocity", getVelocity());
-        SmartDashboard.putNumber("intake/rollerCurrent", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/rollerCurrentA", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("intake/rollerCurrentB", rollerMotorB.getOutputCurrent());
         SmartDashboard.putNumber("intake/rollerTemperature", rollerMotor.getMotorTemperature());
         SmartDashboard.putNumber("intake/error", getPIDError());
     }

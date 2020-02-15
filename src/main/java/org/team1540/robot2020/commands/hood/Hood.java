@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
+import java.util.function.BooleanSupplier;
+
 public class Hood extends SubsystemBase {
     private final double kP = 0.5;
     private final double kD = 0;
@@ -64,5 +66,13 @@ public class Hood extends SubsystemBase {
 
     public boolean isLimitSwitchPressed() {
         return limitSwitch.get();
+    }
+
+    public double getClosedLoopError() {
+        return hoodController.getSmartMotionAllowedClosedLoopError(0);
+    }
+
+    public BooleanSupplier isReady() {
+        return () -> (hoodController.getSmartMotionAllowedClosedLoopError(0) < 10);
     }
 }

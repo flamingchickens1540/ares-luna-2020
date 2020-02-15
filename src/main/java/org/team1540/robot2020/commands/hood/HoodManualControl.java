@@ -15,6 +15,6 @@ public class HoodManualControl extends CommandBase {
 
     @Override
     public void execute() {
-        hood.setPercent(joystickAxis.value());
+        hood.setPercent(joystickAxis.withDeadzone(0.1).value());
     }
 }

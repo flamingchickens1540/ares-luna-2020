@@ -147,7 +147,7 @@ public class PointToTarget extends CommandBase {
         return error;
     }
 
-    private boolean isPointingAtGoalAndStopped(double error) {
+    public boolean isPointingAtGoalAndStopped(double error) {
         return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(error)) < finishedDegrees;
     }
 

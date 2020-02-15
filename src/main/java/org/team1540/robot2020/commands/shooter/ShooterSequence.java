@@ -6,21 +6,15 @@ import org.team1540.robot2020.commands.funnel.RunFunnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodSetPosition;
 import org.team1540.robot2020.commands.indexer.Indexer;
-import org.team1540.robot2020.commands.indexer.IndexerMoveToPosition;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 
 public class ShooterSequence extends SequentialCommandGroup {
-    private Shooter shooter;
-
-    // TODO: Shoot sequence
-
     public ShooterSequence(Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood) {
-        this.shooter = shooter;
         addRequirements(intake, funnel, indexer, shooter, hood);
         addCommands(
                 parallel(
-                        new ShooterSpinUp(shooter),
+                        new ShooterSpinUp(shooter, 5000),
                         new HoodSetPosition(hood, -100)
                 ),
                 deadline(new WaitCommand(2),
@@ -35,5 +29,4 @@ public class ShooterSequence extends SequentialCommandGroup {
                 })
         );
     }
-
 }
