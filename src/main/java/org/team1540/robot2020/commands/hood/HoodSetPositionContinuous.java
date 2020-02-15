@@ -1,5 +1,6 @@
 package org.team1540.robot2020.commands.hood;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import java.util.function.DoubleSupplier;
@@ -8,15 +9,17 @@ public class HoodSetPositionContinuous extends CommandBase {
     private DoubleSupplier position;
     private Hood hood;
 
-    public HoodSetPositionContinuous(Hood hood, DoubleSupplier position) {
+    public HoodSetPositionContinuous(Hood hood, DoubleSupplier positionSupplier) {
         this.hood = hood;
-        this.position = position;
+        this.position = positionSupplier;
         addRequirements(hood);
     }
 
     @Override
     public void execute() {
-        hood.setPosition(this.position.getAsDouble());
+        double position = this.position.getAsDouble();
+        hood.setPosition(position);
+        SmartDashboard.putNumber("ShooterLineUpSequence/hoodSetpoint", position);
     }
 
     public boolean hasReachedGoal() {

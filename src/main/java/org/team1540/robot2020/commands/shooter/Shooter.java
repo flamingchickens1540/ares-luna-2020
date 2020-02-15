@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/tuning/kP", kP);
         SmartDashboard.putNumber("shooter/tuning/kI", kI);
         SmartDashboard.putNumber("shooter/tuning/iZone", iZone);
-        SmartDashboard.putNumber("shooter/tuning/kD", kD);
+//        SmartDashboard.putNumber("shooter/tuning/kD", kD);
         SmartDashboard.putNumber("shooter/tuning/kF", kF);
 
         NetworkTableInstance.getDefault().getTable("SmartDashboard/shooter/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase {
     private void updatePIDs() {
         shooterMotorA.config_kP(0, SmartDashboard.getNumber("shooter/tuning/kP", kP));
         shooterMotorA.config_kI(0, SmartDashboard.getNumber("shooter/tuning/kI", kI));
-        shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/tuning/kD", kD));
+//        shooterMotorA.config_kD(0, SmartDashboard.getNumber("shooter/tuning/kD", kD));
         shooterMotorA.config_kF(0, SmartDashboard.getNumber("shooter/tuning/kF", kF));
         shooterMotorA.config_IntegralZone(0, (int) SmartDashboard.getNumber("shooter/tuning/iZone", iZone));
     }
@@ -81,5 +81,9 @@ public class Shooter extends SubsystemBase {
 
     public double getClosedLoopError() {
         return shooterMotorA.getClosedLoopError();
+    }
+
+    public void config_kD(double kD) {
+        shooterMotorA.config_kD(0, kD);
     }
 }
