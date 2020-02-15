@@ -112,7 +112,7 @@ public class Climber extends SubsystemBase {
 
     public enum RatchetState {
         ENGAGED(0),
-        DISENGAGED(0.372);
+        DISENGAGED(0.472);
 
         private double servoPosition;
 

@@ -2,16 +2,13 @@ package org.team1540.robot2020;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
+import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.commands.drivetrain.FollowRamsetePath;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
@@ -29,7 +26,6 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NatesPolynomialRegression;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
@@ -43,7 +39,7 @@ public class RobotContainer {
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController testingController = new ChickenXboxController(1);
+    private ChickenXboxController testingController = new ChickenXboxController(2);
 //    private ChickenXboxController testClimbController = new ChickenXboxController(2);
 //    private ChickenXboxController testControlPanelController = new ChickenXboxController(3);
 
@@ -97,6 +93,14 @@ public class RobotContainer {
         ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(-130, 5000, localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter);
         copilotController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
         copilotController.getButton(RIGHT_BUMPER).whileHeld(new WaitThenShoot(shooterLineUpSequence.isLinedUp(), indexer));
+
+        ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
+        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {
+            if (climberSequence.isScheduled()) {
+                climberSequence.cancel();
+            }
+            climberSequence.schedule();
+        });
     }
 
     private void initDefaultCommands() {
@@ -107,7 +111,7 @@ public class RobotContainer {
 //                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
 //                driverController.getButton(ChickenXboxController.XboxButton.Y)));
 
-        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
+//        driveTrain.setDefaultCommand(new PointToTarget(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight()));
 
 //        intake.setDefaultCommand(new InstCommand(() -> intake.setPercent(0), intake).perpetually());
 //        indexer.setDefaultCommand(new IndexerBallQueueSequence(indexer, funnel));
@@ -116,6 +120,7 @@ public class RobotContainer {
 //        hood.setDefaultCommand(new InstCommand(() -> hood.setPercent(0), hood).perpetually());
 
         hood.setDefaultCommand(new HoodManualControl(hood, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
+        climber.setDefaultCommand(new InstCommand(() -> climber.setPercent(0), climber).perpetually());
 
 //        controlPanel.setDefaultCommand();
     }
@@ -129,9 +134,9 @@ public class RobotContainer {
         var enabled = new Trigger(RobotState::isEnabled);
         var disabled = new Trigger(RobotState::isDisabled);
 
-        inAuto.whenActive(() -> {
-            climber.zero();
-        });
+//        inAuto.whenActive(() -> {
+//            ;
+//        });
 
         enabled.whenActive(() -> {
             // enable brakes
@@ -155,7 +160,10 @@ public class RobotContainer {
 
     Command getAutoCommand() {
         // TODO logic for selecting an auto command
-        return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
+        return new InstantCommand(() -> {
+            climber.zero();
+        });
+//        return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
     }
 
     private void initDashboard() {

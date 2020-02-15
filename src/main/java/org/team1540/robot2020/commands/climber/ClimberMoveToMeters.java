@@ -15,7 +15,7 @@ public class ClimberMoveToMeters extends SequentialCommandGroup {
                 new ConditionalCommand(
                         sequence(
                                 new ClimberRatchetOff(climber),
-                                new WaitCommand(0.25)
+                                new WaitCommand(0.35)
                         ),
                         new InstCommand(),
                         () -> positionMeters.getAsDouble() >= climber.getPositionMeters()

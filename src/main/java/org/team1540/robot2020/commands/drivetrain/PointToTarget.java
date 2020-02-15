@@ -19,6 +19,7 @@ public class PointToTarget extends CommandBase {
 
     private final NavX navx;
     private final Limelight limelight;
+    private final ChickenXboxController.Axis throttleAxis;
     private double lastTargetAngle = 0;
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
@@ -29,11 +30,13 @@ public class PointToTarget extends CommandBase {
     private double finishedDegrees = 0.2;
     private double lastError = Double.NEGATIVE_INFINITY;
 
+
     public PointToTarget(NavX navx, DriveTrain driveTrain, ChickenXboxController driver, Limelight limelight) {
         this.navx = navx;
         this.driveTrain = driveTrain;
         this.driver = driver;
         this.limelight = limelight;
+        this.throttleAxis = driver.getAxis(LEFT_X).withDeadzone(0.12);
 
         setPID(new PIDConfig(0.4, 0.07, 1.0, 0.003, 0.3, 0.012));
         addRequirements(driveTrain);
@@ -75,11 +78,19 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void execute() {
-        double leftMotors = driver.getAxis(LEFT_X).withDeadzone(0.2).value();
-        double rightMotors = driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
-        double triggerValues = driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
+        double leftMotors = 0;
+        double rightMotors = 0;
+        double triggerValues = 0;
+
+//        triggerValues += throttleAxis.value();
+
+        leftMotors += driver.getAxis(LEFT_X).withDeadzone(0.2).value();
+        rightMotors += driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
+        triggerValues += driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
+
         leftMotors -= triggerValues;
         rightMotors += triggerValues;
+
 
         double pidOutput = pointController.getOutput(calculateError());
 
