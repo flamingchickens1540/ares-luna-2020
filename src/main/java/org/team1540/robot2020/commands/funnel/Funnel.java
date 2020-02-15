@@ -9,13 +9,10 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class Funnel extends SubsystemBase {
 
-        private CANSparkMax funnelLeftMotor = new CANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private CANSparkMax funnelLeftMotor = new CANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANSparkMax funnelRightMotor = new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless);
-        private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
+    private CANEncoder funnelLeftEncoder = funnelLeftMotor.getEncoder();
     private CANEncoder funnelRightEncoder = funnelRightMotor.getEncoder();
-
-    public static final double defaultFunnelLeftPercent = 1;
-    public static final double defaultFunnelRightPercent = 1;
 
     public Funnel() {
         // TODO figure out brake mode on all motors

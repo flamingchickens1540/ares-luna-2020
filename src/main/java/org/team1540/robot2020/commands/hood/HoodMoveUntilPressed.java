@@ -2,13 +2,15 @@ package org.team1540.robot2020.commands.hood;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class HoodZero extends CommandBase {
+public class HoodMoveUntilPressed extends CommandBase {
     private final double speed;
+    private boolean shouldBePressed;
     private Hood hood;
 
-    public HoodZero(Hood hood, double speed) {
+    public HoodMoveUntilPressed(Hood hood, double speed, boolean shouldBePressed) {
         this.hood = hood;
         this.speed = speed;
+        this.shouldBePressed = shouldBePressed;
         addRequirements(hood);
     }
 
@@ -19,15 +21,11 @@ public class HoodZero extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return hood.isLimitSwitchPressed();
+        return shouldBePressed == hood.isLimitSwitchPressed();
     }
 
     @Override
     public void end(boolean interrupted) {
         hood.setPercent(0);
-
-        if (!interrupted) {
-            hood.zero();
-        }
     }
 }

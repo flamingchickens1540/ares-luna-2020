@@ -12,7 +12,7 @@ public class FunnelRun extends CommandBase {
 
     @Override
     public void execute() {
-        funnel.setPercent(0.3);
+        funnel.setPercent(0.5, 0.75);
     }
 
     @Override

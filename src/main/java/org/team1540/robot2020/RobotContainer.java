@@ -13,6 +13,7 @@ import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.indexer.IndexerPercent;
@@ -201,7 +202,8 @@ public class RobotContainer {
         // TODO logic for selecting an auto command
         return new InstantCommand(() -> {
             climber.zero();
-        });
+            climber.setRatchet(Climber.RatchetState.DISENGAGED);
+        }).andThen(new HoodZeroSequence(hood));
 //        return new FollowRamsetePath(driveTrain, List.of(new Pose2d(0, 0, new Rotation2d(0)), new Pose2d(3, 0, new Rotation2d(0))), false);
     }
 

@@ -36,7 +36,7 @@ public class PointToTarget extends CommandBase {
         this.driveTrain = driveTrain;
         this.driver = driver;
         this.limelight = limelight;
-        this.throttleAxis = driver.getAxis(LEFT_X).withDeadzone(0.12);
+        this.throttleAxis = driver.getAxis(LEFT_X);
 
         setPID(new PIDConfig(0.4, 0.07, 1.0, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
@@ -119,15 +119,6 @@ public class PointToTarget extends CommandBase {
 
     public boolean hasReachedGoal() {
         return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
     }
 
     private String coefsToLatexString(List<Double> coefs) {

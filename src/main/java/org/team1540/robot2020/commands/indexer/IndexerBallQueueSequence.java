@@ -2,7 +2,7 @@ package org.team1540.robot2020.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.*;
 import org.team1540.robot2020.commands.funnel.Funnel;
-import org.team1540.robot2020.commands.funnel.RunFunnel;
+import org.team1540.robot2020.commands.funnel.FunnelRun;
 
 public class IndexerBallQueueSequence extends SequentialCommandGroup {
     private boolean endFlag;
@@ -24,7 +24,7 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
                                                 .andThen(() -> indexer.setPercent(0))
                                                 .andThen(indexer::ballAdded))
                                         .andThen(new InstantCommand(() -> new IndexerBallQueueSequence(indexer, funnel).schedule())) // not a schedule command to avoid stack overflow
-                                        .raceWith(new RunFunnel(funnel, indexer))
+                                        .raceWith(new FunnelRun(funnel))
                         ), indexer::getShooterStagedSensor)
         );
     }

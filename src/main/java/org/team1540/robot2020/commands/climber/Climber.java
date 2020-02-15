@@ -15,16 +15,15 @@ import static org.team1540.robot2020.utils.MotorConfigUtils.POSITION_SLOT_IDX;
 
 public class Climber extends SubsystemBase {
 
-    public static final double climberTicksPerMeter = 175289.47806139;
-    public static final double climberTopPositionMeters = 0.7;
-    private final double closedLoopRamp = 0.1;
-    private final int maxAcceleration = 100000;
-    private final int maxVelocity = 20000;
+    private static final double climberTicksPerMeter = 175289.47806139;
+    private static final double closedLoopRamp = 0.1;
+    private static final int maxAcceleration = 100000;
+    private static final int maxVelocity = 20000;
 
-    private double kP = 0.01;
-    private double kI = 0;
-    private double kD = 0;
-    private double kF = 0.04938;
+    private static final double kP = 0.01;
+    private static final double kI = 0;
+    private static final double kD = 0;
+    private static final double kF = 0.04938;
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);

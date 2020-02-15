@@ -26,7 +26,7 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
     public ShooterLineUpSequence(DriveTrain driveTrain, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localization) {
         this.localization = localization;
 
-        // TODO: fix D constant for flywheel
+        // TODO! fix D constant for flywheel
         this.pointingCommand = new PointToTarget(localization.getNavX(), driveTrain, driverController, localization.getLimelight());
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, FLYWHEEL), 1000, 5800));
         this.hoodCommand = new HoodSetPositionContinuous(hood, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, HOOD), -230, -1));
@@ -40,18 +40,18 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
 
     @Override
     public void execute() {
-        super.execute();
-
+        // TODO: move this to the LocalizationManager
         if (pointingCommand.hasReachedGoal()) {
             lastLidarDistance = localization.getLidar().getDistance();
         }
 
         SmartDashboard.putNumber("ShooterLineUpSequence/lastLidarDistance", lastLidarDistance);
+
+        super.execute();
     }
 
     public boolean isLinedUp() {
         if (!isScheduled()) return false;
         return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal();
     }
-
 }
