@@ -37,13 +37,15 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 public class RobotContainer {
 
+    public static final boolean ENABLE_TESTING_CONTROLLERS = false;
+
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
+    private ChickenXboxController distanceOffsetTestingController;
 
     private LocalizationManager localizationManager = new LocalizationManager();
 
@@ -65,6 +67,9 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         new LocalizationManager().schedule();
+        if (ENABLE_TESTING_CONTROLLERS) {
+            distanceOffsetTestingController = new ChickenXboxController(2);
+        }
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -108,34 +113,36 @@ public class RobotContainer {
             climberSequence.schedule();
         });
 
-        // Testing Controller - Distance offset tuning
-        distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
+        if (ENABLE_TESTING_CONTROLLERS) {
+            // Testing Controller - Distance offset tuning
+            distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
 
-        distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
+            distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
+                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
 
-        distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
+            distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
 
-        ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
-        distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
+            ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
+                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
+            distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
 
-        List<Double> distanceList = new ArrayList<>();
-        List<Double> hoodList = new ArrayList<>();
-        List<Double> flywheelList = new ArrayList<>();
-        distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-            distanceList.add(localizationManager.getLidar().getDistance());
-            hoodList.add(hood.getPosition());
-            flywheelList.add(shooterManualSetpoint.getSetpoint());
-            SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
-        }));
+            List<Double> distanceList = new ArrayList<>();
+            List<Double> hoodList = new ArrayList<>();
+            List<Double> flywheelList = new ArrayList<>();
+            distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
+                distanceList.add(localizationManager.getLidar().getDistance());
+                hoodList.add(hood.getPosition());
+                flywheelList.add(shooterManualSetpoint.getSetpoint());
+                SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
+                SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
+                SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
+            }));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
+            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
+                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
+            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
+        }
     }
 
     private void initDefaultCommands() {
