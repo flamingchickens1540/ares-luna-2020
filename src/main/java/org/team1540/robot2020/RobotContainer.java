@@ -32,6 +32,8 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
 
+    private static final boolean TEST_MODE = false;
+
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
@@ -70,21 +72,23 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
-
-        /*
-                    -= COPILOT =-
-
-             /--------\       /---------\
-           /           '-----'     y     \
-          /            o O o     x   b    \
-         /                         a      |
-        |                                 |
-        |            _________            |
-        |          /          \           |
-        |         /            \          |
-        \________/              \________/
-
-         */
+        /**************************************************************************************************
+         *                                                                                                *
+         *               -= Driver =-                                        -= COPILOT =-                *
+         *                                                                                                *
+         *            ↓------------------------- Shooter Lineup            ↓-------------------------- Climber
+         *         BUMPER            BUMPER <--- Run Indexer            BUMPER            BUMPER          *
+         *       /--------\       /---------\                         /--------\       /---------\        *
+         *     /    (+)   '-----'      Y     \                      /    (+)   '-----'    Y       \       *
+         *    /            o O o    X     B   \                   /             o O o   X    B <--\--- Stop intake
+         *   /      ↑                  A      |                  /      ↑       ^   ^     A <-----|--- Start intake
+         *  |     ← + →         (+)           |                 |    ← + →      '---'--(+)--------|--- Climber
+         *  |       ↓    _________            |                 |      ↓     _________            |       *
+         *  |          /          \           |                 |          /          \           |       *
+         *  |         /            \          |                 |         /            \          |       *
+         *  \________/              \________/                  \________/              \________/        *
+         *                                                                                                *
+         **************************************************************************************************/
 
         // Driver
         ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter, hood, localizationManager);
@@ -205,9 +209,8 @@ public class RobotContainer {
     private void initDashboard() {
         SmartDashboard.putData(new InstCommand(() -> climber.zero(), true));
     }
-
-    // TODO: Use Test mode
-//    private void initManualControlCommands() {
+//
+//    if (TEST_MODE){
 //        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driverController));
 //        funnel.setDefaultCommand(new FunnelManualControl(funnel,
 //                copilotController.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
@@ -221,4 +224,5 @@ public class RobotContainer {
 //                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
 //                testClimbController.getButton(org.checkerframework.checker.units.qual.A)));
 //    }
+//
 }

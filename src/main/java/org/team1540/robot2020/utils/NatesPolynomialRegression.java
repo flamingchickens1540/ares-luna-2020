@@ -34,11 +34,22 @@ public class NatesPolynomialRegression {
         return yarr;
     }
 
+    /**
+     * Add a value to the regression arrays
+     *
+     * @param x X value
+     * @param y Y value
+     */
     public void add(double x, double y) {
         this.x.add(x);
         this.y.add(y);
     }
 
+    /**
+     *
+     * @param x
+     * @return Array
+     */
     public double[] xVector(double x) { // {1, x, x*x, x*x*x, ...}
         double[] poly = new double[degree + 1];
         double xi = 1;
