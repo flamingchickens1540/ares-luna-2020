@@ -82,7 +82,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public Command commandPercent(double percent) {
-        return new StartEndCommand(() -> setPercent(percent), () -> setPercent(0));
+        return new StartEndCommand(() -> setPercent(percent), () -> setPercent(0), this);
     }
 
     public Command commandStop() {
