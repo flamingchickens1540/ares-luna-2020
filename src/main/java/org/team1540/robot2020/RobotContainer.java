@@ -60,7 +60,6 @@ public class RobotContainer {
         initButtonBindings();
         initModeTransitionBindings();
         initDefaultCommands();
-        initDashboard();
 
         // TODO: Replace with a notifier that runs more often than commands
         new LocalizationManager().schedule();
@@ -134,7 +133,7 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
     }
 
     private void initDefaultCommands() {
@@ -185,24 +184,4 @@ public class RobotContainer {
             climber.setRatchet(Climber.RatchetState.DISENGAGED);
         }).andThen(new HoodZeroSequence(hood));
     }
-
-    private void initDashboard() {
-    }
-//
-//    if (TEST_MODE){
-//        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driverController));
-//        funnel.setDefaultCommand(new FunnelManualControl(funnel,
-//                copilotController.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
-//        indexer.setDefaultCommand(new IndexerManualControl(indexer,
-//                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-//        funnel.setDefaultCommand(new FunnelManualControl(funnel,
-//                copilotController.getAxis2D(ChickenXboxController.Hand.LEFT).withDeadzone(0.1)));
-//        intake.setDefaultCommand(new IntakeManualControl(intake,
-//                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).withDeadzone(0.1)));
-//        climber.setDefaultCommand(new ClimberManualControl(climber,
-//                testClimbController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-//                testClimbController.getButton(org.checkerframework.checker.units.qual.A)));
-//            hood.setDefaultCommand(new HoodManualControl(hood, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X)));
-//    }
-//
 }

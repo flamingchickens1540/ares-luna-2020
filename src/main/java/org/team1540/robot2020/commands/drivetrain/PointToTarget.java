@@ -12,7 +12,7 @@ import org.team1540.rooster.wrappers.Limelight;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
 public class PointToTarget extends CommandBase {
 
@@ -20,6 +20,7 @@ public class PointToTarget extends CommandBase {
     private final NavX navx;
     private final Limelight limelight;
     private final ChickenXboxController.Axis throttleAxis;
+    private boolean testingMode;
     private double lastTargetAngle = 0;
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
@@ -31,12 +32,13 @@ public class PointToTarget extends CommandBase {
     private double lastError = Double.NEGATIVE_INFINITY;
 
 
-    public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver) {
+    public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver, boolean testingMode) {
         this.navx = navx;
         this.driveTrain = driveTrain;
         this.driver = driver;
         this.limelight = limelight;
         this.throttleAxis = driver.getAxis(LEFT_X);
+        this.testingMode = testingMode;
 
         setPID(new PIDConfig(0.4, 0.07, 1.0, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
@@ -80,17 +82,18 @@ public class PointToTarget extends CommandBase {
     public void execute() {
         double leftMotors = 0;
         double rightMotors = 0;
-        double triggerValues = 0;
 
-        triggerValues += throttleAxis.withDeadzone(0.12).value();
-
-//        leftMotors += driver.getAxis(LEFT_X).withDeadzone(0.2).value();
-//        rightMotors += driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
-//        triggerValues += driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
-
-        leftMotors += triggerValues;
-        rightMotors += triggerValues;
-
+        if (testingMode) { // TODO: Don't do this
+            leftMotors += driver.getAxis(LEFT_X).withDeadzone(0.2).value();
+            rightMotors += driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
+            double triggerValues = driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
+            leftMotors += triggerValues;
+            rightMotors -= triggerValues;
+        } else {
+            double throttle = throttleAxis.withDeadzone(0.12).value();
+            leftMotors += throttle;
+            rightMotors += throttle;
+        }
 
         double pidOutput = pointController.getOutput(calculateError());
 
