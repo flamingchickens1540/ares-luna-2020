@@ -10,26 +10,19 @@ import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
-import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
-import org.team1540.robot2020.commands.indexer.IndexerManualControl;
 import org.team1540.robot2020.commands.indexer.IndexerPercent;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
-import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.NatesPolynomialRegression;
-import org.team1540.rooster.triggers.DPadAxis;
-
-import java.util.Arrays;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
@@ -94,7 +87,7 @@ public class RobotContainer {
          */
 
         // Driver
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(-130, 5000, localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter, hood);
+        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(localizationManager.getNavX(), driveTrain, driverController, localizationManager.getLimelight(), shooter, hood, localizationManager);
         copilotController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
         copilotController.getButton(RIGHT_BUMPER).whileHeld(new IndexerPercent(indexer, 1.0));
 

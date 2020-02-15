@@ -12,7 +12,7 @@ import org.team1540.rooster.wrappers.Limelight;
 
 import java.util.List;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.LEFT_X;
 
 public class PointToTarget extends CommandBase {
 
@@ -26,8 +26,8 @@ public class PointToTarget extends CommandBase {
 
     private ModifiedMiniPID pointController = new ModifiedMiniPID(0, 0, 0);
 
-    private double finishedDegreesPerSecond = 0.1;
-    private double finishedDegrees = 0.2;
+    private double finishedDegreesPerSecond = 0.5;
+    private double finishedDegrees = 1;
     private double lastError = Double.NEGATIVE_INFINITY;
 
 
@@ -112,12 +112,12 @@ public class PointToTarget extends CommandBase {
 
         SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(navx.getYawRadians()));
         SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(error));
-        SmartDashboard.putBoolean("pointToTarget/reachedGoal", isPointingAtGoalAndStopped());
+        SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
 
         return error;
     }
 
-    public boolean isPointingAtGoalAndStopped() {
+    public boolean hasReachedGoal() {
         return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
     }
 
