@@ -82,13 +82,13 @@ public class PointToTarget extends CommandBase {
         double rightMotors = 0;
         double triggerValues = 0;
 
-//        triggerValues += throttleAxis.value();
+        triggerValues += throttleAxis.withDeadzone(0.12).value();
 
-        leftMotors += driver.getAxis(LEFT_X).withDeadzone(0.2).value();
-        rightMotors += driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
-        triggerValues += driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
+//        leftMotors += driver.getAxis(LEFT_X).withDeadzone(0.2).value();
+//        rightMotors += driver.getAxis(RIGHT_X).withDeadzone(0.2).value();
+//        triggerValues += driver.getAxis(LEFT_TRIG).withDeadzone(0.2).value() - driver.getAxis(RIGHT_TRIG).withDeadzone(0.2).value();
 
-        leftMotors -= triggerValues;
+        leftMotors += triggerValues;
         rightMotors += triggerValues;
 
 
@@ -100,7 +100,7 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-18)) {
+        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-20)) {
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
