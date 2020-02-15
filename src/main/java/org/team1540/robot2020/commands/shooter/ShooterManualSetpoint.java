@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
 public class ShooterManualSetpoint extends CommandBase {
-    private final int INITIAL_RPM = 5000;
+    private double rpm = 5000;
     private Shooter shooter;
     private ChickenXboxController.Axis joystickAxis;
 
@@ -15,18 +15,10 @@ public class ShooterManualSetpoint extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        shooter.setVelocityRPM(INITIAL_RPM);
-    }
-
-    @Override
     public void execute() {
-        double joystickValue = joystickAxis.withDeadzone(0.1).value() * 5;
-        if (joystickValue == 0) {
-            shooter.setVelocityRPM(INITIAL_RPM);
-        }
+        rpm += joystickAxis.withDeadzone(0.1).value() * 5;
 
-        SmartDashboard.putNumber("shooter/manualSetpointRPM", joystickValue);
-        shooter.setVelocityRPM(joystickValue);
+        SmartDashboard.putNumber("shooter/manualSetpointRPM", rpm);
+        shooter.setVelocityRPM(rpm);
     }
 }
