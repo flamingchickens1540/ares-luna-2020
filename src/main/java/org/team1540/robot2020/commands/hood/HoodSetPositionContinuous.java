@@ -27,11 +27,6 @@ public class HoodSetPositionContinuous extends CommandBase {
     }
 
     @Override
-    public boolean isFinished() {
-        return hasReachedGoal();
-    }
-
-    @Override
     public void end(boolean interrupted) {
         hood.setPercent(0);
     }

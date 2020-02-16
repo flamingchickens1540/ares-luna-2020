@@ -26,9 +26,9 @@ public class Intake extends SubsystemBase {
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorA);
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorB);
         rollerMotorA.setSmartCurrentLimit(50);
-        rollerMotorA.setSecondaryCurrentLimit(20, 20000);
+        rollerMotorA.setSecondaryCurrentLimit(30, 20000);
         rollerMotorB.setSmartCurrentLimit(50);
-        rollerMotorB.setSecondaryCurrentLimit(20, 20000);
+        rollerMotorB.setSecondaryCurrentLimit(30, 20000);
 
         rollerMotorB.follow(rollerMotorA, true);
 

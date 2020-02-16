@@ -38,7 +38,7 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 public class RobotContainer {
 
-    public static final boolean ENABLE_TESTING_CONTROLLERS = false;
+    public static final boolean ENABLE_TESTING_CONTROLLERS = true;
 
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
@@ -46,7 +46,7 @@ public class RobotContainer {
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController distanceOffsetTestingController;
+    private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
 
     private LocalizationManager localizationManager = new LocalizationManager();
 
@@ -68,9 +68,6 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         new LocalizationManager().schedule();
-        if (ENABLE_TESTING_CONTROLLERS) {
-            distanceOffsetTestingController = new ChickenXboxController(2);
-        }
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -125,7 +122,7 @@ public class RobotContainer {
                 SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
             }));
 
-            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new HoodManualControl(hood,
+            distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                     distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
             distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
@@ -160,11 +157,15 @@ public class RobotContainer {
             intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
+            localizationManager.getLimelight().setLeds(true);
             logger.info("Mechanism brakes enabled");
         });
 
         disabled.whenActive(new WaitCommand(2)
-                .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
+                .alongWith(new InstCommand(() -> {
+                    localizationManager.getLimelight().setLeds(false);
+                    logger.debug("Disabling mechanism brakes in 2 seconds");
+                }, true))
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
                     driveTrain.setBrakes(NeutralMode.Coast);
                     intake.setBrake(CANSparkMax.IdleMode.kCoast);

@@ -11,7 +11,7 @@ public class IntakeRun extends CommandBase {
         this.intake = intake;
         addRequirements(intake);
 
-        SmartDashboard.putNumber("intake/RPMTarget", 5000);
+        SmartDashboard.putNumber("intake/RPMTarget", 7000);
     }
 
     @Override
