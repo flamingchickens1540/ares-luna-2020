@@ -17,9 +17,9 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
     private ShooterSetVelocityContinuous shootingCommand;
     private HoodSetPositionContinuous hoodCommand;
 
-    private double[] HOOD = new double[]{-71.78778076171875, -77.28832244873047, -95.57478332519531, -105.16877746582031, -139.78330993652344, -224.01043701171875};
-    private double[] DISTANCE = new double[]{352.06299212598424, 261.11811023622045, 183.16535433070865, 154.03149606299212, 120.96062992125984, 63.874015748031496};
-    private double[] FLYWHEEL = new double[]{5000.0, 5000.0, 5000.0, 2870.0, 2480.0, 1780.0};
+    private double[] HOOD = new double[]{-224.01043701171875, -139.78330993652344, -105.16877746582031, -95.57478332519531, -77.28832244873047, -71.78778076171875};
+    private double[] DISTANCE = new double[]{63.874015748031496, 120.96062992125984, 154.03149606299212, 183.16535433070865, 261.11811023622045, 352.06299212598424};
+    private double[] FLYWHEEL = new double[]{1780.0, 2480.0, 2870.0, 5000.0, 5000.0, 5000.0};
 
     private double lastLidarDistance = 200;
 
@@ -35,6 +35,14 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
                 shootingCommand,
                 hoodCommand
         );
+        resetIndicators();
+    }
+
+    private void resetIndicators() {
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", false);
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", false);
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", false);
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", false);
     }
 
     @Override
@@ -56,5 +64,11 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
     public boolean isLinedUp() {
         if (!isScheduled()) return false;
         return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        resetIndicators();
     }
 }

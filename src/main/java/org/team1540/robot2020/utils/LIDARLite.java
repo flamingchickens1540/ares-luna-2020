@@ -2,6 +2,7 @@ package org.team1540.robot2020.utils;
 
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.MedianFilter;
 
 import java.nio.ByteBuffer;
 
@@ -11,6 +12,7 @@ public class LIDARLite {
     private final byte m_port; // Default port is I2C.Port.kOnboard
 
     private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2);
+    private MedianFilter filter = new MedianFilter(5);
 
     public LIDARLite(Port port) {
         m_port = (byte) port.value;
@@ -29,6 +31,10 @@ public class LIDARLite {
 
     // TODO document that this returns inches or whatever?
     public double getDistance() {
+        return filter.calculate(getRawDistance());
+    }
+
+    private double getRawDistance() {
         m_buffer.put(0, (byte) 0x8f); // Special combination for readShort which combines high and low byte registers
         I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
         I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);

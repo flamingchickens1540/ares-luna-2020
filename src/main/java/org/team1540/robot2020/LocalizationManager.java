@@ -10,8 +10,8 @@ import org.team1540.robot2020.utils.NavX;
 
 
 public class LocalizationManager extends CommandBase {
-    // TODO: Eventually, this should have its hardware compleately private and just return transforms
-    private Limelight limelight = new Limelight("limelight-a");
+    // TODO: Eventually, this should have its hardware compleately encapsulated and just return transforms
+    private Limelight limelight = new Limelight("limelight");
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
     private NavX navx = new NavX(SPI.Port.kMXP);
 

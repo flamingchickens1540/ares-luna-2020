@@ -37,7 +37,7 @@ public class LookupTableUtils {
                 double upperX = xarr[i + 1];
                 double upperY = yarr[i + 1];
 
-                if (lowerX < input) { // HOOD[i-1] < distance < HOOD[i+1]
+                if (lowerX < input && input < upperX) { // HOOD[i-1] < distance < HOOD[i+1]
                     return line(lowerX, lowerY, upperX, upperY, input);
                 }
             }
