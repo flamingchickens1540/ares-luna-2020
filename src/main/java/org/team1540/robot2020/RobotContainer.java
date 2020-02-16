@@ -68,6 +68,11 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         new LocalizationManager().schedule();
+
+        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
+            logger.info("Turning off limelight LEDs...");
+            localizationManager.getLimelight().setLeds(false);
+        }, true), RobotState::isEnabled)).schedule();
     }
 
     @SuppressWarnings("DanglingJavadoc")
