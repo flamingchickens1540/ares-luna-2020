@@ -19,7 +19,7 @@ public class ChickenRamseteCommand extends SequentialCommandGroup {
     }
 
     public ChickenRamseteCommand(Pose2d end, DriveTrain driveTrain, boolean reversed) {
-        this(end, List.of(), driveTrain);
+        this(end, List.of(), driveTrain, reversed);
     }
 
     public ChickenRamseteCommand(Pose2d end, List<Translation2d> waypoints, DriveTrain driveTrain) {

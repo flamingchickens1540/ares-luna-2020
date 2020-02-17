@@ -6,16 +6,16 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public class RamseteConfig {
-    public static final double ksVolts = 0.669;
-    public static final double kvVoltSecondsPerMeter = 2.76;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.662;
+    public static final double ksVolts = 0.127;
+    public static final double kvVoltSecondsPerMeter = 2.6;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.292;
 
 //    Ramsete PID controllers
-//    public final double kPDriveVel = 19.3;
-    public static final double kPDriveVel = 1;
+//    public final double kPDriveVel = 1.3;
+    public static final double kPDriveVel = 0.3;
 //    public final double kPDriveVel = 0;
 
-    private static final double kTrackwidthMeters = 0.761388065;
+    private static final double kTrackwidthMeters = 0.67978793613;
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackwidthMeters);
 
@@ -28,7 +28,9 @@ public class RamseteConfig {
     public static final double kRamseteZeta = 0.7;
 
     public static final double kMaxSpeedMetersPerSecond = 2;
+//    public static final double kMaxSpeedMetersPerSecond = 1;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+//    public static final double kMaxAccelerationMetersPerSecondSquared = 0.5;
 
     public static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(

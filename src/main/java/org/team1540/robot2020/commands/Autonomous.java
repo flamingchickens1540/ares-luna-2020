@@ -14,10 +14,12 @@ import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterSequence;
 import org.team1540.robot2020.commands.shooter.ShooterSpinUp;
+import org.team1540.robot2020.utils.InstCommand;
 
 public class Autonomous extends SequentialCommandGroup {
     public Autonomous(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter) {
         addCommands(
+                new InstCommand(() -> driveTrain.setEncoderticks(0)),
                 new InstantCommand(() -> driveTrain.resetOdometry(new Pose2d())),
 //                Move to trench while intaking and indexing
                 race(

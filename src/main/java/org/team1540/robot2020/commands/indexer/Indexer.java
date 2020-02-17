@@ -37,7 +37,7 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         MotorConfigUtils.setDefaultTalonFXConfig(indexerMotor);
-        indexerMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 100, 0, 0));
+        indexerMotor.configGetStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 100, 0, 0), 50);
 
         indexerMotor.setInverted(true);
 

@@ -15,9 +15,8 @@ import org.team1540.robot2020.utils.NavX;
 
 public class DriveTrain extends SubsystemBase {
 
-    public static final double kTrackwidthMeters = 0.761388065;
-
-    private final double drivetrainTicksPerMeter = 1052.7398858397396;
+//    private final double drivetrainTicksPerMeter = 1052.7398858397396;
+    private final double drivetrainTicksPerMeter = 49231;
 
     private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
     private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
@@ -40,7 +39,7 @@ public class DriveTrain extends SubsystemBase {
     public DriveTrain(NavX navx) {
         initMotors();
         this.navx = navx;
-        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+        odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
     }
 
     private void initMotors() {
@@ -74,7 +73,7 @@ public class DriveTrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        odometry.update(Rotation2d.fromDegrees(getHeading()), driveMotorLeftA.getDistanceMeters(), driveMotorRightA.getDistanceMeters());
+        odometry.update(new Rotation2d(getHeading()), driveMotorLeftA.getDistanceMeters(), driveMotorRightA.getDistanceMeters());
 
         logState();
     }
@@ -102,7 +101,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+        odometry.resetPosition(pose, new Rotation2d(getHeading()));
     }
 
     public void setVoltage(double leftVolts, double rightVolts) {
@@ -130,5 +129,11 @@ public class DriveTrain extends SubsystemBase {
 
     public double getHeading() {
         return Math.IEEEremainder(navx.getYawRadians() + navxOffset, 360);
+    }
+
+    public void setEncoderticks(int distance) {
+        for (ChickenTalonFX talon : driveMotorAll) {
+            talon.setSelectedSensorPosition(distance);
+        }
     }
 }
