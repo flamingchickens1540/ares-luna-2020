@@ -28,4 +28,8 @@ public class NavX {
     public double getRate() {
         return -Math.toRadians(navx.getRate());
     }
+
+    public void resetAngle() {
+        navx.reset();
+    }
 }

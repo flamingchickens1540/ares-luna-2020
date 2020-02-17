@@ -34,4 +34,12 @@ public class LocalizationManager {
         SmartDashboard.putNumber("telemetry/angleRadians", navx.getAngleRadians());
         SmartDashboard.putNumber("telemetry/yawRadians", navx.getYawRadians());
     }
+
+    public double getHeading() {
+        return navx.getYawRadians();
+    }
+
+    public void resetNavX() {
+        navx.resetAngle();
+    }
 }

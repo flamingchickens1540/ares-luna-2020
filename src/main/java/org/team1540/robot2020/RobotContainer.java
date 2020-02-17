@@ -18,6 +18,7 @@ import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
+import org.team1540.robot2020.commands.drivetrain.TurnToAngle;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.indexer.Indexer;
@@ -28,8 +29,7 @@ import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.BACK;
-import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.X;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 //import org.team1540.robot2020.commands.controlpanel.ControlPanelManualControl;
 
@@ -73,8 +73,11 @@ public class RobotContainer {
 
         driverController.getButton(X).whenPressed(new SequentialCommandGroup(
                 new InstCommand(() -> driveTrain.setEncoderticks(0)),
-                new InstCommand(() -> driveTrain.resetOdometry(new Pose2d()))
+                new InstCommand(() -> driveTrain.resetOdometry(new Pose2d())),
+                new InstCommand(localizationManager::resetNavX)
         ));
+
+        driverController.getButton(A).whenPressed(new TurnToAngle(driveTrain, localizationManager, Math.PI));
     }
 
     private void initDefaultCommands() {
