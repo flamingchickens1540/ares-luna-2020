@@ -30,11 +30,19 @@ public class ChickenRamseteCommand extends SequentialCommandGroup {
             .setKinematics(DriveTrain.kDriveKinematics)
             .addConstraint(autoVoltageConstraint);
 
-    public ChickenRamseteCommand(List<Translation2d> waypoints, Pose2d end, DriveTrain driveTrain) {
-        this(waypoints, end, driveTrain, false);
+    public ChickenRamseteCommand(Pose2d end, DriveTrain driveTrain) {
+        this(end, driveTrain, false);
     }
 
-    public ChickenRamseteCommand(List<Translation2d> waypoints, Pose2d end, DriveTrain driveTrain, boolean reversed) {
+    public ChickenRamseteCommand(Pose2d end, DriveTrain driveTrain, boolean reversed) {
+        this(end, List.of(), driveTrain, reversed);
+    }
+
+    public ChickenRamseteCommand(Pose2d end, List<Translation2d> waypoints, DriveTrain driveTrain) {
+        this(end, waypoints, driveTrain, false);
+    }
+
+    public ChickenRamseteCommand(Pose2d end, List<Translation2d> waypoints, DriveTrain driveTrain, boolean reversed) {
         config.setReversed(reversed);
 
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
