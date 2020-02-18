@@ -12,8 +12,10 @@ public class Limelight {
     private static final double HORIZONTAL_FOV = Math.toRadians(59.6);
     private static final double VERTICAL_FOV = Math.toRadians(45.7);
     private static final Vector2D CAM_RESOLUTION = new Vector2D(320, 240);
-
     private final NetworkTable limelightTable;
+    private double limelightHeight;
+    private double limelightAngle;
+    private double targetHeight;
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -61,6 +63,9 @@ public class Limelight {
         return (double) limelightTable.getEntry("tv").getNumber(0) > 0;
     }
 
+    public boolean getLeds() {
+        return limelightTable.getEntry("ledMode").getDouble(1) == 0;
+    }
 
     /**
      * Sets limelight's green LEDs on or off.
@@ -74,10 +79,6 @@ public class Limelight {
         }
     }
 
-    public boolean getLeds() {
-        return limelightTable.getEntry("ledMode").getDouble(1) == 0;
-    }
-
     /**
      * Sets limelight to driver cam or vision mode.
      *
@@ -88,17 +89,16 @@ public class Limelight {
         NetworkTableInstance.getDefault().flush();
     }
 
+    public long getPipeline() {
+        return Math.round((double) limelightTable.getEntry("getpipe").getNumber(-1));
+    }
+
     public void setPipeline(double id) {
         if (getPipeline() != id) {
             limelightTable.getEntry("pipeline").setNumber(id);
             NetworkTableInstance.getDefault().flush();
         }
     }
-
-    public long getPipeline() {
-        return Math.round((double) limelightTable.getEntry("getpipe").getNumber(-1));
-    }
-
 
     public List<Vector2D> getCorners() {
         Double[] xCorners = limelightTable.getEntry("tcornx").getDoubleArray(new Double[]{});
@@ -110,4 +110,27 @@ public class Limelight {
         return cornerList;
     }
 
+    public double getDistanceFromSelectedTarget() {
+        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
+    }
+
+    public double getDistanceFromSelectedTarget(double targetHeight) {
+        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
+    }
+
+    public double getDistanceFromSelectedTarget(double limelightAngle, double limelightHeight, double targetHeight) {
+        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
+    }
+
+    public double getHeight() {
+        return limelightHeight;
+    }
+
+    public void setHeight(double height) {
+        this.limelightHeight = height;
+    }
+
+    public void setTargetHeight(double targetHeight) {
+        this.targetHeight = targetHeight;
+    }
 }

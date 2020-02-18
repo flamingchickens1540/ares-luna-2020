@@ -30,7 +30,6 @@ public class PointDrive extends CommandBase {
 
     public PointDrive(DriveTrain driveTrain, NavX navx, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
-        this.navx = navx;
 
         this.pointAxis = pointAxis.withDeadzone(0.2);
         this.throttleAxis = throttleAxis.withDeadzone(0.12);
