@@ -75,6 +75,11 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
     }
 
+    public void configSoftLimitMeters(double min, double max) {
+        climberMotor.configForwardSoftLimitThreshold((int) climberMetersToTicks(min), (int) climberMetersToTicks(max));
+        climberMotor.configReverseSoftLimitThreshold((int) climberMetersToTicks(min), (int) climberMetersToTicks(max));
+    }
+
     public void setPercent(double percent) {
         climberMotor.set(ControlMode.PercentOutput, percent);
     }
