@@ -9,7 +9,7 @@ import org.team1540.robot2020.utils.InstCommand;
 
 public class ClimberSensorSequence extends SequentialCommandGroup {
 
-    private final double openHookMeters = 0.5;
+    private final double openHookMeters = 0.6;
 
     public ClimberSensorSequence(Climber climber, ChickenXboxController.Axis axis) {
         addCommands(

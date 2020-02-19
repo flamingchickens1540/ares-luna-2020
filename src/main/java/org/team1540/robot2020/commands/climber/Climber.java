@@ -76,6 +76,7 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
+
     }
 
     public void configSoftLimitMeters(double min, double max) {
@@ -137,6 +138,7 @@ public class Climber extends SubsystemBase {
     public void setRatchet(RatchetState state) {
         climberMotor.configPeakOutputForward(state == RatchetState.ENGAGED ? 0 : 1);
         ratchetServo.set(state.servoPosition);
+        SmartDashboard.putBoolean("climber/ratchetEngaged", state == RatchetState.ENGAGED);
     }
 
     public Command commandRatchet(RatchetState state) {
