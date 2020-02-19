@@ -16,8 +16,12 @@ public class ClimberSensorSequence extends SequentialCommandGroup {
                 new InstCommand(()->climber.setRatchet(Climber.RatchetState.DISENGAGED)),
                 new WaitCommand(0.35),
                 new ClimberMoveToMetersUnsafe(climber, () -> openHookMeters),
-                new ParallelCommandGroup(
+                parallel(
                         new ClimberJoystickControl(climber, axis),
-                        new ActivateRatchetAfterAboveGroundForPeriod(climber, 1, 10)));
+                        sequence(
+                                new ActivateRatchetAfterAboveGroundForPeriod(climber, 1, 0.6),
+                                new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ENGAGED))
+                        ))
+        );
     }
 }

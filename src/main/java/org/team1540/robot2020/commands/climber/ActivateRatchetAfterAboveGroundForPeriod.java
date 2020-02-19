@@ -32,7 +32,6 @@ public class ActivateRatchetAfterAboveGroundForPeriod extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
     }
 
     @Override
