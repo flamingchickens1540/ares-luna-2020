@@ -17,7 +17,7 @@ public class ClimberJoystickControl extends CommandBase {
 
     @Override
     public void initialize() {
-        climber.configSoftLimitMeters(minHeight, maxHeight);
+//        climber.configSoftLimitMeters(minHeight, maxHeight);
     }
 
     @Override
