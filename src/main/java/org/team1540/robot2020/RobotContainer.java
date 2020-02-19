@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
+import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
@@ -97,6 +98,7 @@ public class RobotContainer {
         copilotController.getButton(DPadAxis.UP).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
+        copilotController.getButton(Y).whenPressed(new ClimberSensorSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
         ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {

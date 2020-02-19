@@ -60,7 +60,7 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return (double) limelightTable.getEntry("tv").getNumber(0) > 0;
+        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && getTargetAngles().getY() > Math.toRadians(-20);
     }
 
     public boolean getLeds() {
