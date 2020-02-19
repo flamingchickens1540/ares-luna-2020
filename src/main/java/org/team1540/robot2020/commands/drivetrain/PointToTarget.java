@@ -26,6 +26,9 @@ public class PointToTarget extends CommandBase {
     private double finishedDegreesPerSecond = 0.5;
     private double finishedDegrees = 1;
     private double lastError = Double.NEGATIVE_INFINITY;
+    private PIDConfig config;
+
+    private boolean foundTarget;
 
 
     public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver, boolean testingMode) {
@@ -47,6 +50,7 @@ public class PointToTarget extends CommandBase {
     @Override
     public void initialize() {
         lastTargetAngle = navx.getAngleRadians();
+        foundTarget = false;
 
         double p = SmartDashboard.getNumber("pointToTarget/P", 0);
         double i = SmartDashboard.getNumber("pointToTarget/I", 0);
@@ -58,7 +62,8 @@ public class PointToTarget extends CommandBase {
         double finishedDegreesPerSecond = SmartDashboard.getNumber("pointToTarget/finishedDegreesPerSecond", 0);
         this.finishedDegrees = finishedDegrees;
         this.finishedDegreesPerSecond = finishedDegreesPerSecond;
-        setPID(new PIDConfig(p, i, d, IMax, outputMax, C));
+        config = new PIDConfig(p, i, d, IMax, outputMax, C);
+        setPID(config);
     }
 
     private void setPID(PIDConfig config) {
@@ -89,9 +94,16 @@ public class PointToTarget extends CommandBase {
             double throttle = throttleAxis.withDeadzone(0.12).value();
             leftMotors += throttle;
             rightMotors += throttle;
+            double actualCValue = Math.abs(throttle) > 0.12 ? 0 : config.c;
+            SmartDashboard.putNumber("pointToTarget/actualCValue", actualCValue);
+            pointController.setC(actualCValue);
         }
 
         double pidOutput = pointController.getOutput(calculateError());
+
+        if (!foundTarget) {
+            pidOutput = 0;
+        }
 
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
@@ -100,6 +112,7 @@ public class PointToTarget extends CommandBase {
 
     private double calculateError() {
         if (limelight.isTargetFound()) {
+            foundTarget = true;
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
