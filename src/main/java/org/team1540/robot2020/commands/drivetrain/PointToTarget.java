@@ -36,7 +36,7 @@ public class PointToTarget extends CommandBase {
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
 
-        setPID(new PIDConfig(0.4, 0.07, 1.0, 0.008, 0.25, 0.013));
+        setPID(new PIDConfig(0.4, 0.07, 0.9, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
 
         SmartDashboard.putNumber("pointToTarget/finishedDegrees", finishedDegrees);
@@ -99,7 +99,7 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        if (limelight.isTargetFound() && limelight.getTargetAngles().getY() > Math.toRadians(-21)) {
+        if (limelight.isTargetFound()) {
             Vector2D targetAngles = limelight.getTargetAngles();
             lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
             SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
