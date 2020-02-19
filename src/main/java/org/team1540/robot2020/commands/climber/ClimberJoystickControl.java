@@ -22,6 +22,6 @@ public class ClimberJoystickControl extends CommandBase {
 
     @Override
     public void execute() {
-        climber.setPercent(axis.value());
+        climber.setPercent(axis.withDeadzone(0.12).value());
     }
 }

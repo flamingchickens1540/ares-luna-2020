@@ -94,7 +94,7 @@ public class RobotContainer {
         copilotController.getButton(DPadAxis.UP).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
-        copilotController.getButton(Y).whenPressed(new ClimberSensorSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y)));
+        copilotController.getButton(Y).whenPressed(new ClimberSensorSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
         ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {

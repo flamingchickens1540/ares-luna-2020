@@ -70,6 +70,7 @@ public class Climber extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("climber/position", getPositionMeters());
+        SmartDashboard.putNumber("climber/height voltage", getGroundSensorVoltage());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber("climber/error", climberMotor.getClosedLoopError());
         SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
@@ -118,7 +119,7 @@ public class Climber extends SubsystemBase {
         return Math.abs(getPositionMeters() - position) <= toleranceMeters;
     }
 
-    public double getHeight() {
+    public double getGroundSensorVoltage() {
         return distanceSensor.getVoltage();
     }
 
