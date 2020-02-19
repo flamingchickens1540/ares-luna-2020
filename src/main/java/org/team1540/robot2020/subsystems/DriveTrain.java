@@ -13,11 +13,12 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.shouldbeinrooster.Encoder;
 import org.team1540.robot2020.shouldbeinrooster.NavX;
 import org.team1540.robot2020.shouldbeinrooster.TalonEncoder;
+import org.team1540.rooster.util.ChickenXboxController;
+import org.team1540.rooster.wrappers.ChickenTalon;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -55,16 +56,18 @@ public class DriveTrain extends SubsystemBase {
     private BaseMotorController[] driveMotorLeft;
     private BaseMotorController[] driveMotorRight;
 
-    private TalonSRX driveMotorLeftA = new TalonSRX(13);
-    private VictorSPX driveMotorLeftB = new VictorSPX(12);
-    private VictorSPX driveMotorLeftC = new VictorSPX(11);
+    public ChickenTalon driveMotorLeftA = new ChickenTalon(13);
+    public VictorSPX driveMotorLeftB = new VictorSPX(12);
+    public VictorSPX driveMotorLeftC = new VictorSPX(11);
 
-    private TalonSRX driveMotorRightA = new TalonSRX(1);
-    private VictorSPX driveMotorRightC = new VictorSPX(3);
-    private VictorSPX driveMotorRightB = new VictorSPX(2);
+    public ChickenTalon driveMotorRightA = new ChickenTalon(1);
+    public VictorSPX driveMotorRightC = new VictorSPX(3);
+    public VictorSPX driveMotorRightB = new VictorSPX(2);
 
     private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
+
+    private ChickenXboxController copilot;
 
     private final NavX navx = new NavX(Port.kMXP);
 
@@ -73,7 +76,8 @@ public class DriveTrain extends SubsystemBase {
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
 
-    public DriveTrain() {
+    public DriveTrain(ChickenXboxController copilot) {
+        this.copilot = copilot;
         initMotors();
         initEncoders();
     }
@@ -165,6 +169,9 @@ public class DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("drive/odometry/X", postTranslation.getX());
         SmartDashboard.putNumber("drive/odometry/Y", postTranslation.getY());
         SmartDashboard.putNumber("drive/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
+
+//        driveMotorRightA.set(ControlMode.PercentOutput, copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.1).value());
+//        driveMotorRightB.set(ControlMode.PercentOutput, copilot.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1).value());
     }
 
     public Pose2d getPose() {

@@ -7,8 +7,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.rooster.wrappers.ChickenTalon;
 
 public class CargoMech extends SubsystemBase {
-    private ChickenTalon cargoRollerTop = new ChickenTalon(9);
+    public ChickenTalon cargoRollerTop = new ChickenTalon(9);
 
+    public CargoMech() {
+        cargoRollerTop.setNeutralMode(NeutralMode.Brake);
+    }
     public void setRollerSpeed(double speed) {
         cargoRollerTop.set(ControlMode.PercentOutput, speed);
     }

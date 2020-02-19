@@ -18,6 +18,8 @@ public class Robot extends TimedRobot {
     private static final Logger logger = Logger.getLogger(Robot.class);
 
     private Command m_autonomousCommand;
+    private boolean initContainerFlag = true;
+
     private RobotContainer container;
 
     @Override
@@ -49,10 +51,22 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        if (initContainerFlag) {
+            container.init(false);
+        }
+        initContainerFlag = false;
     }
 
     @Override
     public void disabledPeriodic() {
+    }
+
+    @Override
+    public void teleopInit() {
+    }
+
+    @Override
+    public void teleopPeriodic() {
     }
 
     @Override
@@ -70,10 +84,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopInit() {
+    public void testInit() {
+        initContainerFlag = true;
+        container.init(true);
     }
 
     @Override
-    public void teleopPeriodic() {
+    public void testPeriodic() {
     }
 }
