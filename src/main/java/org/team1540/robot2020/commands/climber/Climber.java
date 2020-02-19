@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,7 @@ public class Climber extends SubsystemBase {
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
+    private AnalogInput distanceSensor = new AnalogInput(0);
 
 
     public Climber() {
@@ -68,11 +70,18 @@ public class Climber extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("climber/position", getPositionMeters());
+        SmartDashboard.putNumber("climber/height voltage", getGroundSensorVoltage());
         SmartDashboard.putNumber("climber/velocity", climberMotor.getSelectedSensorVelocity());
         SmartDashboard.putNumber("climber/error", climberMotor.getClosedLoopError());
         SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
+
+    }
+
+    public void configSoftLimitMeters(double min, double max) {
+        climberMotor.configForwardSoftLimitThreshold((int) climberMetersToTicks(min), (int) climberMetersToTicks(max));
+        climberMotor.configReverseSoftLimitThreshold((int) climberMetersToTicks(min), (int) climberMetersToTicks(max));
     }
 
     public void setPercent(double percent) {
@@ -111,6 +120,10 @@ public class Climber extends SubsystemBase {
         return Math.abs(getPositionMeters() - position) <= toleranceMeters;
     }
 
+    public double getGroundSensorVoltage() {
+        return distanceSensor.getVoltage();
+    }
+
     public enum RatchetState {
         ENGAGED(0),
         DISENGAGED(0.472);
@@ -125,6 +138,7 @@ public class Climber extends SubsystemBase {
     public void setRatchet(RatchetState state) {
         climberMotor.configPeakOutputForward(state == RatchetState.ENGAGED ? 0 : 1);
         ratchetServo.set(state.servoPosition);
+        SmartDashboard.putBoolean("climber/ratchetEngaged", state == RatchetState.ENGAGED);
     }
 
     public Command commandRatchet(RatchetState state) {
