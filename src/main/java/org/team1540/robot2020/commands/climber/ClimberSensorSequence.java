@@ -9,11 +9,11 @@ public class ClimberSensorSequence extends SequentialCommandGroup {
 
     private final double openHookMeters = 0.5;
 
-    public ClimberSensorSequence(Climber climber, AnalogInput heightSensor, ChickenXboxController.Axis axis) {
+    public ClimberSensorSequence(Climber climber, ChickenXboxController.Axis axis) {
         addCommands(
                 new ClimberMoveToMeters(climber, () -> openHookMeters),
                 new ParallelCommandGroup(
                         new ClimberJoystickControl(climber, axis),
-                        new ActivateRatchetWhenLifting(climber, heightSensor)));
+                        new ActivateRatchetWhenLifting(climber)));
     }
 }

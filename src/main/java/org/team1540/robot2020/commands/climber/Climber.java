@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +30,7 @@ public class Climber extends SubsystemBase {
 
     private TalonFX climberMotor = new TalonFX(13);
     private Servo ratchetServo = new Servo(9);
+    private AnalogInput distanceSensor = new AnalogInput(0);
 
 
     public Climber() {
@@ -114,6 +116,10 @@ public class Climber extends SubsystemBase {
 
     public boolean atPositionMeters(double position, double toleranceMeters) {
         return Math.abs(getPositionMeters() - position) <= toleranceMeters;
+    }
+
+    public double getHeight() {
+        return distanceSensor.getVoltage();
     }
 
     public enum RatchetState {
