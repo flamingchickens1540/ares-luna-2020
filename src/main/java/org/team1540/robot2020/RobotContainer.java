@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
+import org.team1540.robot2020.commands.climber.ClimberNonSensorControl;
 import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
@@ -103,6 +104,11 @@ public class RobotContainer {
             }
             climberSequence.schedule();
         });
+
+        copilotController.getButton(START).and(copilotController.getButton(BACK)).whenActive(new ClimberNonSensorControl(
+                climber,
+                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+                copilotController.getButton(START)));
 
         if (ENABLE_TESTING_CONTROLLERS) {
             // Testing Controller - Distance offset tuning
