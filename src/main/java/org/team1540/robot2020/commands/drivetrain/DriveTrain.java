@@ -2,22 +2,17 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.ChickenTalonFX;
 import org.team1540.robot2020.utils.MotorConfigUtils;
-import org.team1540.robot2020.utils.NavX;
 
 public class DriveTrain extends SubsystemBase {
 
     public static final double kTrackwidthMeters = 0.761388065;
 
-    private final double drivetrainTicksPerMeter = 1052.7398858397396;
+    private final double drivetrainTicksPerMeter = 49231;
 
     private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
     private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
@@ -102,10 +97,15 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getDistanceLeft() {
-        return driveMotorRightA.getDistanceMeters();
+        return driveMotorLeftA.getDistanceMeters();
     }
 
     public double getDistanceRight() {
         return driveMotorRightA.getDistanceMeters();
+    }
+
+    public void resetEncoders() {
+        driveMotorLeftA.setSelectedSensorPosition(0);
+        driveMotorRightA.setSelectedSensorPosition(0);
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.team1540.robot2020.LocalizationManager;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class FollowRamsetePath extends SequentialCommandGroup {
                     kDriveKinematics,
                     maxVoltage);
 
-    public FollowRamsetePath(DriveTrain driveTrain, List<Pose2d> waypoints, boolean reversed) {
+    public FollowRamsetePath(DriveTrain driveTrain, LocalizationManager localizationManager, List<Pose2d> waypoints, boolean reversed) {
 
         TrajectoryConfig trajectoryConfig =
                 new TrajectoryConfig(maxVelocityMetersPerSecond, maxAccelerationMetersPerSecondSq)
@@ -60,7 +61,7 @@ public class FollowRamsetePath extends SequentialCommandGroup {
 
         RamseteCommand ramseteCommand = new RamseteCommand(
                 exampleTrajectory,
-                driveTrain::getPose,
+                localizationManager::odometryGetPose,
                 new RamseteController(kRamseteB, kRamseteZeta),
                 new SimpleMotorFeedforward(ksVolts,
                         kvVoltSecondsPerMeter,

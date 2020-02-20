@@ -10,6 +10,8 @@ import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.LookupTableUtils;
+import org.team1540.rooster.datastructures.threed.Transform3D;
+import org.team1540.rooster.datastructures.utils.UnitsUtils;
 
 public class ShooterLineUpSequence extends ParallelCommandGroup {
     private LocalizationManager localization;
@@ -21,14 +23,18 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
     private double[] DISTANCE = new double[]{63.874015748031496, 120.96062992125984, 154.03149606299212, 183.16535433070865, 261.11811023622045, 352.06299212598424};
     private double[] FLYWHEEL = new double[]{1780.0, 2480.0, 2870.0, 5000.0, 5000.0, 5000.0};
 
-    private double lastLidarDistance = 200;
-
     public ShooterLineUpSequence(DriveTrain driveTrain, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localization) {
         this.localization = localization;
 
-        this.pointingCommand = new PointToTarget(driveTrain, localization.getNavX(), localization.getLimelight(), driverController, false);
-        this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, FLYWHEEL), 1000, 5800));
-        this.hoodCommand = new HoodSetPositionContinuous(hood, () -> MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(lastLidarDistance, DISTANCE, HOOD), -230, -1));
+        this.pointingCommand = new PointToTarget(driveTrain, localization, driverController, false);
+        this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> {
+            double norm = getDistanceInchesOrDefault(localization);
+            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 1000, 5800);
+        });
+        this.hoodCommand = new HoodSetPositionContinuous(hood, () -> {
+            double norm = getDistanceInchesOrDefault(localization);
+            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -230, -1);
+        });
 
         addCommands(
                 pointingCommand,
@@ -36,6 +42,12 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
                 hoodCommand
         );
         resetIndicators();
+    }
+
+    private double getDistanceInchesOrDefault(LocalizationManager localization) {
+        Transform3D robotToRearHoleTransform = localization.getRobotToRearHoleTransform();
+        if (robotToRearHoleTransform == null) return 100; // default cm
+        return UnitsUtils.metersToInches(robotToRearHoleTransform.getPosition().getNorm());
     }
 
     private void resetIndicators() {
@@ -47,13 +59,8 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
 
     @Override
     public void execute() {
-        // TODO: move this to the LocalizationManager
-        if (pointingCommand.hasReachedGoal()) {
-            lastLidarDistance = localization.getLidar().getDistance();
-        }
-
-        SmartDashboard.putNumber("ShooterLineUpSequence/lastLidarDistance", lastLidarDistance);
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp());
+        SmartDashboard.putNumber("ShooterLineUpSequence/getDistanceInchesOrDefault", getDistanceInchesOrDefault(localization));
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp(ll));
         SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", pointingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());

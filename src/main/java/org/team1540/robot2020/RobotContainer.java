@@ -125,7 +125,7 @@ public class RobotContainer {
             List<Double> hoodList = new ArrayList<>();
             List<Double> flywheelList = new ArrayList<>();
             distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-                distanceList.add(localizationManager.getLidar().getDistance());
+                distanceList.add(localizationManager.getCorrectedLidarDistance());
                 hoodList.add(hood.getPosition());
                 flywheelList.add(shooterManualSetpoint.getSetpoint());
                 SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
@@ -136,14 +136,14 @@ public class RobotContainer {
             distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                     distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
+            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, driverController, true));
         }
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager.getNavX(),
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
                 driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));

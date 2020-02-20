@@ -60,7 +60,11 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && getTargetAngles().getY() > Math.toRadians(-20);
+        double y = getTargetAngles().getY();
+        double x = getTargetAngles().getX();
+        boolean verticalInBounds = y > Math.toRadians(-20);
+        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
+        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
     }
 
     public boolean getLeds() {
@@ -108,29 +112,5 @@ public class Limelight {
             cornerList.add(new Vector2D(xCorners[i], yCorners[i]));
         }
         return cornerList;
-    }
-
-    public double getDistanceFromSelectedTarget() {
-        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
-    }
-
-    public double getDistanceFromSelectedTarget(double targetHeight) {
-        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
-    }
-
-    public double getDistanceFromSelectedTarget(double limelightAngle, double limelightHeight, double targetHeight) {
-        return (targetHeight - limelightHeight) / Math.tan(limelightAngle + getTargetAngles().getY());
-    }
-
-    public double getHeight() {
-        return limelightHeight;
-    }
-
-    public void setHeight(double height) {
-        this.limelightHeight = height;
-    }
-
-    public void setTargetHeight(double targetHeight) {
-        this.targetHeight = targetHeight;
     }
 }
