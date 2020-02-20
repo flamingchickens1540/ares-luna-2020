@@ -8,9 +8,9 @@ import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.Set;
 
-public class ClimberManualJoystickAndRatchetControl extends SequentialCommandGroup {
+public class ClimberNonSensorControl extends SequentialCommandGroup {
 
-    public ClimberManualJoystickAndRatchetControl(Climber climber, ChickenXboxController.Axis axis, Button button) {
+    public ClimberNonSensorControl(Climber climber, ChickenXboxController.Axis axis, Button button) {
         addCommands(
                 new InstCommand(()->climber.setRatchet(Climber.RatchetState.DISENGAGED)),
                 new WaitCommand(0.35),
