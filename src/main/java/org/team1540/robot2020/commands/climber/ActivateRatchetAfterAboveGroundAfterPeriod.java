@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.utils.Timer;
 
-public class ActivateRatchetAfterAboveGroundForPeriod extends CommandBase {
+public class ActivateRatchetAfterAboveGroundAfterPeriod extends CommandBase {
 
     private Climber climber;
     private Timer timer;
     private double period;
     private final double heightVoltageThreshold;
 
-    public ActivateRatchetAfterAboveGroundForPeriod(Climber climber, double period, double heightThreshold) {
+    public ActivateRatchetAfterAboveGroundAfterPeriod(Climber climber, double period, double heightThreshold) {
         this.period = period;
         this.climber = climber;
         this.heightVoltageThreshold = heightThreshold;

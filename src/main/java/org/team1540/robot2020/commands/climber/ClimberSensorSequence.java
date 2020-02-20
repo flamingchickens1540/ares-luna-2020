@@ -1,7 +1,5 @@
 package org.team1540.robot2020.commands.climber;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -19,7 +17,7 @@ public class ClimberSensorSequence extends SequentialCommandGroup {
                 parallel(
                         new ClimberJoystickControl(climber, axis),
                         sequence(
-                                new ActivateRatchetAfterAboveGroundForPeriod(climber, 1, 0.6),
+                                new ActivateRatchetAfterAboveGroundAfterPeriod(climber, 1, 0.6),
                                 new InstCommand(() -> climber.setRatchet(Climber.RatchetState.ENGAGED))
                         ))
         );
