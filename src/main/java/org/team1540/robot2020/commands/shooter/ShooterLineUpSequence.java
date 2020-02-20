@@ -60,7 +60,7 @@ public class ShooterLineUpSequence extends ParallelCommandGroup {
     @Override
     public void execute() {
         SmartDashboard.putNumber("ShooterLineUpSequence/getDistanceInchesOrDefault", getDistanceInchesOrDefault(localization));
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp(ll));
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", pointingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());
