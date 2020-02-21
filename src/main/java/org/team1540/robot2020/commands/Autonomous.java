@@ -31,12 +31,20 @@ public class Autonomous extends ParallelCommandGroup {
                 sequence(
                     new ChickenRamseteCommand(
                             startingPose,
-                            new Pose2d(2, 0, new Rotation2d(0)),
+                            startingPose,
+                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
+                            false,
+                            localizationManager,
+                            driveTrain
+                    ),
+                    new ChickenRamseteCommand(
+                            startingPose,
+                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
+                            new Pose2d(2.5, -0.5, new Rotation2d(0)),
                             false,
                             localizationManager,
                             driveTrain
                     )
-
     //                new ShooterSpinUp(shooter),
     //                new ShooterSequence(intake, indexer, shooter),
     //                new TurnToAngle(driveTrain, localizationManager, Math.PI),

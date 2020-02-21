@@ -15,19 +15,19 @@ import java.util.List;
 
 public class ChickenRamseteCommand extends SequentialCommandGroup {
 
-    public ChickenRamseteCommand(Pose2d start, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
-        this(start, end, List.of(), reversed, localizationManager, driveTrain);
+    public ChickenRamseteCommand(Pose2d start, Pose2d offset, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+        this(start, offset, end, List.of(), reversed, localizationManager, driveTrain);
     }
 
-    public ChickenRamseteCommand(Pose2d start, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+    public ChickenRamseteCommand(Pose2d start, Pose2d offset, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
         RamseteConfig.trajectoryConfig.setReversed(reversed);
 
         addCommands(
                 new BaseChickenRamseteCommand(
                         TrajectoryGenerator.generateTrajectory(
                                 start,
-                                RamseteUtils.translateWaypoints(start, waypoints),
-                                RamseteUtils.translatePose(start, end),
+                                RamseteUtils.translateWaypoints(start, RamseteUtils.translateWaypoints(offset, waypoints)),
+                                RamseteUtils.translatePose(start, RamseteUtils.translatePose(offset, end)),
                                 RamseteConfig.trajectoryConfig
                         ),
                         localizationManager,
