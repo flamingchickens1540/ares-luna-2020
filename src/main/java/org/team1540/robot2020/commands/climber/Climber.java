@@ -18,6 +18,8 @@ import static org.team1540.robot2020.utils.MotorConfigUtils.POSITION_SLOT_IDX;
 
 public class Climber extends SubsystemBase {
 
+    public static final double HOOK_MIN_LOCATION = 0.6;
+
     private static final double climberTicksPerMeter = 175289.47806139;
     private static final double closedLoopRamp = 0.1;
     private static final int maxAcceleration = 15000;
@@ -49,6 +51,7 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/tuning/configMotionAcceleration", maxAcceleration);
         SmartDashboard.putNumber("climber/tuning/configMotionCruiseVelocity", maxVelocity);
 
+        configSoftLimitMeters(0.05, 0.75); // TODO: tune these soft limits
         updatePIDs();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }

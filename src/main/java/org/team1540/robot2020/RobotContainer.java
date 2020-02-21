@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
-import org.team1540.robot2020.commands.climber.ClimberNonSensorControl;
-import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
-import org.team1540.robot2020.commands.climber.ClimberSequence;
+import org.team1540.robot2020.commands.climber.ClimberSequenceSensor;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
@@ -39,8 +37,6 @@ import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
 public class RobotContainer {
-
-    public static final boolean ENABLE_TESTING_CONTROLLERS = true;
 
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
@@ -71,11 +67,6 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
-
-        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-            logger.info("Turning off limelight LEDs...");
-            localizationManager.setLimelightLeds(false);
-        }, true), RobotState::isEnabled)).schedule();
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -87,9 +78,6 @@ public class RobotContainer {
         driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
 
         // Copilot
-
-//        copilotController.getButton(Y).whenPressed(localizationManager.getNavX()::zeroYaw);
-
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
         Command intakeCommand = new IntakeRun(intake).alongWith(new ScheduleCommand(ballQueueCommand));
         copilotController.getButton(A).whenPressed(intakeCommand);
@@ -99,51 +87,36 @@ public class RobotContainer {
         copilotController.getButton(DPadAxis.UP).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
-        copilotController.getButton(Y).whenPressed(new ClimberSensorSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
+        copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
 
-        ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
-        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {
-            if (climberSequence.isScheduled()) {
-                climberSequence.cancel();
-            }
-            climberSequence.schedule();
-        });
+        // Testing Controller - Distance offset tuning
+        distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
 
-        copilotController.getButton(START).and(copilotController.getButton(BACK)).whenActive(new ClimberNonSensorControl(
-                climber,
-                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                copilotController.getButton(START)));
+        distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
 
-        if (ENABLE_TESTING_CONTROLLERS) {
-            // Testing Controller - Distance offset tuning
-            distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
+        distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
 
-            distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
+        ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
+        distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
 
-            distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
+        List<Double> distanceList = new ArrayList<>();
+        List<Double> hoodList = new ArrayList<>();
+        List<Double> flywheelList = new ArrayList<>();
+        distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
+            distanceList.add(localizationManager.getCorrectedLidarDistance());
+            hoodList.add(hood.getPosition());
+            flywheelList.add(shooterManualSetpoint.getSetpoint());
+            SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
+        }));
 
-            ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
-            distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
+        distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-            List<Double> distanceList = new ArrayList<>();
-            List<Double> hoodList = new ArrayList<>();
-            List<Double> flywheelList = new ArrayList<>();
-            distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-                distanceList.add(localizationManager.getCorrectedLidarDistance());
-                hoodList.add(hood.getPosition());
-                flywheelList.add(shooterManualSetpoint.getSetpoint());
-                SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
-                SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
-                SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
-            }));
-
-            distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
-
-            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, driverController, true));
-        }
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, driverController, true));
     }
 
     private void initDefaultCommands() {
@@ -190,6 +163,11 @@ public class RobotContainer {
                     climber.setBrake(NeutralMode.Coast);
                     logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
+
+        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
+            logger.info("Turning off limelight LEDs 20 seconds after boot...");
+            localizationManager.setLimelightLeds(false);
+        }, true), RobotState::isEnabled)).schedule();
     }
 
     Command getAutoCommand() {

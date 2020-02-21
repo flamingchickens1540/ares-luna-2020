@@ -9,7 +9,7 @@ import java.util.function.DoubleSupplier;
 
 public class ClimberMoveToMeters extends SequentialCommandGroup {
 
-    public ClimberMoveToMeters(Climber climber, DoubleSupplier positionMeters) {
+    public ClimberMoveToMeters(Climber climber, DoubleSupplier positionMeters, Climber.RatchetState finalState) {
         addRequirements(climber);
         addCommands(
                 new ConditionalCommand(
@@ -21,7 +21,7 @@ public class ClimberMoveToMeters extends SequentialCommandGroup {
                         () -> positionMeters.getAsDouble() >= climber.getPositionMeters()
                 ),
                 new ClimberMoveToMetersUnsafe(climber, positionMeters),
-                climber.commandRatchet(Climber.RatchetState.ENGAGED)
+                climber.commandRatchet(finalState)
         );
     }
 }
