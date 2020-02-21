@@ -12,22 +12,23 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.RamseteUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ChickenRamseteCommand extends SequentialCommandGroup {
 
-    public ChickenRamseteCommand(Pose2d start, Pose2d offset, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
-        this(start, offset, end, List.of(), reversed, localizationManager, driveTrain);
+    public ChickenRamseteCommand(Supplier<Pose2d> offset, Pose2d start, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+        this(offset, start, end, List.of(), reversed, localizationManager, driveTrain);
     }
 
-    public ChickenRamseteCommand(Pose2d start, Pose2d offset, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+    public ChickenRamseteCommand(Supplier<Pose2d> offset, Pose2d start, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
         RamseteConfig.trajectoryConfig.setReversed(reversed);
 
         addCommands(
                 new BaseChickenRamseteCommand(
-                        TrajectoryGenerator.generateTrajectory(
+                        () -> TrajectoryGenerator.generateTrajectory(
                                 start,
-                                RamseteUtils.translateWaypoints(start, RamseteUtils.translateWaypoints(offset, waypoints)),
-                                RamseteUtils.translatePose(start, RamseteUtils.translatePose(offset, end)),
+                                RamseteUtils.translateWaypoints(offset.get(), waypoints),
+                                RamseteUtils.translatePose(offset.get(), end),
                                 RamseteConfig.trajectoryConfig
                         ),
                         localizationManager,

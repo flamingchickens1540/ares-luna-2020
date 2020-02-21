@@ -4,12 +4,14 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
+import org.team1540.robot2020.utils.RamseteCommand;
+
+import java.util.function.Supplier;
 
 public class BaseChickenRamseteCommand extends RamseteCommand {
-    public BaseChickenRamseteCommand(Trajectory trajectory, LocalizationManager localizationManager, DriveTrain driveTrain) {
+    public BaseChickenRamseteCommand(Supplier<Trajectory> trajectory, LocalizationManager localizationManager, DriveTrain driveTrain) {
         super(
                 trajectory,
                 localizationManager::odometryGetPose,
