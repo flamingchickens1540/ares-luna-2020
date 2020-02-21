@@ -22,7 +22,7 @@ public class PointToTarget extends CommandBase {
     private ModifiedMiniPID pointController = new ModifiedMiniPID(0, 0, 0);
 
     private double finishedDegreesPerSecond = 0.5;
-    private double finishedDegrees = 1;
+    private double finishedDegrees = 0.3;
     private double lastError = Double.NEGATIVE_INFINITY;
     private PIDConfig config;
     private boolean testingMode;
@@ -101,13 +101,19 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
+        boolean targetingInnerPort = true;
         Transform3D robotToGoalTransform = localizationManager.getRobotToRearHoleTransform();
         if (robotToGoalTransform == null) return 0;
 
-        if (robotToGoalTransform.getOrientation().getAngle() > Math.toRadians(20)) { // TODO: tune this value
+        double angle = robotToGoalTransform.getOrientation().getAngle();
+        SmartDashboard.putNumber("pointToTarget/targetSwitchingAngle", angle);
+        if (angle > Math.toRadians(20)) { // TODO: tune this value
             robotToGoalTransform = localizationManager.getRobotToHexagonTransform();
+            targetingInnerPort = false;
+            if (robotToGoalTransform == null) return 0;
         }
-        if (robotToGoalTransform == null) return 0;
+
+        SmartDashboard.putBoolean("pointToTarget/targetingInnerPort", targetingInnerPort);
 
         Vector3D targetPosition = robotToGoalTransform.getPosition();
         double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
