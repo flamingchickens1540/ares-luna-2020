@@ -30,7 +30,7 @@ public class LocalizationManager extends CommandBase {
     private final double LIMELIGHT_PITCH = Math.toRadians(23);
     private final double LIDAR_PITCH = Math.toRadians(4.5);
     private final double LIDAR_SELECTION_TOLERANCE = Math.toRadians(2);
-    private final Transform3D HEXAGON_TO_CENTER_HOLE = new Transform3D(.7, 0, 0); // TODO
+    private final Transform3D HEXAGON_TO_INNER_PORT = new Transform3D(0.74295, 0, 0);
 
     private final DifferentialDriveOdometry odometry;
     private Limelight limelight = new Limelight("limelight");
@@ -152,7 +152,14 @@ public class LocalizationManager extends CommandBase {
     @Nullable
     public Transform3D getRobotToRearHoleTransform() {
         if (odomToHexagon == null) return null;
-        return getOdomToRobot().negate().add(odomToHexagon).add(HEXAGON_TO_CENTER_HOLE);
+        return getOdomToRobot().negate().add(odomToHexagon).add(HEXAGON_TO_INNER_PORT);
+    }
+
+    @Nullable
+    public Transform3D getRobotToHexagonTransform() {
+        Transform3D robotToRearHoleTransform = getRobotToRearHoleTransform();
+        if (robotToRearHoleTransform == null) return null;
+        return robotToRearHoleTransform.add(HEXAGON_TO_INNER_PORT);
     }
 
     public double getRate() {

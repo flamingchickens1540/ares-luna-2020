@@ -25,7 +25,6 @@ public class FollowRamsetePath extends SequentialCommandGroup {
     private static final double kaVoltSecondsSquaredPerMeter = 0.662;
 
     // PID controllers
-    // TODO why are you using a default P value of 1
     private static final double kPDriveVel = 1;
 
     // Ramsete tuning constants

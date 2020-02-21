@@ -25,9 +25,6 @@ public class DriveTrain extends SubsystemBase {
     private ChickenTalonFX[] driveMotorRights = new ChickenTalonFX[]{driveMotorRightA, driveMotorRightB};
 
 
-    // TODO need a wrapper for the odometry class that allows us to not reset the encoders-  should store its own relative offsets
-
-
     public DriveTrain() {
         initMotors();
     }

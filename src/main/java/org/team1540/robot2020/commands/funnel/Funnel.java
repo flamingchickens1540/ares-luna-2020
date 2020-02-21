@@ -18,8 +18,6 @@ public class Funnel extends SubsystemBase {
     private CANEncoder funnelRightEncoder = funnelRightMotor.getEncoder();
 
     public Funnel() {
-        // TODO figure out brake mode on all motors
-        // TODO figure out current limit on all motors
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelRightMotor);
         funnelLeftMotor.setInverted(true);

@@ -101,23 +101,25 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        Transform3D robotToRearHoleTransform = localizationManager.getRobotToRearHoleTransform();
-        if (robotToRearHoleTransform == null) return 0;
+        Transform3D robotToGoalTransform = localizationManager.getRobotToRearHoleTransform();
+        if (robotToGoalTransform == null) return 0;
 
-        Vector3D targetPosition = robotToRearHoleTransform.getPosition();
+        if (robotToGoalTransform.getOrientation().getAngle() > Math.toRadians(20)) { // TODO: tune this value
+            robotToGoalTransform = localizationManager.getRobotToHexagonTransform();
+        }
+        if (robotToGoalTransform == null) return 0;
+
+        Vector3D targetPosition = robotToGoalTransform.getPosition();
         double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
         SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
 
-        double error = targetAngle;
-//        double error = TrigUtils.signedAngleError(targetAngle, localizationManager.getAngleRadians());
-
-        lastError = error;
+        lastError = targetAngle;
 
         SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getAngleRadians()));
-        SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(error));
+        SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(targetAngle));
         SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
 
-        return error;
+        return targetAngle;
     }
 
     public boolean hasReachedGoal() {

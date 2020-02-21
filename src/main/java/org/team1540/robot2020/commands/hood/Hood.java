@@ -9,16 +9,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.MotorConfigUtils;
 
-import java.util.function.BooleanSupplier;
-
 public class Hood extends SubsystemBase {
     private final double kP = 0.5;
     private final double kD = 0;
 
     private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
-    CANPIDController hoodController = new CANPIDController(hoodMotor);
+    private CANPIDController hoodController = new CANPIDController(hoodMotor);
     private CANEncoder hoodEncoder = hoodMotor.getEncoder();
     private CANDigitalInput limitSwitch = hoodMotor.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+    private double lastSetpoint;
 
     public Hood() {
         MotorConfigUtils.setDefaultSparkMaxConfig(hoodMotor);
@@ -34,12 +33,10 @@ public class Hood extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("hood/position", hoodEncoder.getPosition());
+        SmartDashboard.putNumber("hood/lastSetpoint", hoodEncoder.getPosition());
         SmartDashboard.putNumber("hood/current", hoodMotor.getOutputCurrent());
         SmartDashboard.putBoolean("hood/limitSwitch", limitSwitch.get());
-//         TODO is this the value we want to be putting up
-//        SmartDashboard.putNumber("hood/error", hoodController.getSmartMotionAllowedClosedLoopError(0));
-
+        SmartDashboard.putNumber("hood/error", hoodEncoder.getPosition() - lastSetpoint); // https://trello.com/c/xymF8avF/84-get-closed-loop-error-function
     }
 
     public void stop() {
@@ -56,6 +53,7 @@ public class Hood extends SubsystemBase {
     }
 
     public void setPosition(double position) {
+        this.lastSetpoint = position;
         hoodController.setReference(position, ControlType.kPosition);
     }
 
@@ -70,15 +68,6 @@ public class Hood extends SubsystemBase {
     public boolean isLimitSwitchPressed() {
         return limitSwitch.get();
     }
-
-//    public double getClosedLoopError() {
-//        return hoodController.getSmartMotionAllowedClosedLoopError(0);
-//    }
-
-//    public BooleanSupplier isReady() {
-//        return () -> (hoodController.getSmartMotionAllowedClosedLoopError(0) < 10);
-//    }
-
 
     public Command commandStop() {
         return new InstantCommand(this::stop, this);
