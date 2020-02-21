@@ -3,10 +3,12 @@ package org.team1540.robot2020;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberNonSensorControl;
 import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
@@ -66,8 +68,9 @@ public class RobotContainer {
         logger.info("Creating robot container...");
 
         initButtonBindings();
-        initModeTransitionBindings();
         initDefaultCommands();
+        initModeTransitionBindings();
+        initDashboard();
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
@@ -192,10 +195,14 @@ public class RobotContainer {
                 }, true), RobotState::isEnabled)));
     }
 
+    private void initDashboard() {
+        SmartDashboard.putData("localizationManager/ResetOdometry", new InstCommand(() -> {
+            driveTrain.resetEncoders();
+            localizationManager.resetOdometry(new Pose2d());
+        }, true));
+    }
+
     Command getAutoCommand() {
-        return new InstantCommand(() -> {
-            climber.zero();
-            climber.setRatchet(Climber.RatchetState.DISENGAGED);
-        }).andThen(new HoodZeroSequence(hood));
+        return new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
     }
 }
