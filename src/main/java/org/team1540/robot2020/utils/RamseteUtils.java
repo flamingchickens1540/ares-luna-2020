@@ -8,19 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RamseteUtils {
-    public static Pose2d translatePose(Pose2d start, Pose2d pose) {
-        Transform2d transform = pose.minus(start);
-        return new Pose2d(
-                transform.getTranslation(),
-                transform.getRotation()
-        );
+    public static Pose2d translatePose(Pose2d offset, Pose2d pose) {
+        return offset.plus(new Transform2d(pose.getTranslation(), pose.getRotation()));
     }
 
-    public static List<Translation2d> translateWaypoints(Pose2d start, List<Translation2d> waypoints) {
+    public static List<Translation2d> translateWaypoints(Pose2d offset, List<Translation2d> waypoints) {
         List<Translation2d> outputWaypoints = new ArrayList<>();
-        Translation2d startTranslation = start.getTranslation();
+        Translation2d startTranslation = offset.getTranslation();
         for (Translation2d waypoint : waypoints) {
-            outputWaypoints.add(waypoint.minus(startTranslation));
+            outputWaypoints.add(startTranslation.plus(waypoint));
         }
         return outputWaypoints;
     }
