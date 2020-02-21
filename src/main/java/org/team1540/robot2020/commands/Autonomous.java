@@ -17,8 +17,10 @@ import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.InstCommand;
 
 public class Autonomous extends ParallelCommandGroup {
+    private LocalizationManager localizationManager;
+    private Pose2d startingPose;
+
     public Autonomous(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager) {
-        Pose2d startingPose = localizationManager.odometryGetPose();
         addCommands(
                 new InstCommand(() -> {
                     driveTrain.resetEncoders();
@@ -63,5 +65,10 @@ public class Autonomous extends ParallelCommandGroup {
     //                new ShooterSequence(intake, indexer, shooter)
                 )
         );
+    }
+
+    @Override
+    public void initialize() {
+        Pose2d startingPose = localizationManager.odometryGetPose();
     }
 }
