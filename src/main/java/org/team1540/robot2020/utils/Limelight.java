@@ -12,8 +12,10 @@ public class Limelight {
     private static final double HORIZONTAL_FOV = Math.toRadians(59.6);
     private static final double VERTICAL_FOV = Math.toRadians(45.7);
     private static final Vector2D CAM_RESOLUTION = new Vector2D(320, 240);
-
     private final NetworkTable limelightTable;
+    private double limelightHeight;
+    private double limelightAngle;
+    private double targetHeight;
 
     /**
      * Constructs a new limelight interface with the default hostname.
@@ -58,9 +60,16 @@ public class Limelight {
      * @return the state of the target
      */
     public boolean isTargetFound() {
-        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && getTargetAngles().getY() > Math.toRadians(-20);
+        double y = getTargetAngles().getY();
+        double x = getTargetAngles().getX();
+        boolean verticalInBounds = y > Math.toRadians(-20);
+        boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
+        return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
     }
 
+    public boolean getLeds() {
+        return limelightTable.getEntry("ledMode").getDouble(1) == 0;
+    }
 
     /**
      * Sets limelight's green LEDs on or off.
@@ -74,10 +83,6 @@ public class Limelight {
         }
     }
 
-    public boolean getLeds() {
-        return limelightTable.getEntry("ledMode").getDouble(1) == 0;
-    }
-
     /**
      * Sets limelight to driver cam or vision mode.
      *
@@ -88,17 +93,16 @@ public class Limelight {
         NetworkTableInstance.getDefault().flush();
     }
 
+    public long getPipeline() {
+        return Math.round((double) limelightTable.getEntry("getpipe").getNumber(-1));
+    }
+
     public void setPipeline(double id) {
         if (getPipeline() != id) {
             limelightTable.getEntry("pipeline").setNumber(id);
             NetworkTableInstance.getDefault().flush();
         }
     }
-
-    public long getPipeline() {
-        return Math.round((double) limelightTable.getEntry("getpipe").getNumber(-1));
-    }
-
 
     public List<Vector2D> getCorners() {
         Double[] xCorners = limelightTable.getEntry("tcornx").getDoubleArray(new Double[]{});
@@ -109,5 +113,4 @@ public class Limelight {
         }
         return cornerList;
     }
-
 }

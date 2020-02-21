@@ -50,9 +50,7 @@ public class RobotContainer {
     private ChickenXboxController copilotController = new ChickenXboxController(1);
     private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
 
-    private LocalizationManager localizationManager = new LocalizationManager();
-
-    private DriveTrain driveTrain = new DriveTrain(localizationManager.getNavX());
+    private DriveTrain driveTrain = new DriveTrain();
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
     private Indexer indexer = new Indexer();
@@ -60,6 +58,9 @@ public class RobotContainer {
     private Hood hood = new Hood();
     //    private ControlPanel controlPanel = new ControlPanel();
     private Climber climber = new Climber();
+
+    private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
+
 
     RobotContainer() {
         logger.info("Creating robot container...");
@@ -69,11 +70,11 @@ public class RobotContainer {
         initDefaultCommands();
 
         // TODO: Replace with a notifier that runs more often than commands
-        new LocalizationManager().schedule();
+        localizationManager.schedule();
 
         new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
             logger.info("Turning off limelight LEDs...");
-            localizationManager.getLimelight().setLeds(false);
+            localizationManager.setLimelightLeds(false);
         }, true), RobotState::isEnabled)).schedule();
     }
 
@@ -86,6 +87,9 @@ public class RobotContainer {
         driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
 
         // Copilot
+
+//        copilotController.getButton(Y).whenPressed(localizationManager.getNavX()::zeroYaw);
+
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
         Command intakeCommand = new IntakeRun(intake).alongWith(new ScheduleCommand(ballQueueCommand));
         copilotController.getButton(A).whenPressed(intakeCommand);
@@ -127,7 +131,7 @@ public class RobotContainer {
             List<Double> hoodList = new ArrayList<>();
             List<Double> flywheelList = new ArrayList<>();
             distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-                distanceList.add(localizationManager.getLidar().getDistance());
+                distanceList.add(localizationManager.getCorrectedLidarDistance());
                 hoodList.add(hood.getPosition());
                 flywheelList.add(shooterManualSetpoint.getSetpoint());
                 SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
@@ -138,14 +142,14 @@ public class RobotContainer {
             distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                     distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
+            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, driverController, true));
         }
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager.getNavX(),
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
                 driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
@@ -170,13 +174,13 @@ public class RobotContainer {
             intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
-            localizationManager.getLimelight().setLeds(true);
+            localizationManager.setLimelightLeds(true);
             logger.info("Mechanism brakes enabled");
         });
 
         disabled.whenActive(new WaitCommand(2)
                 .alongWith(new InstCommand(() -> {
-                    localizationManager.getLimelight().setLeds(false);
+                    localizationManager.setLimelightLeds(false);
                     logger.debug("Disabling mechanism brakes in 2 seconds");
                 }, true))
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {

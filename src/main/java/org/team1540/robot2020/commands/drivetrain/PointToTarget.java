@@ -2,22 +2,20 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.team1540.robot2020.utils.*;
-import org.team1540.rooster.util.TrigUtils;
-
-import java.util.List;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.team1540.robot2020.LocalizationManager;
+import org.team1540.robot2020.utils.ChickenXboxController;
+import org.team1540.robot2020.utils.ModifiedMiniPID;
+import org.team1540.robot2020.utils.PIDConfig;
+import org.team1540.rooster.datastructures.threed.Transform3D;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
 public class PointToTarget extends CommandBase {
 
 
-    private final NavX navx;
-    private final Limelight limelight;
+    private final LocalizationManager localizationManager;
     private final ChickenXboxController.Axis throttleAxis;
-    private boolean testingMode;
-    private double lastTargetAngle = 0;
     private DriveTrain driveTrain;
     private ChickenXboxController driver;
 
@@ -27,15 +25,13 @@ public class PointToTarget extends CommandBase {
     private double finishedDegrees = 1;
     private double lastError = Double.NEGATIVE_INFINITY;
     private PIDConfig config;
+    private boolean testingMode;
 
-    private boolean foundTarget;
 
-
-    public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver, boolean testingMode) {
-        this.navx = navx;
+    public PointToTarget(DriveTrain driveTrain, LocalizationManager localizationManager, ChickenXboxController driver, boolean testingMode) {
+        this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
         this.driver = driver;
-        this.limelight = limelight;
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
 
@@ -49,8 +45,6 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        lastTargetAngle = navx.getAngleRadians();
-        foundTarget = false;
 
         double p = SmartDashboard.getNumber("pointToTarget/P", 0);
         double i = SmartDashboard.getNumber("pointToTarget/I", 0);
@@ -101,28 +95,25 @@ public class PointToTarget extends CommandBase {
 
         double pidOutput = pointController.getOutput(calculateError());
 
-        if (!foundTarget) {
-            pidOutput = 0;
-        }
-
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
         driveTrain.setPercent(leftMotors + pidOutput, rightMotors - pidOutput);
     }
 
     private double calculateError() {
-        if (limelight.isTargetFound()) {
-            foundTarget = true;
-            Vector2D targetAngles = limelight.getTargetAngles();
-            lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
-            SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
-        }
+        Transform3D robotToRearHoleTransform = localizationManager.getRobotToRearHoleTransform();
+        if (robotToRearHoleTransform == null) return 0;
 
-        double error = TrigUtils.signedAngleError(lastTargetAngle, navx.getAngleRadians());
+        Vector3D targetPosition = robotToRearHoleTransform.getPosition();
+        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
+        SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
+
+        double error = targetAngle;
+//        double error = TrigUtils.signedAngleError(targetAngle, localizationManager.getAngleRadians());
 
         lastError = error;
 
-        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(navx.getYawRadians()));
+        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getAngleRadians()));
         SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(error));
         SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
 
@@ -130,14 +121,6 @@ public class PointToTarget extends CommandBase {
     }
 
     public boolean hasReachedGoal() {
-        return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
-    }
-
-    private String coefsToLatexString(List<Double> coefs) {
-        String latexString = "";
-        for (int i = 0; i < coefs.size(); i++) {
-            latexString += coefs.get(i) + "x^{" + i + "}+";
-        }
-        return latexString;
+        return Math.abs(localizationManager.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
     }
 }

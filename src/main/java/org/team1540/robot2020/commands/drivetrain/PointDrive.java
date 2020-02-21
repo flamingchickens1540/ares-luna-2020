@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.ControlUtils;
 import org.team1540.robot2020.utils.MiniPID;
-import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.util.TrigUtils;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.Axis2D;
 
 public class PointDrive extends CommandBase {
     private DriveTrain driveTrain;
-    private NavX navx;
+    private LocalizationManager localizationManager;
 
     private Axis2D pointAxis;
     private ChickenXboxController.Axis throttleAxis;
@@ -28,10 +28,9 @@ public class PointDrive extends CommandBase {
     private double deadzone;
     private SlewRateLimiter throttleRateLimiter;
 
-    public PointDrive(DriveTrain driveTrain, NavX navx, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
+    public PointDrive(DriveTrain driveTrain, LocalizationManager localizationManager, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
-        this.navx = navx;
-
+        this.localizationManager = localizationManager;
         this.pointAxis = pointAxis.withDeadzone(0.2);
         this.throttleAxis = throttleAxis.withDeadzone(0.12);
         this.resetNavXButton = resetNavXButton;
@@ -44,7 +43,7 @@ public class PointDrive extends CommandBase {
         SmartDashboard.putNumber("pointDrive/max", 0.45);
         SmartDashboard.putNumber("pointDrive/min", 0);
         SmartDashboard.putNumber("pointDrive/deadzone", 0);
-        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 2);
+        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 1.6);
 
         pointController = new MiniPID(0, 0, 0);
         resetNavXButton.whenPressed(this::zeroAngle);
@@ -64,19 +63,19 @@ public class PointDrive extends CommandBase {
     }
 
     public void zeroAngle() {
-        angleOffset = navx.getYawRadians();
+        angleOffset = localizationManager.getYawRadians();
         setGoalToCurrentAngle();
     }
 
     public void setGoalToCurrentAngle() {
-        goalAngle = navx.getYawRadians() - angleOffset;
+        goalAngle = localizationManager.getYawRadians() - angleOffset;
     }
 
     @Override
     public void execute() {
         if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
 
-        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, navx.getYawRadians());
+        double error = TrigUtils.signedAngleError(goalAngle + angleOffset, localizationManager.getYawRadians());
         SmartDashboard.putNumber("pointDrive/error", error);
 
         double rawPIDOutput = pointController.getOutput(error);
