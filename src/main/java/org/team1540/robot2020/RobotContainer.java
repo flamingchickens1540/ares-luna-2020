@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.LightyButtonTest;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
 import org.team1540.robot2020.commands.climber.ClimberSequence;
@@ -28,6 +29,7 @@ import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.LightyButton;
 import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.ArrayList;
@@ -75,6 +77,8 @@ public class RobotContainer {
             logger.info("Turning off limelight LEDs...");
             localizationManager.setLimelightLeds(false);
         }, true), RobotState::isEnabled)).schedule();
+
+        new LightyButtonTest().schedule();
     }
 
     @SuppressWarnings("DanglingJavadoc")
