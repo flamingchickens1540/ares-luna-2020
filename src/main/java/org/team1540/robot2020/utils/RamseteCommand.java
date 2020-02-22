@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -141,6 +142,7 @@ public class RamseteCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        SmartDashboard.putBoolean("RamseteCommand/initialize", true);
         m_trajectory = m_trajectorySupplier.get();
         m_prevTime = 0;
         var initialState = m_trajectory.sample(0);
@@ -159,6 +161,7 @@ public class RamseteCommand extends CommandBase {
 
     @Override
     public void execute() {
+        SmartDashboard.putBoolean("RamseteCommand/execute", true);
         double curTime = m_timer.get();
         double dt = curTime - m_prevTime;
 
@@ -192,6 +195,8 @@ public class RamseteCommand extends CommandBase {
             rightOutput = rightSpeedSetpoint;
         }
 
+        SmartDashboard.putNumber("RamseteCommand/outputLeft", leftOutput);
+        SmartDashboard.putNumber("RamseteCommand/outputright", rightOutput);
         m_output.accept(leftOutput, rightOutput);
 
         m_prevTime = curTime;

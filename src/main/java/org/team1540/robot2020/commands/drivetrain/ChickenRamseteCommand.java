@@ -3,6 +3,7 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -21,6 +22,7 @@ public class ChickenRamseteCommand extends SequentialCommandGroup {
     }
 
     public ChickenRamseteCommand(Supplier<Pose2d> offset, Pose2d start, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+        SmartDashboard.putBoolean("ChickenRamseteCommand/constructed", true);
         RamseteConfig.trajectoryConfig.setReversed(reversed);
 
         addCommands(

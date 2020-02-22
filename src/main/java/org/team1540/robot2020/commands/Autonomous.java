@@ -31,17 +31,17 @@ public class Autonomous extends ParallelCommandGroup {
                 new HoodZeroSequence(hood),
                 sequence(
                     new ChickenRamseteCommand(
-                            () -> startingPose,
+                            this::getStartingPose,
                             new Pose2d(0, 0, new Rotation2d(0)),
-                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
+                            new Pose2d(1, 0, new Rotation2d(0)),
                             false,
                             localizationManager,
                             driveTrain
                     ),
                     new ChickenRamseteCommand(
-                            () -> startingPose,
-                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
-                            new Pose2d(2.5, -0.5, new Rotation2d(0)),
+                            this::getStartingPose,
+                            new Pose2d(1, 0, new Rotation2d(0)),
+                            new Pose2d(2, 0, new Rotation2d(0)),
                             false,
                             localizationManager,
                             driveTrain
@@ -68,6 +68,11 @@ public class Autonomous extends ParallelCommandGroup {
 
     @Override
     public void initialize() {
+        super.initialize();
         startingPose = localizationManager.odometryGetPose();
+    }
+
+    private Pose2d getStartingPose() {
+        return localizationManager.odometryGetPose();
     }
 }
