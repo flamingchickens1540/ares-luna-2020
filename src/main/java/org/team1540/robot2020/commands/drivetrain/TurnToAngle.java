@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.utils.RamseteUtils;
+import org.team1540.rooster.util.TrigUtils;
 
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ public class TurnToAngle extends CommandBase {
     private Supplier<Pose2d> offsetSupplier;
     private Pose2d goal;
     private ProfiledPIDController pidController;
+    private double goalRadians;
 
     public TurnToAngle(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Pose2d> offsetSupplier, Pose2d goal) {
         this.driveTrain = driveTrain;
@@ -46,14 +48,14 @@ public class TurnToAngle extends CommandBase {
         double tolerance = SmartDashboard.getNumber("turnToAngle/tolerance", 0);
         pidController = new ProfiledPIDController(p, i, d,
                 new TrapezoidProfile.Constraints(maxVelocity, maxAccel));
-        pidController.setGoal(translatePose.getRotation().getRadians());
-        pidController.enableContinuousInput(0, Math.PI * 2);
+        goalRadians = translatePose.getRotation().getRadians();
+        pidController.setGoal(0);
         pidController.setTolerance(Math.toDegrees(tolerance));
     }
 
     @Override
     public void execute() {
-        double output = pidController.calculate(localizationManager.getYawRadians());
+        double output = pidController.calculate(TrigUtils.signedAngleError(goalRadians, localizationManager.getYawRadians()));
         driveTrain.setPercent(-output, output);
     }
 
