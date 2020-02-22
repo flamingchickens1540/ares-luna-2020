@@ -20,6 +20,7 @@ public class Autonomous extends ParallelCommandGroup {
     private Pose2d startingPose;
 
     public Autonomous(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager) {
+        this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
                     localizationManager.resetOdometry(new Pose2d());
@@ -30,7 +31,7 @@ public class Autonomous extends ParallelCommandGroup {
                 new HoodZeroSequence(hood),
                 sequence(
                     new ChickenRamseteCommand(
-                            () -> startingPose,
+                            () -> new Pose2d(0, 0, new Rotation2d(0)),
                             startingPose,
                             new Pose2d(1.5, 0.5, new Rotation2d(0)),
                             false,
@@ -38,8 +39,8 @@ public class Autonomous extends ParallelCommandGroup {
                             driveTrain
                     ),
                     new ChickenRamseteCommand(
-                            () -> new Pose2d(1.5, 0.5, new Rotation2d(0)),
-                            startingPose,
+                            () -> startingPose,
+                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
                             new Pose2d(2.5, -0.5, new Rotation2d(0)),
                             false,
                             localizationManager,
