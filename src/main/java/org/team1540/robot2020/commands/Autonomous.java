@@ -3,7 +3,6 @@ package org.team1540.robot2020.commands;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.drivetrain.ChickenRamseteCommand;
@@ -23,7 +22,6 @@ public class Autonomous extends ParallelCommandGroup {
     public Autonomous(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager) {
         addCommands(
                 new InstCommand(() -> {
-                    driveTrain.resetEncoders();
                     localizationManager.resetOdometry(new Pose2d());
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
@@ -32,7 +30,7 @@ public class Autonomous extends ParallelCommandGroup {
                 new HoodZeroSequence(hood),
                 sequence(
                     new ChickenRamseteCommand(
-                            startingPose,
+                            () -> startingPose,
                             startingPose,
                             new Pose2d(1.5, 0.5, new Rotation2d(0)),
                             false,
@@ -40,8 +38,8 @@ public class Autonomous extends ParallelCommandGroup {
                             driveTrain
                     ),
                     new ChickenRamseteCommand(
+                            () -> new Pose2d(1.5, 0.5, new Rotation2d(0)),
                             startingPose,
-                            new Pose2d(1.5, 0.5, new Rotation2d(0)),
                             new Pose2d(2.5, -0.5, new Rotation2d(0)),
                             false,
                             localizationManager,
@@ -69,6 +67,6 @@ public class Autonomous extends ParallelCommandGroup {
 
     @Override
     public void initialize() {
-        Pose2d startingPose = localizationManager.odometryGetPose();
+        startingPose = localizationManager.odometryGetPose();
     }
 }
