@@ -23,6 +23,6 @@ public class ClimberJoystickControl extends CommandBase {
 
     @Override
     public void execute() {
-        climber.setPercent(slewRisingRateLimiter.calculate(axis.withDeadzone(0.12).value()));
+        climber.setPercent(slewRisingRateLimiter.calculate(axis.withDeadzone(0.12).value()*.8));
     }
 }
