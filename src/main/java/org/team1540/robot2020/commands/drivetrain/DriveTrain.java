@@ -12,7 +12,7 @@ public class DriveTrain extends SubsystemBase {
 
     public static final double kTrackwidthMeters = 0.761388065;
 
-    private final double drivetrainTicksPerMeter = 49231;
+    private final double drivetrainTicksPerMeter = 49866;
 
     private ChickenTalonFX driveMotorLeftA = new ChickenTalonFX(1, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);
     private ChickenTalonFX driveMotorLeftB = new ChickenTalonFX(2, drivetrainTicksPerMeter, MotorConfigUtils.POSITION_SLOT_IDX, MotorConfigUtils.VELOCITY_SLOT_IDX);

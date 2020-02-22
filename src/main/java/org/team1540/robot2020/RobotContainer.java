@@ -44,6 +44,7 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
+    private final Autonomous autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
@@ -71,6 +72,7 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
+        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -183,6 +185,6 @@ public class RobotContainer {
     }
 
     Command getAutoCommand() {
-        return new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
+        return autonomous;
     }
 }

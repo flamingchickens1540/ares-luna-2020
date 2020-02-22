@@ -52,8 +52,6 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/tuning/configMotionCruiseVelocity", maxVelocity);
 
         zero();
-
-        configSoftLimitMeters(0.05, 0.75); // TODO: tune these soft limits
         updatePIDs();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
     }

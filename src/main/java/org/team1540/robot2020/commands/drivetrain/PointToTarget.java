@@ -121,7 +121,7 @@ public class PointToTarget extends CommandBase {
 
         lastError = targetAngle;
 
-        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getAngleRadians()));
+        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getYawRadians()));
         SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(targetAngle));
         SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
 

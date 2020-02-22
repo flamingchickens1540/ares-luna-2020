@@ -1,6 +1,7 @@
 package org.team1540.robot2020.utils;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 
@@ -14,9 +15,8 @@ public class RamseteUtils {
 
     public static List<Translation2d> translateWaypoints(Pose2d offset, List<Translation2d> waypoints) {
         List<Translation2d> outputWaypoints = new ArrayList<>();
-        Translation2d startTranslation = offset.getTranslation();
         for (Translation2d waypoint : waypoints) {
-            outputWaypoints.add(startTranslation.plus(waypoint));
+            outputWaypoints.add(offset.plus(new Transform2d(waypoint, new Rotation2d())).getTranslation());
         }
         return outputWaypoints;
     }

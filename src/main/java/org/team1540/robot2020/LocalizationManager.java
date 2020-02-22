@@ -145,10 +145,6 @@ public class LocalizationManager extends CommandBase {
         return odometry.getPoseMeters();
     }
 
-    public double getAngleRadians() {
-        return navx.getAngleRadians();
-    }
-
     @Nullable
     public Transform3D getRobotToRearHoleTransform() {
         if (odomToHexagon == null) return null;
