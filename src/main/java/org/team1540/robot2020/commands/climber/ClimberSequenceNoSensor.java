@@ -13,10 +13,7 @@ public class ClimberSequenceNoSensor extends SequentialCommandGroup {
                 new ClimberMoveToMeters(climber, () -> Climber.HOOK_MIN_LOCATION, Climber.RatchetState.DISENGAGED),
                 parallel(
                         new ClimberJoystickControl(climber, axis),
-                        sequence(
-                                new WaitUntilCommand(button::get),
-                                new RunCommand(() -> climber.setRatchet(button.get() ? Climber.RatchetState.DISENGAGED : Climber.RatchetState.ENGAGED))
-                        )
+                        new RunCommand(() -> climber.setRatchet(button.get() ? Climber.RatchetState.DISENGAGED : Climber.RatchetState.ENGAGED))
                 )
         );
     }
