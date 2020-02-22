@@ -18,7 +18,7 @@ import static org.team1540.robot2020.utils.MotorConfigUtils.POSITION_SLOT_IDX;
 
 public class Climber extends SubsystemBase {
 
-    public static final double HOOK_MIN_LOCATION = 0.6;
+    public static final double HOOK_MIN_LOCATION = 0.58;
 
     private static final double climberTicksPerMeter = 175289.47806139;
     private static final double closedLoopRamp = 0.1;
