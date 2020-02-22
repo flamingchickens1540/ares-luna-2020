@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
-import org.team1540.robot2020.commands.Autonomous;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
 import org.team1540.robot2020.commands.climber.ClimberSequenceSensor;
+import org.team1540.robot2020.commands.drivetrain.Autonomous;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
@@ -30,7 +30,6 @@ import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
-import org.team1540.rooster.triggers.DPadAxis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,16 +80,16 @@ public class RobotContainer {
 
         // Driver
         driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
+        driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
 
         // Copilot
-        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
-        Command intakeCommand = new IntakeRun(intake).alongWith(new ScheduleCommand(ballQueueCommand));
+        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
+        Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
-        copilotController.getButton(DPadAxis.DOWN).whileHeld(intake.commandPercent(-1));
-        copilotController.getButton(DPadAxis.UP).whileHeld(
+        copilotController.getButton(LEFT_BUMPER).whileHeld(intake.commandPercent(-1));
+        copilotController.getButton(RIGHT_BUMPER).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
         copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));

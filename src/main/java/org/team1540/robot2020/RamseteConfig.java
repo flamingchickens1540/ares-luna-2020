@@ -12,7 +12,7 @@ public class RamseteConfig {
 
     //    Ramsete PID controllers
 //    public final double kPDriveVel = 1.3;
-    public static final double kPDriveVel = 0.8;
+    public static final double kPDriveVel = 0.7;
 //    public final double kPDriveVel = 0;
 
     private static final double kTrackwidthMeters = 0.67978793613;

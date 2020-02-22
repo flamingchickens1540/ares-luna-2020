@@ -2,13 +2,13 @@ package org.team1540.robot2020.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class IntakeRun extends CommandBase {
+public class IntakePercent extends CommandBase {
     private Intake intake;
-    private double targetRPM;
+    private double targetPercent;
 
-    public IntakeRun(Intake intake, double targetRPM) {
+    public IntakePercent(Intake intake, double targetPercent) {
         this.intake = intake;
-        this.targetRPM = targetRPM;
+        this.targetPercent = targetPercent;
         addRequirements(intake);
 
     }
@@ -19,7 +19,7 @@ public class IntakeRun extends CommandBase {
 
     @Override
     public void execute() {
-        intake.setVelocity(targetRPM);
+        intake.setPercent(targetPercent);
     }
 
     @Override
