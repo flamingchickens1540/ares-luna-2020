@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
 import org.team1540.robot2020.commands.climber.ClimberSequenceSensor;
-import org.team1540.robot2020.commands.drivetrain.Autonomous;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.PointToTarget;
@@ -43,7 +42,7 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
-    private final Autonomous autonomous;
+    private final Command autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
@@ -71,7 +70,11 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
-        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
+        autonomous = new InstCommand(() -> {
+            climber.zero();
+            climber.setRatchet(Climber.RatchetState.DISENGAGED);
+        }).andThen(new HoodZeroSequence(hood));
+//        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
     }
 
     @SuppressWarnings("DanglingJavadoc")

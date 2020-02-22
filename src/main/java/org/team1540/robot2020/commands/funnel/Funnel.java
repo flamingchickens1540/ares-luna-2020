@@ -21,7 +21,6 @@ public class Funnel extends SubsystemBase {
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelLeftMotor);
         MotorConfigUtils.setDefaultSparkMaxConfig(funnelRightMotor);
         funnelLeftMotor.setInverted(true);
-
     }
 
     @Override

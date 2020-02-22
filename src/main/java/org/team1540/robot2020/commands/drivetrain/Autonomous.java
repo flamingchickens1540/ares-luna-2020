@@ -7,6 +7,7 @@ import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
@@ -27,6 +28,7 @@ public class Autonomous extends ParallelCommandGroup {
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
+                new HoodZeroSequence(hood),
                 new IntakePercent(intake, 1),
                 sequence(new IndexerBallQueueSequence(indexer, funnel, false),
                         new IndexerBallQueueSequence(indexer, funnel, false),

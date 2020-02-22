@@ -12,6 +12,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
+import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.LIDARLite;
 import org.team1540.robot2020.utils.Limelight;
 import org.team1540.robot2020.utils.NavX;
@@ -49,6 +50,10 @@ public class LocalizationManager extends CommandBase {
         navx.zeroYaw();
 
         odometry = new DifferentialDriveOdometry(new Rotation2d(navx.getYawRadians()));
+
+        SmartDashboard.putData("localizationManager/zeroYaw", new InstCommand(() -> {
+            navx.zeroYaw();
+        }, true));
     }
 
     public void initialize() {
@@ -146,16 +151,32 @@ public class LocalizationManager extends CommandBase {
     }
 
     @Nullable
-    public Transform3D getRobotToRearHoleTransform() {
+    public Transform3D getRobotToHexagonTransform() {
         if (odomToHexagon == null) return null;
-        return getOdomToRobot().negate().add(odomToHexagon).add(HEXAGON_TO_INNER_PORT);
+        return getOdomToRobot().negate().add(odomToHexagon);
     }
 
     @Nullable
-    public Transform3D getRobotToHexagonTransform() {
-        Transform3D robotToRearHoleTransform = getRobotToRearHoleTransform();
+    public Transform3D getRobotToRearHoleTransform() {
+        Transform3D robotToRearHoleTransform = getRobotToHexagonTransform();
         if (robotToRearHoleTransform == null) return null;
         return robotToRearHoleTransform.add(HEXAGON_TO_INNER_PORT);
+    }
+
+    @Nullable
+    public Transform3D getBestTargetTransform() {
+        boolean targetingInnerPort = true;
+        Transform3D robotToGoalTransform = getRobotToRearHoleTransform();
+        if (robotToGoalTransform == null) return null;
+
+        double angle = robotToGoalTransform.getOrientation().getAngle();
+        SmartDashboard.putNumber("pointToTarget/targetSwitchingAngle", Math.toDegrees(angle));
+        if (angle > Math.toRadians(20)) { // TODO: tune this value
+            robotToGoalTransform = getRobotToHexagonTransform();
+            targetingInnerPort = false;
+        }
+        SmartDashboard.putBoolean("pointToTarget/targetingInnerPort", targetingInnerPort);
+        return robotToGoalTransform;
     }
 
     public double getRate() {

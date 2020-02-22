@@ -101,19 +101,8 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        boolean targetingInnerPort = true;
-        Transform3D robotToGoalTransform = localizationManager.getRobotToRearHoleTransform();
+        Transform3D robotToGoalTransform = localizationManager.getBestTargetTransform();
         if (robotToGoalTransform == null) return 0;
-
-        double angle = robotToGoalTransform.getOrientation().getAngle();
-        SmartDashboard.putNumber("pointToTarget/targetSwitchingAngle", angle);
-        if (angle > Math.toRadians(20)) { // TODO: tune this value
-            robotToGoalTransform = localizationManager.getRobotToHexagonTransform();
-            targetingInnerPort = false;
-            if (robotToGoalTransform == null) return 0;
-        }
-
-        SmartDashboard.putBoolean("pointToTarget/targetingInnerPort", targetingInnerPort);
 
         Vector3D targetPosition = robotToGoalTransform.getPosition();
         double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
