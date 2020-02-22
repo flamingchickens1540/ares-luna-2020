@@ -73,6 +73,6 @@ public class Autonomous extends ParallelCommandGroup {
     }
 
     private Pose2d getStartingPose() {
-        return localizationManager.odometryGetPose();
+        return startingPose;
     }
 }
