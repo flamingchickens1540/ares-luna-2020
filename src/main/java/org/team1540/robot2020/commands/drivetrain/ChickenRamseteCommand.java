@@ -26,7 +26,7 @@ public class ChickenRamseteCommand extends SequentialCommandGroup {
         addCommands(
                 new BaseChickenRamseteCommand(
                         () -> TrajectoryGenerator.generateTrajectory(
-                                start,
+                                RamseteUtils.translatePose(offset.get(), start),
                                 RamseteUtils.translateWaypoints(offset.get(), waypoints),
                                 RamseteUtils.translatePose(offset.get(), end),
                                 RamseteConfig.trajectoryConfig
