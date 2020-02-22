@@ -6,7 +6,7 @@ import org.team1540.robot2020.utils.SlewRisingRateLimiter;
 
 public class ClimberJoystickControl extends CommandBase {
 
-    private final SlewRisingRateLimiter slewRisingRateLimiter = new SlewRisingRateLimiter(1); // TODO tune rate limiter
+    private final SlewRisingRateLimiter slewRisingRateLimiter = new SlewRisingRateLimiter(1.8); // TODO tune rate limiter
     private Climber climber;
     private ChickenXboxController.Axis axis;
 
@@ -23,6 +23,6 @@ public class ClimberJoystickControl extends CommandBase {
 
     @Override
     public void execute() {
-        climber.setPercent(slewRisingRateLimiter.calculate(axis.withDeadzone(0.12).value()*.8));
+        climber.setPercent(slewRisingRateLimiter.calculate(axis.withDeadzone(0.12).value()));
     }
 }

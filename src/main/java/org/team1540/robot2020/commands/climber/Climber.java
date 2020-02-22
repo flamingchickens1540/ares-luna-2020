@@ -51,6 +51,8 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/tuning/configMotionAcceleration", maxAcceleration);
         SmartDashboard.putNumber("climber/tuning/configMotionCruiseVelocity", maxVelocity);
 
+        zero();
+
         configSoftLimitMeters(0.05, 0.75); // TODO: tune these soft limits
         updatePIDs();
         NetworkTableInstance.getDefault().getTable("SmartDashboard/climber/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
@@ -79,12 +81,17 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("climber/current", climberMotor.getStatorCurrent());
         SmartDashboard.putNumber("climber/ratchetPosition", ratchetServo.get());
         SmartDashboard.putNumber("climber/throttle", climberMotor.getMotorOutputPercent());
+        SmartDashboard.putNumber("climber/positionTicks", climberMotor.getSelectedSensorPosition());
 
     }
 
     public void configSoftLimitMeters(double min, double max) {
         climberMotor.configForwardSoftLimitThreshold((int) climberMetersToTicks(max));
         climberMotor.configReverseSoftLimitThreshold((int) climberMetersToTicks(min));
+        climberMotor.configForwardSoftLimitEnable(true);
+        climberMotor.configReverseSoftLimitEnable(true);
+        SmartDashboard.putNumber("climber/softMinTicks", min);
+        SmartDashboard.putNumber("climber/softMaxTicks", max);
     }
 
     public void setPercent(double percent) {
