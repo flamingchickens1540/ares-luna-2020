@@ -28,24 +28,24 @@ public class Autonomous extends ParallelCommandGroup {
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
 
                 }),
-                new HoodZeroSequence(hood),
-                sequence(
-                    new ChickenRamseteCommand(
-                            this::getStartingPose,
-                            new Pose2d(0, 0, new Rotation2d(0)),
-                            new Pose2d(1, 0, new Rotation2d(0)),
-                            false,
-                            localizationManager,
-                            driveTrain
-                    ),
-                    new ChickenRamseteCommand(
-                            this::getStartingPose,
-                            new Pose2d(1, 0, new Rotation2d(0)),
-                            new Pose2d(2, 0, new Rotation2d(0)),
-                            false,
-                            localizationManager,
-                            driveTrain
-                    )
+                new HoodZeroSequence(hood)
+//                ,sequence(
+//                    new ChickenRamseteCommand(
+//                            this::getStartingPose,
+//                            new Pose2d(0, 0, new Rotation2d(0)),
+//                            new Pose2d(1, 0, new Rotation2d(0)),
+//                            false,
+//                            localizationManager,
+//                            driveTrain
+//                    ),
+//                    new ChickenRamseteCommand(
+//                            this::getStartingPose,
+//                            new Pose2d(1, 0, new Rotation2d(0)),
+//                            new Pose2d(2, 0, new Rotation2d(0)),
+//                            false,
+//                            localizationManager,
+//                            driveTrain
+//                    )
     //                new ShooterSpinUp(shooter),
     //                new ShooterSequence(intake, indexer, shooter),
     //                new TurnToAngle(driveTrain, localizationManager, Math.PI),
@@ -62,7 +62,7 @@ public class Autonomous extends ParallelCommandGroup {
     //                new TurnToAngle(driveTrain, localizationManager, 0)
     //                new ShooterSpinUp(shooter),
     //                new ShooterSequence(intake, indexer, shooter)
-                )
+//                )
         );
     }
 
