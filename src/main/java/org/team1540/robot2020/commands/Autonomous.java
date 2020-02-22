@@ -68,8 +68,8 @@ public class Autonomous extends ParallelCommandGroup {
 
     @Override
     public void initialize() {
-        super.initialize();
         startingPose = localizationManager.odometryGetPose();
+        super.initialize();
     }
 
     private Pose2d getStartingPose() {
