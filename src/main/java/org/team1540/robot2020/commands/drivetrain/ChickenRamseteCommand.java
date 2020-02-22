@@ -9,39 +9,27 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.robot2020.utils.RamseteUtils;
 
 import java.util.List;
 
 public class ChickenRamseteCommand extends SequentialCommandGroup {
-    private static Pose2d lastPose = new Pose2d(0, 0, new Rotation2d(0));
 
-    public ChickenRamseteCommand(Pose2d end, LocalizationManager localizationManager, DriveTrain driveTrain) {
-        this(end, localizationManager, driveTrain, false);
+    public ChickenRamseteCommand(Pose2d start, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+        this(start, end, List.of(), reversed, localizationManager, driveTrain);
     }
 
-    public ChickenRamseteCommand(Pose2d end, LocalizationManager localizationManager, DriveTrain driveTrain, boolean reversed) {
-        this(end, List.of(), localizationManager, driveTrain, reversed);
-    }
-
-    public ChickenRamseteCommand(Pose2d end, List<Translation2d> waypoints, LocalizationManager localizationManager, DriveTrain driveTrain) {
-        this(end, waypoints, localizationManager, driveTrain, false);
-    }
-
-    public ChickenRamseteCommand(Pose2d end, List<Translation2d> waypoints, LocalizationManager localizationManager, DriveTrain driveTrain, boolean reversed) {
+    public ChickenRamseteCommand(Pose2d start, Pose2d end, List<Translation2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
         RamseteConfig.trajectoryConfig.setReversed(reversed);
-
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-                lastPose,
-                waypoints,
-                end,
-                RamseteConfig.trajectoryConfig
-        );
-
-        lastPose = end;
 
         addCommands(
                 new BaseChickenRamseteCommand(
-                        trajectory,
+                        TrajectoryGenerator.generateTrajectory(
+                                start,
+                                RamseteUtils.translateWaypoints(start, waypoints),
+                                RamseteUtils.translatePose(start, end),
+                                RamseteConfig.trajectoryConfig
+                        ),
                         localizationManager,
                         driveTrain
                 ),
