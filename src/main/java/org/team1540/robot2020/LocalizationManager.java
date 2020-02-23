@@ -29,7 +29,7 @@ public class LocalizationManager extends CommandBase {
     private final double LIMELIGHT_HEIGHT = 0.9398;
     private final double LIMELIGHT_PITCH = Math.toRadians(23);
     private final double LIDAR_PITCH = Math.toRadians(4.5);
-    private final double LIDAR_SELECTION_TOLERANCE = Math.toRadians(2);
+    private final double LIDAR_SELECTION_TOLERANCE = Math.toRadians(3);
     private final Transform3D HEXAGON_TO_INNER_PORT = new Transform3D(0.74295, 0, 0);
 
     private final DifferentialDriveOdometry odometry;
@@ -66,7 +66,7 @@ public class LocalizationManager extends CommandBase {
 
     private void updateOdomToHexagonTransform() {
         SmartDashboard.putBoolean("localizationManager/isAcceptingLimelight", acceptLimelight);
-        if (acceptLimelight && limelight.isTargetFound()) {
+        if (acceptLimelight && isLimelightTargetFound()) {
             double robotToTargetDistance = getBestSensorDistance();
             double robotToTargetAngle = -limelight.getTargetAngles().getX();
             double targetAngleRelativeToRobot = -navx.getYawRadians();
@@ -74,6 +74,10 @@ public class LocalizationManager extends CommandBase {
             Transform3D robotToTarget = new Transform3D(Math.cos(robotToTargetAngle) * robotToTargetDistance, Math.sin(robotToTargetAngle) * robotToTargetDistance, HEXAGON_HEIGHT, 0, 0, targetAngleRelativeToRobot);
             odomToHexagon = getOdomToRobot().add(robotToTarget);
         }
+    }
+
+    public boolean isLimelightTargetFound() {
+        return limelight.isTargetFound();
     }
 
     public void stopAcceptingLimelight() {
@@ -113,7 +117,7 @@ public class LocalizationManager extends CommandBase {
 
         SmartDashboard.putNumber("localizationManager/angleRadians", navx.getAngleRadians());
         SmartDashboard.putNumber("localizationManager/yawRadians", navx.getYawRadians());
-        SmartDashboard.putBoolean("localizationManager/isTargetFound", limelight.isTargetFound());
+        SmartDashboard.putBoolean("localizationManager/isLimelightTargetFound", limelight.isTargetFound());
         SmartDashboard.putBoolean("localizationManager/robotToTargetDistanceUseLidar", useLidarForDistanceEst());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLimelight", getLimelightDistance());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLidar", getCorrectedLidarDistance());

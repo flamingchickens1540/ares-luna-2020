@@ -81,7 +81,7 @@ public class PointDrive extends CommandBase {
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
 
-        double throttle = throttleRateLimiter.calculate(throttleAxis.withDeadzone(0.12).value());
+        double throttle = throttleRateLimiter.calculate(throttleAxis.withDeadzone(0.15).value());
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;

@@ -83,13 +83,14 @@ public class ShooterLineUpSequence extends SequentialCommandGroup {
         SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", pointingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
         SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isLimelightTargetFound", localization.isLimelightTargetFound());
 
         super.execute();
     }
 
     public boolean isLinedUp() {
         if (!isScheduled()) return false;
-        return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal();
+        return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal() && localization.isLimelightTargetFound();
     }
 
     @Override
