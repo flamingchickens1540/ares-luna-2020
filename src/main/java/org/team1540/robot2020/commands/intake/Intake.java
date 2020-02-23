@@ -17,20 +17,20 @@ public class Intake extends SubsystemBase {
     private double kF = 9.2E-5;
 
     private CANSparkMax rollerMotorA = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANSparkMax rollerMotorB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
+//    private CANSparkMax rollerMotorB = new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     private final CANPIDController pidController = rollerMotorA.getPIDController();
     private CANEncoder rollerEncoder = rollerMotorA.getEncoder();
 
     public Intake() {
         MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorA);
-        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorB);
+//        MotorConfigUtils.setDefaultSparkMaxConfig(rollerMotorB);
         rollerMotorA.setSmartCurrentLimit(50);
         rollerMotorA.setSecondaryCurrentLimit(30, 20000);
-        rollerMotorB.setSmartCurrentLimit(50);
-        rollerMotorB.setSecondaryCurrentLimit(30, 20000);
+//        rollerMotorB.setSmartCurrentLimit(50);
+//        rollerMotorB.setSecondaryCurrentLimit(30, 20000);
 
-        rollerMotorB.follow(rollerMotorA, true);
+//        rollerMotorB.follow(rollerMotorA, true);
 
         SmartDashboard.putNumber("intake/tuning/kP", kP);
         SmartDashboard.putNumber("intake/tuning/kD", kD);
@@ -50,9 +50,9 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("intake/rollerVelocity", getVelocity());
         SmartDashboard.putNumber("intake/rollerCurrentA", rollerMotorA.getOutputCurrent());
-        SmartDashboard.putNumber("intake/rollerCurrentB", rollerMotorB.getOutputCurrent());
+//        SmartDashboard.putNumber("intake/rollerCurrentB", rollerMotorB.getOutputCurrent());
         SmartDashboard.putNumber("intake/rollerTemperatureA", rollerMotorA.getMotorTemperature());
-        SmartDashboard.putNumber("intake/rollerTemperatureB", rollerMotorB.getMotorTemperature());
+//        SmartDashboard.putNumber("intake/rollerTemperatureB", rollerMotorB.getMotorTemperature());
     }
 
     public void setPercent(double percent) {
@@ -74,7 +74,7 @@ public class Intake extends SubsystemBase {
 
     public void setBrake(CANSparkMax.IdleMode mode) {
         rollerMotorA.setIdleMode(mode);
-        rollerMotorB.setIdleMode(mode);
+//        rollerMotorB.setIdleMode(mode);
     }
 
     public Command commandStop() {
