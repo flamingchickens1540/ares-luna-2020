@@ -101,10 +101,11 @@ public class RobotContainer {
                 ),
                 new InstCommand(localizationManager::startAcceptingLimelight)
         );
-        driverController.getButton(RIGHT_BUMPER).whileHeld(
-                () -> shootSequence.schedule()
-        );
-        driverController.getButton(LEFT_BUMPER).whenReleased(() -> shootSequence.cancel());
+        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
+//        driverController.getButton(RIGHT_BUMPER).whileHeld(
+//                () -> shootSequence.schedule()
+//        );
+//        driverController.getButton(LEFT_BUMPER).whenReleased(() -> shootSequence.cancel());
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);

@@ -109,7 +109,8 @@ public class PointToTarget extends CommandBase {
         if (robotToGoalTransform == null) return 0;
 
         Vector3D targetPosition = robotToGoalTransform.getPosition();
-        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX()) - Math.toRadians(1.5);
+        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
+//                - Math.toRadians(1.5);
         SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
 
         lastError = targetAngle;
