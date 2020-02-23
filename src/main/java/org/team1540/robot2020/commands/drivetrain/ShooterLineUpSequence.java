@@ -1,4 +1,4 @@
-package org.team1540.robot2020.commands.shooter;
+package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -7,11 +7,11 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.team1540.robot2020.LocalizationManager;
-import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.indexer.Indexer;
+import org.team1540.robot2020.commands.shooter.Shooter;
+import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.LookupTableUtils;

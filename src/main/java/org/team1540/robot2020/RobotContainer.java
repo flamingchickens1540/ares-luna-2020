@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
-import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
+import org.team1540.robot2020.commands.drivetrain.*;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
@@ -22,7 +20,6 @@ import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -71,7 +68,7 @@ public class RobotContainer {
             climber.zero();
             climber.setRatchet(Climber.RatchetState.DISENGAGED);
         }).andThen(new HoodZeroSequence(hood));
-//        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager);
+//        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -84,23 +81,7 @@ public class RobotContainer {
         ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager);
         driverController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
-        CommandGroupBase shootSequence = sequence(
-                parallel(
-                        race(
-                                new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
-                                new FunnelRun(funnel),
-                                new IntakeRun(intake, 7000)
-                        ),
-                        new WaitUntilCommand(shooterLineUpSequence::isLinedUp)
-                ),
-                new InstCommand(localizationManager::stopAcceptingLimelight),
-                race(
-                        new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
-                        new FunnelRun(funnel),
-                        new IntakeRun(intake, 7000)
-                ),
-                new InstCommand(localizationManager::startAcceptingLimelight)
-        );
+        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
 //        driverController.getButton(RIGHT_BUMPER).whileHeld(
 //                () -> shootSequence.schedule()
