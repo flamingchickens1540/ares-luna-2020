@@ -31,8 +31,8 @@ public class PointDrive extends CommandBase {
     public PointDrive(DriveTrain driveTrain, LocalizationManager localizationManager, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
         this.localizationManager = localizationManager;
-        this.pointAxis = pointAxis.withDeadzone(0.2);
-        this.throttleAxis = throttleAxis.withDeadzone(0.12);
+        this.pointAxis = pointAxis;
+        this.throttleAxis = throttleAxis;
         this.resetNavXButton = resetNavXButton;
 
         addRequirements(driveTrain);
@@ -73,7 +73,7 @@ public class PointDrive extends CommandBase {
 
     @Override
     public void execute() {
-        if (pointAxis.magnitude().value() > 0.5) goalAngle = pointAxis.angle().value();
+        if (pointAxis.magnitude().value() > 0.7) goalAngle = pointAxis.angle().value();
 
         double error = TrigUtils.signedAngleError(goalAngle + angleOffset, localizationManager.getYawRadians());
         SmartDashboard.putNumber("pointDrive/error", error);
@@ -81,7 +81,7 @@ public class PointDrive extends CommandBase {
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
 
-        double throttle = throttleRateLimiter.calculate(throttleAxis.value());
+        double throttle = throttleRateLimiter.calculate(throttleAxis.withDeadzone(0.12).value());
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;

@@ -18,7 +18,6 @@ import org.team1540.robot2020.utils.Limelight;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
-import org.team1540.rooster.datastructures.utils.UnitsUtils;
 
 import javax.annotation.Nullable;
 
@@ -41,6 +40,7 @@ public class LocalizationManager extends CommandBase {
 
     @Nullable
     private Transform3D odomToHexagon = null;
+    private boolean acceptLimelight = true;
 
     public LocalizationManager(DriveTrain driveTrain) {
         this.driveTrain = driveTrain;
@@ -65,7 +65,8 @@ public class LocalizationManager extends CommandBase {
     }
 
     private void updateOdomToHexagonTransform() {
-        if (limelight.isTargetFound()) {
+        SmartDashboard.putBoolean("localizationManager/isAcceptingLimelight", acceptLimelight);
+        if (acceptLimelight && limelight.isTargetFound()) {
             double robotToTargetDistance = getBestSensorDistance();
             double robotToTargetAngle = -limelight.getTargetAngles().getX();
             double targetAngleRelativeToRobot = -navx.getYawRadians();
@@ -75,12 +76,20 @@ public class LocalizationManager extends CommandBase {
         }
     }
 
+    public void stopAcceptingLimelight() {
+        acceptLimelight = false;
+    }
+
+    public void startAcceptingLimelight() {
+        acceptLimelight = true;
+    }
+
     @NotNull
     private Transform3D getOdomToRobot() {
         return new Transform3D(odometry.getPoseMeters().getTranslation().getX(), odometry.getPoseMeters().getTranslation().getY(), odometry.getPoseMeters().getRotation().getRadians());
     }
 
-    private boolean useLidarForDistanceEst() {
+    public boolean useLidarForDistanceEst() {
         // TODO: Use limelight if they disagree
         return limelight.isTargetFound() && Math.abs(limelight.getTargetAngles().getX()) < LIDAR_SELECTION_TOLERANCE;
     }
@@ -94,7 +103,7 @@ public class LocalizationManager extends CommandBase {
     }
 
     public double getCorrectedLidarDistance() {
-        return UnitsUtils.inchesToMeters(lidar.getDistance()) * Math.cos(LIDAR_PITCH);
+        return lidar.getDistance() * Math.cos(LIDAR_PITCH);
     }
 
     @Override
@@ -163,20 +172,14 @@ public class LocalizationManager extends CommandBase {
         return robotToRearHoleTransform.add(HEXAGON_TO_INNER_PORT);
     }
 
-    @Nullable
-    public Transform3D getBestTargetTransform() {
-        boolean targetingInnerPort = true;
-        Transform3D robotToGoalTransform = getRobotToRearHoleTransform();
-        if (robotToGoalTransform == null) return null;
-
-        double angle = robotToGoalTransform.getOrientation().getAngle();
+    public boolean shouldTargetInnerPort() {
+        Transform3D robotToRearHoleTransform = getRobotToRearHoleTransform();
+        if (robotToRearHoleTransform == null) return false;
+        double angle = robotToRearHoleTransform.getOrientation().getAngle();
         SmartDashboard.putNumber("pointToTarget/targetSwitchingAngle", Math.toDegrees(angle));
-        if (angle > Math.toRadians(20)) { // TODO: tune this value
-            robotToGoalTransform = getRobotToHexagonTransform();
-            targetingInnerPort = false;
-        }
+        boolean targetingInnerPort = angle < Math.toRadians(20);
         SmartDashboard.putBoolean("pointToTarget/targetingInnerPort", targetingInnerPort);
-        return robotToGoalTransform;
+        return targetingInnerPort;
     }
 
     public double getRate() {

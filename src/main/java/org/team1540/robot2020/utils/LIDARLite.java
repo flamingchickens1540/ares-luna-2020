@@ -3,6 +3,7 @@ package org.team1540.robot2020.utils;
 import edu.wpi.first.hal.I2CJNI;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.MedianFilter;
+import org.team1540.rooster.datastructures.utils.UnitsUtils;
 
 import java.nio.ByteBuffer;
 
@@ -31,7 +32,7 @@ public class LIDARLite {
 
     // TODO document that this returns inches or whatever?
     public double getDistance() {
-        return filter.calculate(getRawDistance());
+        return filter.calculate(UnitsUtils.inchesToMeters(getRawDistance()));
     }
 
     private double getRawDistance() {

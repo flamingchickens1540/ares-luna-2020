@@ -19,9 +19,7 @@ import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
-import org.team1540.robot2020.commands.indexer.Indexer;
-import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
-import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
@@ -33,7 +31,7 @@ import org.team1540.robot2020.utils.InstCommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edu.wpi.first.wpilibj2.command.CommandGroupBase.parallel;
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
@@ -81,9 +79,33 @@ public class RobotContainer {
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
+        SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
+
         // Driver
-        driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
+        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager);
+        driverController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
+        driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
+        CommandGroupBase shootSequence = sequence(
+                parallel(
+                        race(
+                                new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
+                                new FunnelRun(funnel),
+                                new IntakeRun(intake, 7000)
+                        ),
+                        new WaitUntilCommand(shooterLineUpSequence::isLinedUp)
+                ),
+                new InstCommand(localizationManager::stopAcceptingLimelight),
+                race(
+                        new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
+                        new FunnelRun(funnel),
+                        new IntakeRun(intake, 7000)
+                ),
+                new InstCommand(localizationManager::startAcceptingLimelight)
+        );
+        driverController.getButton(RIGHT_BUMPER).whileHeld(
+                () -> shootSequence.schedule()
+        );
+        driverController.getButton(LEFT_BUMPER).whenReleased(() -> shootSequence.cancel());
 
         // Copilot
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
@@ -98,7 +120,21 @@ public class RobotContainer {
         copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
 
         // Testing Controller - Distance offset tuning
-        distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
+        CommandGroupBase shootSequenceTest = sequence(
+                race(
+                        new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
+                        new FunnelRun(funnel),
+                        new IntakeRun(intake, 7000)
+                ),
+                new InstCommand(localizationManager::stopAcceptingLimelight),
+                race(
+                        new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
+                        new FunnelRun(funnel),
+                        new IntakeRun(intake, 7000)
+                ),
+                new InstCommand(localizationManager::startAcceptingLimelight)
+        );
+        distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(() -> shootSequenceTest.schedule()));
 
         distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
@@ -124,8 +160,8 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, driverController, true));
-        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber,copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X),copilotController.getButton(BACK)));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false));
+        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
     }
 
     private void initDefaultCommands() {

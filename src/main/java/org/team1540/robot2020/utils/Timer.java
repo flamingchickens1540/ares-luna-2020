@@ -1,11 +1,9 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2016-2019 FIRST. All Rights Reserved.                        */
+package org.team1540.robot2020.utils;/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2016-2020 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
-package org.team1540.robot2020.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -108,24 +106,47 @@ public class Timer {
     }
 
     /**
+     * Check if the period specified has passed.
+     *
+     * @param seconds The period to check.
+     * @return Whether the period has passed.
+     */
+    public synchronized boolean hasElapsed(double seconds) {
+        return get() > seconds;
+    }
+
+    /**
      * Check if the period specified has passed and if it has, advance the start time by that period.
      * This is useful to decide if it's time to do periodic work without drifting later by the time it
      * took to get around to checking.
      *
      * @param period The period to check for (in seconds).
-     * @return If the period has passed.
+     * @return Whether the period has passed.
      */
     public synchronized boolean hasPeriodPassed(double period) {
-        if (get() > period) {
-            // Advance the start time by the period.
-            // Don't set it to the current time... we want to avoid drift.
-            m_startTime += period * 1000;
-            return true;
-        }
-        return false;
+        return advanceIfElapsed(period);
     }
 
-    public synchronized boolean isRunning() {
+    /**
+     * Check if the period specified has passed and if it has, advance the start time by that period.
+     * This is useful to decide if it's time to do periodic work without drifting later by the time it
+     * took to get around to checking.
+     *
+     * @param seconds The period to check.
+     * @return Whether the period has passed.
+     */
+    public synchronized boolean advanceIfElapsed(double seconds) {
+        if (get() > seconds) {
+            // Advance the start time by the period.
+            // Don't set it to the current time... we want to avoid drift.
+            m_startTime += seconds * 1000;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isRunning() {
         return m_running;
     }
 }

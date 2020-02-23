@@ -9,6 +9,8 @@ import org.team1540.robot2020.utils.ModifiedMiniPID;
 import org.team1540.robot2020.utils.PIDConfig;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 
+import java.util.function.Supplier;
+
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
 public class PointToTarget extends CommandBase {
@@ -17,6 +19,7 @@ public class PointToTarget extends CommandBase {
     private final LocalizationManager localizationManager;
     private final ChickenXboxController.Axis throttleAxis;
     private DriveTrain driveTrain;
+    private Supplier<Transform3D> targetSupplier;
     private ChickenXboxController driver;
 
     private ModifiedMiniPID pointController = new ModifiedMiniPID(0, 0, 0);
@@ -28,9 +31,10 @@ public class PointToTarget extends CommandBase {
     private boolean testingMode;
 
 
-    public PointToTarget(DriveTrain driveTrain, LocalizationManager localizationManager, ChickenXboxController driver, boolean testingMode) {
+    public PointToTarget(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode) {
         this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
+        this.targetSupplier = targetSupplier;
         this.driver = driver;
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
@@ -85,10 +89,10 @@ public class PointToTarget extends CommandBase {
             leftMotors += triggerValues;
             rightMotors -= triggerValues;
         } else {
-            double throttle = throttleAxis.withDeadzone(0.12).value();
+            double throttle = throttleAxis.withDeadzone(0.2).value();
             leftMotors += throttle;
             rightMotors += throttle;
-            double actualCValue = Math.abs(throttle) > 0.12 ? 0 : config.c;
+            double actualCValue = Math.abs(throttle) > 0.2 ? 0 : config.c;
             SmartDashboard.putNumber("pointToTarget/actualCValue", actualCValue);
             pointController.setC(actualCValue);
         }
@@ -101,11 +105,11 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        Transform3D robotToGoalTransform = localizationManager.getBestTargetTransform();
+        Transform3D robotToGoalTransform = targetSupplier.get();
         if (robotToGoalTransform == null) return 0;
 
         Vector3D targetPosition = robotToGoalTransform.getPosition();
-        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
+        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX()) - Math.toRadians(1.5);
         SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
 
         lastError = targetAngle;
