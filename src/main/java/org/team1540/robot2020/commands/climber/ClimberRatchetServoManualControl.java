@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
-public class ClimberRatchetManualControl extends CommandBase {
+public class ClimberRatchetServoManualControl extends CommandBase {
     private Climber climber;
     private ChickenXboxController.Axis joystickAxis;
     private double ratchetValue = 0;
 
-    public ClimberRatchetManualControl(Climber climber, ChickenXboxController.Axis joystickAxis) {
+    public ClimberRatchetServoManualControl(Climber climber, ChickenXboxController.Axis joystickAxis) {
         this.climber = climber;
         this.joystickAxis = joystickAxis;
         addRequirements(climber);

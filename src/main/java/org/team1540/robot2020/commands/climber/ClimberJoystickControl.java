@@ -2,13 +2,14 @@ package org.team1540.robot2020.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.utils.ChickenXboxController;
+import org.team1540.robot2020.utils.SlewRisingRateLimiter;
 
 public class ClimberJoystickControl extends CommandBase {
 
-    Climber climber;
-    ChickenXboxController.Axis axis;
-    private static final double maxHeight = 0.75;
-    private static final double minHeight = 0.05;
+    private final SlewRisingRateLimiter slewRisingRateLimiter = new SlewRisingRateLimiter(1.8); // TODO tune rate limiter
+    private Climber climber;
+    private ChickenXboxController.Axis axis;
+
 
     public ClimberJoystickControl(Climber climber, ChickenXboxController.Axis axis) {
         this.climber = climber;
@@ -17,11 +18,11 @@ public class ClimberJoystickControl extends CommandBase {
 
     @Override
     public void initialize() {
-//        climber.configSoftLimitMeters(minHeight, maxHeight);
+        slewRisingRateLimiter.reset(0);
     }
 
     @Override
     public void execute() {
-        climber.setPercent(axis.withDeadzone(0.12).value());
+        climber.setPercent(slewRisingRateLimiter.calculate(axis.withDeadzone(0.12).value()));
     }
 }

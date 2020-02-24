@@ -2,40 +2,40 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.team1540.robot2020.utils.*;
-import org.team1540.rooster.util.TrigUtils;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.team1540.robot2020.LocalizationManager;
+import org.team1540.robot2020.utils.ChickenXboxController;
+import org.team1540.robot2020.utils.ModifiedMiniPID;
+import org.team1540.robot2020.utils.PIDConfig;
+import org.team1540.rooster.datastructures.threed.Transform3D;
 
-import java.util.List;
+import java.util.function.Supplier;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
-public class PointToTarget extends CommandBase {
+public class PointToTransform extends CommandBase {
 
 
-    private final NavX navx;
-    private final Limelight limelight;
+    private final LocalizationManager localizationManager;
     private final ChickenXboxController.Axis throttleAxis;
-    private boolean testingMode;
-    private double lastTargetAngle = 0;
     private DriveTrain driveTrain;
+    private Supplier<Transform3D> targetSupplier;
     private ChickenXboxController driver;
 
     private ModifiedMiniPID pointController = new ModifiedMiniPID(0, 0, 0);
 
     private double finishedDegreesPerSecond = 0.5;
-    private double finishedDegrees = 1;
+    private double finishedDegrees = 0.3;
     private double lastError = Double.NEGATIVE_INFINITY;
     private PIDConfig config;
+    private boolean testingMode;
 
-    private boolean foundTarget;
 
-
-    public PointToTarget(DriveTrain driveTrain, NavX navx, Limelight limelight, ChickenXboxController driver, boolean testingMode) {
-        this.navx = navx;
+    public PointToTransform(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode) {
+        this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
+        this.targetSupplier = targetSupplier;
         this.driver = driver;
-        this.limelight = limelight;
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
 
@@ -49,8 +49,6 @@ public class PointToTarget extends CommandBase {
 
     @Override
     public void initialize() {
-        lastTargetAngle = navx.getAngleRadians();
-        foundTarget = false;
 
         double p = SmartDashboard.getNumber("pointToTarget/P", 0);
         double i = SmartDashboard.getNumber("pointToTarget/I", 0);
@@ -91,19 +89,15 @@ public class PointToTarget extends CommandBase {
             leftMotors += triggerValues;
             rightMotors -= triggerValues;
         } else {
-            double throttle = throttleAxis.withDeadzone(0.12).value();
+            double throttle = throttleAxis.withDeadzone(0.2).value();
             leftMotors += throttle;
             rightMotors += throttle;
-            double actualCValue = Math.abs(throttle) > 0.12 ? 0 : config.c;
+            double actualCValue = Math.abs(throttle) > 0.2 ? 0 : config.c;
             SmartDashboard.putNumber("pointToTarget/actualCValue", actualCValue);
             pointController.setC(actualCValue);
         }
 
         double pidOutput = pointController.getOutput(calculateError());
-
-        if (!foundTarget) {
-            pidOutput = 0;
-        }
 
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
@@ -111,33 +105,24 @@ public class PointToTarget extends CommandBase {
     }
 
     private double calculateError() {
-        if (limelight.isTargetFound()) {
-            foundTarget = true;
-            Vector2D targetAngles = limelight.getTargetAngles();
-            lastTargetAngle = navx.getAngleRadians() - targetAngles.getX();
-            SmartDashboard.putNumber("pointToTarget/limelightTarget", targetAngles.getX());
-        }
+        Transform3D robotToGoalTransform = targetSupplier.get();
+        if (robotToGoalTransform == null) return 0;
 
-        double error = TrigUtils.signedAngleError(lastTargetAngle, navx.getAngleRadians());
+        Vector3D targetPosition = robotToGoalTransform.getPosition();
+        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
+//                - Math.toRadians(1.5);
+        SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
 
-        lastError = error;
+        lastError = targetAngle;
 
-        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(navx.getYawRadians()));
-        SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(error));
+        SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getYawRadians()));
+        SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(targetAngle));
         SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
 
-        return error;
+        return targetAngle;
     }
 
     public boolean hasReachedGoal() {
-        return Math.abs(navx.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
-    }
-
-    private String coefsToLatexString(List<Double> coefs) {
-        String latexString = "";
-        for (int i = 0; i < coefs.size(); i++) {
-            latexString += coefs.get(i) + "x^{" + i + "}+";
-        }
-        return latexString;
+        return Math.abs(localizationManager.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
     }
 }

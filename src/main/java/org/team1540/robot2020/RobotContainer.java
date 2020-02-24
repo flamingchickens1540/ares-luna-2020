@@ -3,56 +3,47 @@ package org.team1540.robot2020;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
-import org.team1540.robot2020.commands.climber.ClimberNonSensorControl;
-import org.team1540.robot2020.commands.climber.ClimberSensorSequence;
-import org.team1540.robot2020.commands.climber.ClimberSequence;
-import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
-import org.team1540.robot2020.commands.drivetrain.PointToTarget;
+import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
+import org.team1540.robot2020.commands.drivetrain.*;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
-import org.team1540.robot2020.commands.indexer.Indexer;
-import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
-import org.team1540.robot2020.commands.indexer.IndexerManualControl;
+import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.commands.shooter.ShooterLineUpSequence;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
-import org.team1540.rooster.triggers.DPadAxis;
+import org.team1540.rooster.wrappers.RevBlinken;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static edu.wpi.first.wpilibj2.command.CommandGroupBase.parallel;
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
 public class RobotContainer {
 
-    public static final boolean ENABLE_TESTING_CONTROLLERS = true;
-
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
+    private final Command autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
     private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
 
-    private LocalizationManager localizationManager = new LocalizationManager();
-
-    private DriveTrain driveTrain = new DriveTrain(localizationManager.getNavX());
+    private DriveTrain driveTrain = new DriveTrain();
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
     private Indexer indexer = new Indexer();
@@ -60,92 +51,107 @@ public class RobotContainer {
     private Hood hood = new Hood();
     //    private ControlPanel controlPanel = new ControlPanel();
     private Climber climber = new Climber();
+    private RevBlinken leds = new RevBlinken(0);
+
+    private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
+
 
     RobotContainer() {
         logger.info("Creating robot container...");
 
         initButtonBindings();
-        initModeTransitionBindings();
         initDefaultCommands();
+        initModeTransitionBindings();
+        initDashboard();
 
         // TODO: Replace with a notifier that runs more often than commands
-        new LocalizationManager().schedule();
-
-        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-            logger.info("Turning off limelight LEDs...");
-            localizationManager.getLimelight().setLeds(false);
-        }, true), RobotState::isEnabled)).schedule();
+        localizationManager.schedule();
+//        autonomous = new InstCommand(() -> {
+//            climber.zero();
+//            climber.setRatchet(Climber.RatchetState.DISENGAGED);
+//        }).andThen(new HoodZeroSequence(hood));
+        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
+        SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
+
         // Driver
-        driverController.getButton(LEFT_BUMPER).whileHeld(new ShooterLineUpSequence(driveTrain, shooter, hood, driverController, localizationManager));
-        driverController.getButton(RIGHT_BUMPER).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake)));
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false);
+        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
+        driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
+        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp);
+        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
+//        driverController.getButton(RIGHT_BUMPER).whileHeld(
+//                () -> shootSequence.schedule()
+//        );
+//        driverController.getButton(LEFT_BUMPER).whenReleased(() -> shootSequence.cancel());
 
         // Copilot
-        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel);
-        Command intakeCommand = new IntakeRun(intake).alongWith(new ScheduleCommand(ballQueueCommand));
+        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
+        Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
-        copilotController.getButton(DPadAxis.DOWN).whileHeld(intake.commandPercent(-1));
-        copilotController.getButton(DPadAxis.UP).whileHeld(
+        copilotController.getButton(LEFT_BUMPER).whileHeld(intake.commandPercent(-1));
+        copilotController.getButton(RIGHT_BUMPER).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
-        copilotController.getButton(Y).whenPressed(new ClimberSensorSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
+//        copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
+        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
 
-        ClimberSequence climberSequence = new ClimberSequence(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_TRIG));
-        copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(() -> {
-            if (climberSequence.isScheduled()) {
-                climberSequence.cancel();
-            }
-            climberSequence.schedule();
-        });
+        // Testing Controller - Distance offset tuning
+        CommandGroupBase shootSequenceTest = sequence(
+                race(
+                        new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
+                        new FunnelRun(funnel),
+                        new IntakeRun(intake, 7000)
+                ),
+                new InstCommand(localizationManager::stopAcceptingLimelight),
+                race(
+                        new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
+                        new FunnelRun(funnel),
+                        new IntakeRun(intake, 7000)
+                ),
+                new InstCommand(localizationManager::startAcceptingLimelight)
+        );
+        distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(() -> shootSequenceTest.schedule()));
 
-        copilotController.getButton(START).and(copilotController.getButton(BACK)).whenActive(new ClimberNonSensorControl(
-                climber,
-                copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                copilotController.getButton(START)));
+        distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
 
-        if (ENABLE_TESTING_CONTROLLERS) {
-            // Testing Controller - Distance offset tuning
-            distanceOffsetTestingController.getButton(LEFT_BUMPER).whileHeld(indexer.commandPercent(1));
+        distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
 
-            distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
+        ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
+        distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
 
-            distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
+        List<Double> distanceList = new ArrayList<>();
+        List<Double> hoodList = new ArrayList<>();
+        List<Double> flywheelList = new ArrayList<>();
+        distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
+            distanceList.add(localizationManager.getCorrectedLidarDistance());
+            hoodList.add(hood.getPosition());
+            flywheelList.add(shooterManualSetpoint.getSetpoint());
+            SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
+            SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
+        }));
 
-            ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
-            distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
+        distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
+                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-            List<Double> distanceList = new ArrayList<>();
-            List<Double> hoodList = new ArrayList<>();
-            List<Double> flywheelList = new ArrayList<>();
-            distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-                distanceList.add(localizationManager.getLidar().getDistance());
-                hoodList.add(hood.getPosition());
-                flywheelList.add(shooterManualSetpoint.getSetpoint());
-                SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
-                SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
-                SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
-            }));
-
-            distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
-                    distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
-
-            distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager.getNavX(), localizationManager.getLimelight(), driverController, true));
-        }
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTransform(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false));
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager.getNavX(),
+        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
                 driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
                 driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
                 driverController.getButton(ChickenXboxController.XboxButton.Y)));
@@ -170,13 +176,15 @@ public class RobotContainer {
             intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
-            localizationManager.getLimelight().setLeds(true);
+            localizationManager.setLimelightLeds(true);
             logger.info("Mechanism brakes enabled");
+            leds.set(RevBlinken.ColorPattern.AQUA);
         });
 
         disabled.whenActive(new WaitCommand(2)
                 .alongWith(new InstCommand(() -> {
-                    localizationManager.getLimelight().setLeds(false);
+                    leds.set(RevBlinken.ColorPattern.FIRE_LARGE);
+                    localizationManager.setLimelightLeds(false);
                     logger.debug("Disabling mechanism brakes in 2 seconds");
                 }, true))
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
@@ -186,12 +194,21 @@ public class RobotContainer {
                     climber.setBrake(NeutralMode.Coast);
                     logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
+
+        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
+            logger.info("Turning off limelight LEDs 20 seconds after boot...");
+            localizationManager.setLimelightLeds(false);
+        }, true), RobotState::isEnabled)).schedule();
+    }
+
+    private void initDashboard() {
+        SmartDashboard.putData("localizationManager/ResetOdometry", new InstCommand(() -> {
+            driveTrain.resetEncoders();
+            localizationManager.resetOdometry(new Pose2d());
+        }, true));
     }
 
     Command getAutoCommand() {
-        return new InstantCommand(() -> {
-            climber.zero();
-            climber.setRatchet(Climber.RatchetState.DISENGAGED);
-        }).andThen(new HoodZeroSequence(hood));
+        return autonomous;
     }
 }

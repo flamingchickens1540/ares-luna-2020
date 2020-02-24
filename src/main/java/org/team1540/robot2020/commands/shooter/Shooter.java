@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team1540.robot2020.utils.ControlUtils;
 import org.team1540.robot2020.utils.MotorConfigUtils;
+import org.team1540.robot2020.utils.Timer;
 
 public class Shooter extends SubsystemBase {
     private double kP = 0.5;
@@ -20,10 +22,16 @@ public class Shooter extends SubsystemBase {
     private TalonFX shooterMotorA = new TalonFX(9);
     private TalonFX shooterMotorB = new TalonFX(10);
 
+    public static final int HIGH_RPM_kD = 30;
+    public static final int LOW_RPM_kD = 10;
+    private Timer kdTimer = new Timer();
+
     public Shooter() {
         setupFlywheelMotors();
         setupPIDs();
         updatePIDs();
+        kdTimer.reset();
+        kdTimer.start();
     }
 
     private void setupFlywheelMotors() {
@@ -57,6 +65,13 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter/error", getClosedLoopError());
     }
 
+
+    private void configLowRPM(double targetRPM) {
+        double kD = ControlUtils.linearDeadzoneRamp(targetRPM, false, HIGH_RPM_kD, LOW_RPM_kD, 5000, 3000);
+        config_kD(kD);
+        SmartDashboard.putNumber("shooter/calculatedKd", kD);
+    }
+
     public void stop() {
         shooterMotorA.set(TalonFXControlMode.PercentOutput, 0);
     }
@@ -66,6 +81,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocityRPM(double velocity) {
+        if (kdTimer.hasPeriodPassed(0.3)) configLowRPM(velocity);
         shooterMotorA.set(TalonFXControlMode.Velocity, (velocity * 2048.0) / 600);
     }
 
