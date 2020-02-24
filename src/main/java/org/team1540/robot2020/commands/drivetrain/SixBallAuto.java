@@ -9,7 +9,9 @@ import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
+import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
+import org.team1540.robot2020.commands.intake.IntakePercent;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -23,22 +25,14 @@ public class SixBallAuto extends ParallelCommandGroup {
     public SixBallAuto(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
         ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
+        ShooterLineUpSequence shooterLineUpSequence2 = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
                 sequence(
-                        parallel(
-                                new HoodZeroSequence(hood),
-                                new ChickenRamseteCommand(
-                                        this::getStartingPose,
-                                        () -> List.of(
-                                                new Pose2d(0, 0, new Rotation2d(localizationManager.getYawRadians())),
-                                                new Pose2d(-1.5, 0, new Rotation2d(0))
-                                        ),
-                                        true, localizationManager, driveTrain)
-                        ),
+                        new HoodZeroSequence(hood),
                         race(
                                 shooterLineUpSequence,
                                 sequence(
@@ -46,45 +40,37 @@ public class SixBallAuto extends ParallelCommandGroup {
                                         new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp),
                                         new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp)
                                 )
+                        ),
+                        race(
+                                new IntakePercent(intake, 1),
+                                sequence(
+                                        new IndexerBallQueueSequence(indexer, funnel, false),
+                                        new IndexerBallQueueSequence(indexer, funnel, false),
+                                        new IndexerBallQueueSequence(indexer, funnel, false),
+                                        new IndexerBallQueueSequence(indexer, funnel, false),
+                                        new IndexerBallQueueSequence(indexer, funnel, false)
+                                ),
+                                sequence(
+                                        new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
+                                        new ChickenRamseteCommand(
+                                                this::getStartingPose,
+                                                () -> List.of(
+                                                        new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))),
+                                                        new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
+                                                        new Pose2d(-4, -.8, new Rotation2d(Math.PI))
+                                                ),
+                                                false, localizationManager, driveTrain
+                                        )
+                                )
+                        ),
+                        race(
+                                shooterLineUpSequence2,
+                                sequence(
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp)
+                                )
                         )
-//                        parallel(
-//                                new IntakePercent(intake, 1),
-//                                sequence(
-//                                        new IndexerBallQueueSequence(indexer, funnel, false),
-//                                        new IndexerBallQueueSequence(indexer, funnel, false),
-//                                        new IndexerBallQueueSequence(indexer, funnel, false),
-//                                        new IndexerBallQueueSequence(indexer, funnel, false),
-//                                        new IndexerBallQueueSequence(indexer, funnel, false)
-//                                ),
-//                                sequence(
-//                                        new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.PI + Math.toRadians(5))), Math.toRadians(20)),
-//                                        new ChickenRamseteCommand(
-//                                                this::getStartingPose,
-//                                                List.of(
-//                                                        new Pose2d(0, 0, new Rotation2d(Math.PI)),
-//                                                        new Pose2d(-2, -.7, new Rotation2d(Math.PI)),
-//                                                        new Pose2d(-4, -.7, new Rotation2d(Math.PI))
-//                                                ),
-//                                                false, localizationManager, driveTrain
-//                                        )
-////                                        new ChickenRamseteCommand(
-////                                                this::getStartingPose,
-////                                                List.of(
-////                                                        new Pose2d(0, 0, new Rotation2d(0)),
-////                                                        new Pose2d(4, 0, new Rotation2d(0))
-////                                                ),
-////                                                false, localizationManager, driveTrain
-////                                        ),
-////                                        new ChickenRamseteCommand(
-////                                                this::getStartingPose,
-////                                                List.of(
-////                                                        new Pose2d(4, 0, new Rotation2d(0)),
-////                                                        new Pose2d(0, 0, new Rotation2d(0))
-////                                                ),
-////                                                true, localizationManager, driveTrain
-////                                        )
-//                                )
-//                        )
                 )
         );
     }

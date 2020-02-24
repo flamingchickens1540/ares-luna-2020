@@ -22,6 +22,7 @@ public class Indexer extends SubsystemBase {
 
     private DigitalInput indexerStagedSensor = new DigitalInput(0);
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
+    private DigitalInput almostShooterStagedSensor = new DigitalInput(3);
 
     private int balls = 0;
     //    public double bottomOfBottomBallMeters = 0;
@@ -67,6 +68,7 @@ public class Indexer extends SubsystemBase {
 
         SmartDashboard.putBoolean("indexer/indexerStagedSensor", getIndexerStagedSensor());
         SmartDashboard.putBoolean("indexer/shooterStagedSensor", getShooterStagedSensor());
+        SmartDashboard.putBoolean("indexer/almostShooterStagedSensor", getAlmostShooterStagedSensor());
         SmartDashboard.putNumber("indexer/balls", balls);
         SmartDashboard.putBoolean("indexer/isFull", isFull);
     }
@@ -100,8 +102,13 @@ public class Indexer extends SubsystemBase {
     public boolean getIndexerStagedSensor() {
         return !indexerStagedSensor.get();
     }
+
     public boolean getShooterStagedSensor() {
         return !shooterStagedSensor.get();
+    }
+
+    public boolean getAlmostShooterStagedSensor() {
+        return !almostShooterStagedSensor.get();
     }
 
     public double getPositionMeters() {

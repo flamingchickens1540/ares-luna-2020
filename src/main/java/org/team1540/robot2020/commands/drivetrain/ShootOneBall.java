@@ -1,14 +1,13 @@
 package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.indexer.Indexer;
-import org.team1540.robot2020.commands.indexer.IndexerBallsToTop;
+import org.team1540.robot2020.commands.indexer.IndexerBallsToTopFast;
 import org.team1540.robot2020.commands.indexer.IndexerPercentToPosition;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
@@ -22,7 +21,7 @@ public class ShootOneBall extends SequentialCommandGroup {
         addCommands(
                 parallel(
                         race(
-                                new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
+                                new IndexerBallsToTopFast(indexer, 0.2, 1),
                                 new FunnelRun(funnel),
                                 new IntakeRun(intake, 7000)
                         ),

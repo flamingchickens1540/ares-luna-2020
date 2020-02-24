@@ -1,5 +1,7 @@
 package org.team1540.robot2020;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -8,6 +10,8 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +24,8 @@ import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
 
 import javax.annotation.Nullable;
+
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 
 
 public class LocalizationManager extends CommandBase {
@@ -38,6 +44,9 @@ public class LocalizationManager extends CommandBase {
     private NavX navx = new NavX(SPI.Port.kMXP);
     private DriveTrain driveTrain;
 
+    private DigitalOutput buttonLed = new DigitalOutput(4);
+    private DigitalInput buttonSignal = new DigitalInput(5);
+
     @Nullable
     private Transform3D odomToHexagon = null;
     private boolean acceptLimelight = true;
@@ -51,9 +60,17 @@ public class LocalizationManager extends CommandBase {
 
         odometry = new DifferentialDriveOdometry(new Rotation2d(navx.getYawRadians()));
 
-        SmartDashboard.putData("localizationManager/zeroYaw", new InstCommand(() -> {
-            navx.zeroYaw();
-        }, true));
+        var button = new Trigger(buttonSignal::get);
+
+        CommandBase zeroNavxCommand = sequence(
+                new WaitCommand(1),
+                new InstCommand(() -> {
+                    navx.zeroYaw();
+                    System.out.println("NavX Zeroed!");
+                }, true)
+        );
+        button.whenActive(zeroNavxCommand);
+        SmartDashboard.putData("localizationManager/zeroYaw", zeroNavxCommand);
     }
 
     public void initialize() {

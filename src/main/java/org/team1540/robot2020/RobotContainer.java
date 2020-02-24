@@ -23,6 +23,7 @@ import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
+import org.team1540.rooster.wrappers.RevBlinken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,7 @@ public class RobotContainer {
     private Hood hood = new Hood();
     //    private ControlPanel controlPanel = new ControlPanel();
     private Climber climber = new Climber();
+    private RevBlinken leds = new RevBlinken(0);
 
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
 
@@ -68,7 +70,8 @@ public class RobotContainer {
 //            climber.zero();
 //            climber.setRatchet(Climber.RatchetState.DISENGAGED);
 //        }).andThen(new HoodZeroSequence(hood));
-        autonomous = new ThreeBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        autonomous = new SixBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new ThreeBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -175,10 +178,12 @@ public class RobotContainer {
             climber.setBrake(NeutralMode.Brake);
             localizationManager.setLimelightLeds(true);
             logger.info("Mechanism brakes enabled");
+            leds.set(RevBlinken.ColorPattern.AQUA);
         });
 
         disabled.whenActive(new WaitCommand(2)
                 .alongWith(new InstCommand(() -> {
+                    leds.set(RevBlinken.ColorPattern.FIRE_LARGE);
                     localizationManager.setLimelightLeds(false);
                     logger.debug("Disabling mechanism brakes in 2 seconds");
                 }, true))
