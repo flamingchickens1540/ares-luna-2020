@@ -13,10 +13,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.team1540.robot2020.shouldbeinrooster.Encoder;
-import org.team1540.robot2020.shouldbeinrooster.NavX;
-import org.team1540.robot2020.shouldbeinrooster.TalonEncoder;
+import org.team1540.robot2020.shouldbeinrooster.*;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.ChickenTalon;
 
@@ -78,17 +75,26 @@ public class DriveTrain extends SubsystemBase {
 
     public DriveTrain(ChickenXboxController copilot) {
         this.copilot = copilot;
-        initMotors();
-        initEncoders();
-    }
 
-    private void initMotors() {
         driveMotorAll = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC, driveMotorRightA, driveMotorRightB, driveMotorRightC};
         driveMotorMasters = new TalonSRX[]{driveMotorLeftA, driveMotorRightA};
         driveMotorFollowers = new VictorSPX[]{driveMotorLeftB, driveMotorLeftC, driveMotorRightB, driveMotorRightC};
         driveMotorLeft = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC};
         driveMotorRight = new BaseMotorController[]{driveMotorRightA, driveMotorRightB, driveMotorRightC};
 
+        initEncoders();
+
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftA, 0, "driveLeftA"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftB, 1, "driveLeftB"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftC, 2, "driveLeftC"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightA, 3, "driveRightA"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightB, 4, "driveRightB"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightC, 5, "driveRightC"));
+
+    }
+
+    @Override
+    public void configMotors() {
         for (BaseMotorController controller : driveMotorAll) {
             controller.setNeutralMode(NeutralMode.Brake);
 

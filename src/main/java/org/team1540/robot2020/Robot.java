@@ -9,16 +9,19 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.shouldbeinrooster.MotorTesting;
 
 public class Robot extends TimedRobot {
 
     private static final Logger logger = Logger.getLogger(Robot.class);
 
     private Command m_autonomousCommand;
-    private boolean initContainerFlag = true;
+    private boolean configMotorsFlag = true;
 
     private RobotContainer container;
 
@@ -51,10 +54,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        if (initContainerFlag) {
-            container.init(false);
+        if (configMotorsFlag) {
+            container.configMotors();
+            configMotorsFlag = false;
         }
-        initContainerFlag = false;
     }
 
     @Override
@@ -85,8 +88,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testInit() {
-        initContainerFlag = true;
-        container.init(true);
+        LiveWindow.setEnabled(false);
+        Shuffleboard.disableActuatorWidgets();
+        configMotorsFlag = true;
+        container.testMotors();
     }
 
     @Override

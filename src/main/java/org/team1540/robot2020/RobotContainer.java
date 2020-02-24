@@ -1,37 +1,25 @@
 package org.team1540.robot2020;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.List;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.Autonomous;
-import org.team1540.robot2020.commands.TestMotors;
-import org.team1540.robot2020.commands.cargomech.CargoMechIntake;
-import org.team1540.robot2020.commands.cargomech.CargoMechManualControl;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.drivetrain.TankDrive;
 import org.team1540.robot2020.shouldbeinrooster.InstCommand;
+import org.team1540.robot2020.shouldbeinrooster.MotorTesting;
+import org.team1540.robot2020.shouldbeinrooster.SubsystemBase;
 import org.team1540.robot2020.subsystems.CargoMech;
 import org.team1540.robot2020.subsystems.DriveTrain;
-import org.team1540.rooster.triggers.DPadAxis;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.NavX;
 
-import static org.team1540.rooster.util.ChickenXboxController.XboxButton.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RobotContainer {
 
@@ -43,43 +31,37 @@ public class RobotContainer {
 
     private NavX navx = new NavX(SPI.Port.kMXP);
 
-    private BaseMotorController[] motors;
-    private int testMotorI = 0;
-
     private DriveTrain driveTrain;
     private CargoMech cargoMech;
+
+    private SubsystemBase[] subsystems;
 
     public RobotContainer() {
         logger.info("Creating robot container...");
 
-//        initButtonBindings();
-//        initModeTransitionBindings();
-//        initDefaultCommands();
+        driveTrain = new DriveTrain(copilot);
+        cargoMech = new CargoMech();
+
+        subsystems = new SubsystemBase[]{
+                driveTrain,
+                cargoMech
+        };
+
+        initDefaultCommands();
+        initButtonBindings();
+        initModeTransitionBindings();
 
 //        SmartDashboard.putData("drive/resetEncoders", new ResetEncoders(driveTrain));
     }
 
-    public void init(boolean test) {
-        driveTrain = new DriveTrain(copilot);
-        cargoMech = new CargoMech();
-
-        motors = new BaseMotorController[]{
-                driveTrain.driveMotorRightA,
-                driveTrain.driveMotorRightB,
-                driveTrain.driveMotorRightC,
-                driveTrain.driveMotorLeftA,
-                driveTrain.driveMotorLeftB,
-                driveTrain.driveMotorLeftC,
-                cargoMech.cargoRollerTop
-        };
-
-        initModeTransitionBindings();
-        if (test) {
-            initTest();
-        } else {
-            initDefaultCommands();
-            initButtonBindings();
+    public void configMotors() {
+        for (SubsystemBase subsystem : subsystems) {
+            subsystem.configMotors();
         }
+    }
+
+    public void testMotors() {
+        MotorTesting.getInstance().testMotors(test.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y));
     }
 
     private void initButtonBindings() {
@@ -92,28 +74,6 @@ public class RobotContainer {
 //        driver.getButton(Y).whenPressed(new CargoMechIntake(cargoMech));
 //        copilot.getButton(Y).whileHeld(new StartEndCommand(() -> driveTrain.driveMotorRightA.set(ControlMode.PercentOutput, 0.2), () -> driveTrain.driveMotorRightA.set(ControlMode.PercentOutput, 0), driveTrain));
 //        copilot.getButton(A).whileHeld(new StartEndCommand(() -> driveTrain.driveMotorRightB.set(ControlMode.PercentOutput, 0.2), () -> driveTrain.driveMotorRightB.set(ControlMode.PercentOutput, 0), driveTrain));
-    }
-
-    public void initTest() {
-        test.getButton(ChickenXboxController.XboxButton.RB).whenPressed(() -> {
-            if (testMotorI == motors.length - 1) {
-                testMotorI = 0;
-            } else {
-                testMotorI++;
-            }
-            System.out.println(testMotorI);
-        });
-        test.getButton(ChickenXboxController.XboxButton.LB).whenPressed(() -> {
-            if (testMotorI == 0) {
-                testMotorI = motors.length - 1;
-            } else {
-                testMotorI--;
-            }
-            System.out.println(testMotorI);
-        });
-        driveTrain.setDefaultCommand(new InstCommand(() -> {}, driveTrain).perpetually());
-        cargoMech.setDefaultCommand(new InstCommand(() -> {}, cargoMech).perpetually());
-        new TestMotors(motors, () -> testMotorI, test.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.1)).schedule();
     }
 
     private void initModeTransitionBindings() {
@@ -139,12 +99,13 @@ public class RobotContainer {
 
     }
 
-    public Command getAutoCommand() {
-        return new Autonomous(driveTrain, cargoMech, driver);
-    }
-
     private void initDefaultCommands() {
         driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 //        cargoMech.setDefaultCommand(new CargoMechManualControl(cargoMech, copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y)));
     }
+
+    public Command getAutoCommand() {
+        return new Autonomous(driveTrain, cargoMech, driver);
+    }
+
 }
