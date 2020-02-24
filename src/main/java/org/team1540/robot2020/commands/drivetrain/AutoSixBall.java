@@ -34,7 +34,7 @@ public class AutoSixBall extends ParallelCommandGroup {
                 }),
                 sequence(
                         new HoodZeroSequence(hood),
-                        new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                         race(
                                 new IntakePercent(intake, 1),
                                 sequence(
@@ -55,7 +55,7 @@ public class AutoSixBall extends ParallelCommandGroup {
                                         )
                                 )
                         ),
-                        new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                 )
         );
     }
