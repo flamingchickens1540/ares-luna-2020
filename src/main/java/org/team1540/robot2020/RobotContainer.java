@@ -55,7 +55,6 @@ public class RobotContainer {
 
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
 
-
     RobotContainer() {
         logger.info("Creating robot container...");
 
