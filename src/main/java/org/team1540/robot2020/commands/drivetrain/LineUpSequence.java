@@ -39,7 +39,7 @@ public class LineUpSequence extends SequentialCommandGroup {
             return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 1000, 5800);
         });
         this.hoodCommand = new HoodSetPositionContinuous(hood, () -> {
-            double norm = getDistanceMetersOrDefault(localizationManager);
+            double norm = getDistanceMetersOrDefault(localizationManager) + hood.offset;
             return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -230, -1);
         });
 
