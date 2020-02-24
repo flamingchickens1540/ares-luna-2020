@@ -24,8 +24,6 @@ public class AutoSixBall extends ParallelCommandGroup {
 
     public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
-        LineUpSequence lineUpSequence2 = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
@@ -33,14 +31,7 @@ public class AutoSixBall extends ParallelCommandGroup {
                 }),
                 sequence(
                         new HoodZeroSequence(hood),
-                        race(
-                                lineUpSequence,
-                                sequence( // TODO: shoot commands need timeouts
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp)
-                                )
-                        ),
+                        new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                         race(
                                 new IntakePercent(intake, 1),
                                 sequence(
@@ -63,14 +54,7 @@ public class AutoSixBall extends ParallelCommandGroup {
                                         )
                                 )
                         ),
-                        race(
-                                lineUpSequence2,
-                                sequence(
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp)
-                                )
-                        )
+                        new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                 )
         );
     }
