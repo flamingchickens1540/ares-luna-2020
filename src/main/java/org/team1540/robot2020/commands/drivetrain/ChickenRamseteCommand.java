@@ -15,23 +15,23 @@ import java.util.function.Supplier;
 
 public class ChickenRamseteCommand extends SequentialCommandGroup {
 
-    public ChickenRamseteCommand(Supplier<Pose2d> offset, Pose2d start, List<Translation2d> waypoints, Pose2d end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+    public ChickenRamseteCommand(Supplier<Pose2d> offset, Supplier<Pose2d> start, Supplier<List<Translation2d>> waypoints, Supplier<Pose2d> end, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
         this(localizationManager, driveTrain, () -> {
             RamseteConfig.trajectoryConfig.setReversed(reversed);
             return TrajectoryGenerator.generateTrajectory(
-                    TransformUtils.translatePose(offset.get(), start),
-                    TransformUtils.translateWaypoints(offset.get(), waypoints),
-                    TransformUtils.translatePose(offset.get(), end),
+                    TransformUtils.translatePose(offset.get(), start.get()),
+                    TransformUtils.translateWaypoints(offset.get(), waypoints.get()),
+                    TransformUtils.translatePose(offset.get(), end.get()),
                     RamseteConfig.trajectoryConfig
             );
         });
     }
 
-    public ChickenRamseteCommand(Supplier<Pose2d> offset, List<Pose2d> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
+    public ChickenRamseteCommand(Supplier<Pose2d> offset, Supplier<List<Pose2d>> waypoints, boolean reversed, LocalizationManager localizationManager, DriveTrain driveTrain) {
         this(localizationManager, driveTrain, () -> {
             RamseteConfig.trajectoryConfig.setReversed(reversed);
             return TrajectoryGenerator.generateTrajectory(
-                    TransformUtils.translatePoseList(offset.get(), waypoints),
+                    TransformUtils.translatePoseList(offset.get(), waypoints.get()),
                     RamseteConfig.trajectoryConfig
             );
         });

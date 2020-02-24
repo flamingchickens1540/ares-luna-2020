@@ -62,7 +62,7 @@ public class Limelight {
     public boolean isTargetFound() {
         double y = getTargetAngles().getY();
         double x = getTargetAngles().getX();
-        boolean verticalInBounds = y > Math.toRadians(-20);
+        boolean verticalInBounds = y > Math.toRadians(-21);
         boolean horizontalInBounds = x > Math.toRadians(-22) && x < Math.toRadians(17);
         return (double) limelightTable.getEntry("tv").getNumber(0) > 0 && verticalInBounds && horizontalInBounds;
     }

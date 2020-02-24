@@ -64,11 +64,11 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
-        autonomous = new InstCommand(() -> {
-            climber.zero();
-            climber.setRatchet(Climber.RatchetState.DISENGAGED);
-        }).andThen(new HoodZeroSequence(hood));
-//        autonomous = new Autonomous(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new InstCommand(() -> {
+//            climber.zero();
+//            climber.setRatchet(Climber.RatchetState.DISENGAGED);
+//        }).andThen(new HoodZeroSequence(hood));
+        autonomous = new ThreeBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -78,7 +78,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
 
         // Driver
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager);
+        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false);
         driverController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp);
