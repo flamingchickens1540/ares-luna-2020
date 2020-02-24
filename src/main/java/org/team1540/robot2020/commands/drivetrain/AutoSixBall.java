@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
+import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
@@ -59,6 +60,8 @@ public class AutoSixBall extends ParallelCommandGroup {
                                                         new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
                                                         new Pose2d(-4, -.8, new Rotation2d(Math.PI))
                                                 ),
+                                                RamseteConfig.kMaxSpeedMetersPerSecond,
+                                                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                                 false, localizationManager, driveTrain
                                         )
                                 )
