@@ -10,6 +10,8 @@ import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.ChickenXboxController;
 
+import static org.team1540.robot2020.utils.LoopCommand.loop;
+
 public class AutoShootThreeBalls extends ParallelRaceGroup {
 
     public AutoShootThreeBalls(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
@@ -18,9 +20,10 @@ public class AutoShootThreeBalls extends ParallelRaceGroup {
         addCommands(
                 lineUpSequence, // todo: should start spinning up earlier before shooting
                 sequence( // TODO: shoot commands need timeouts
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp)
+                        loop(
+                                new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                                3
+                        )
                 )
         );
     }

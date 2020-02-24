@@ -18,6 +18,8 @@ import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.List;
 
+import static org.team1540.robot2020.utils.LoopCommand.loop;
+
 public class AutoSixBall extends ParallelCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
@@ -35,11 +37,7 @@ public class AutoSixBall extends ParallelCommandGroup {
                         race(
                                 new IntakePercent(intake, 1),
                                 sequence(
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false)
+                                        loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually())
                                 ),
                                 sequence(
                                         new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),

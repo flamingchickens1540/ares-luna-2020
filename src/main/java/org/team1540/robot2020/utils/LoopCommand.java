@@ -16,31 +16,49 @@ import java.util.function.Supplier;
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.requireUngrouped;
 
 public class LoopCommand extends CommandBase {
-    private final Command commandToSchedule;
-    private Supplier<Integer> numberOfLoopsSupplier;
-    private int currentLoopIndex = -1; // -1 means no command is scheduled
-    private Integer numberOfLoops; // -1 means loop forever
 
-
-    public LoopCommand(Command commandToSchedule) {
-        this(commandToSchedule, () -> -1);
+    public static CommandBase loop(Command commandToSchedule) {
+        return new LoopCommand(commandToSchedule);
     }
 
-    public LoopCommand(Command commandToSchedule, Supplier<Integer> numberOfLoops) {
+    public static CommandBase loop(Command commandToSchedule, int numberOfLoops) {
+        return new LoopCommand(commandToSchedule, numberOfLoops);
+    }
+
+    public static CommandBase loop(Command commandToSchedule, Supplier<Boolean> loopWhileTrue) {
+        return new LoopCommand(commandToSchedule, loopWhileTrue);
+    }
+
+    private final Command commandToSchedule;
+    private int currentLoopIndex; // -1 means no command is scheduled
+    private Supplier<Boolean> commandShouldBeRunning;
+    private boolean commandIsRunning = false;
+
+    public LoopCommand(Command commandToSchedule) {
         requireUngrouped(commandToSchedule);
-        this.numberOfLoopsSupplier = numberOfLoops;
 
         this.commandToSchedule = new SequentialCommandGroup(commandToSchedule); // workaround for CommandGroupBase.registerGroupedCommands being package-private
 
         m_requirements.addAll(this.commandToSchedule.getRequirements());
     }
 
+    public LoopCommand(Command commandToSchedule, int numberOfLoops) {
+        this(commandToSchedule);
+        commandShouldBeRunning = () -> currentLoopIndex < numberOfLoops;
+    }
+
+    public LoopCommand(Command commandToSchedule, Supplier<Boolean> loopWhileTrue) {
+        this(commandToSchedule);
+        commandShouldBeRunning = loopWhileTrue;
+    }
+
     @Override
     public void initialize() {
-        numberOfLoops = numberOfLoopsSupplier.get();
         currentLoopIndex = 0;
-        if (numberOfLoops != 0)
+        if (commandShouldBeRunning.get()) {
             commandToSchedule.initialize();
+            commandIsRunning = true;
+        }
     }
 
     @Override
@@ -49,7 +67,8 @@ public class LoopCommand extends CommandBase {
         if (commandToSchedule.isFinished()) {
             commandToSchedule.end(false);
             currentLoopIndex++;
-            if (numberOfLoops < 0 || currentLoopIndex < numberOfLoops) {
+            commandIsRunning = commandShouldBeRunning.get();
+            if (commandIsRunning) {
                 commandToSchedule.initialize();
             }
         }
@@ -57,18 +76,19 @@ public class LoopCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        if (interrupted // might need to interrupt command
-                && currentLoopIndex > -1 // command has not been ended already
-                && currentLoopIndex < numberOfLoops // there was a command that should have been running
-        ) {
-            commandToSchedule.end(true); // interrupt the command
+        if (interrupted && commandIsRunning) {
+            commandToSchedule.end(true);
         }
-        currentLoopIndex = -1; // no command is scheduled anymore
+        commandIsRunning = false;
+    }
+
+    public int getCurrentLoopIndex() {
+        return currentLoopIndex;
     }
 
     @Override
     public boolean isFinished() {
-        return currentLoopIndex == numberOfLoops;
+        return commandIsRunning;
     }
 
     @Override
