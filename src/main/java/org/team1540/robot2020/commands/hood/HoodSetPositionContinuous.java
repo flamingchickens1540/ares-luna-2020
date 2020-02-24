@@ -28,7 +28,7 @@ public class HoodSetPositionContinuous extends CommandBase {
         lastGoal = filter.calculate(this.positionSupplier.getAsDouble());
         double position = lastGoal;
         hood.setPosition(position);
-        SmartDashboard.putNumber("ShooterLineUpSequence/hoodSetpoint", position);
+        SmartDashboard.putNumber("LineUpSequence/hoodSetpoint", position);
     }
 
     public boolean hasReachedGoal() {

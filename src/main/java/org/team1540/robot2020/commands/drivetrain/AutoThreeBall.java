@@ -15,13 +15,13 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.WaitSupplierCommand;
 
-public class ThreeBallAuto extends ParallelCommandGroup {
+public class AutoThreeBall extends ParallelCommandGroup {
 
-    public ThreeBallAuto(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoThreeBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
 
-        SmartDashboard.putNumber("ThreeBallAuto/TimeBeforeDrive", 0);
-        SmartDashboard.putNumber("ThreeBallAuto/TimeBeforeShoot", 0);
-        SmartDashboard.putBoolean("ThreeBallAuto/DriveBeforeShoot", true);
+        SmartDashboard.putNumber("AutoThreeBall/TimeBeforeDrive", 0);
+        SmartDashboard.putNumber("AutoThreeBall/TimeBeforeShoot", 0);
+        SmartDashboard.putBoolean("AutoThreeBall/DriveBeforeShoot", true);
 
         addCommands(
                 new InstCommand(() -> {
@@ -33,21 +33,21 @@ public class ThreeBallAuto extends ParallelCommandGroup {
                                 parallel(
                                         new HoodZeroSequence(hood),
                                         sequence(
-                                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("ThreeBallAuto/TimeBeforeDrive", 0)),
-                                                new ThreeBallAutoDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeDrive", 0)),
+                                                new AutoThreeBallDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                                         )
                                 ),
-                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("ThreeBallAuto/TimeBeforeShoot", 0)),
+                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeShoot", 0)),
                                 new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                         ),
                         sequence(
                                 new HoodZeroSequence(hood),
-                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("ThreeBallAuto/TimeBeforeShoot", 0)),
+                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeShoot", 0)),
                                 new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
-                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("ThreeBallAuto/TimeBeforeDrive", 0)),
-                                new ThreeBallAutoDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                                new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeDrive", 0)),
+                                new AutoThreeBallDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                         ),
-                        () -> SmartDashboard.getBoolean("ThreeBallAuto/DriveBeforeShoot", true)
+                        () -> SmartDashboard.getBoolean("AutoThreeBall/DriveBeforeShoot", true)
                 )
         );
     }

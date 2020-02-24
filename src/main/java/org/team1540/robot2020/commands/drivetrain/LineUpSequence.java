@@ -17,9 +17,9 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.LookupTableUtils;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 
-public class ShooterLineUpSequence extends SequentialCommandGroup {
+public class LineUpSequence extends SequentialCommandGroup {
     private LocalizationManager localization;
-    private PointToTarget pointingCommand;
+    private PointToTransform pointingCommand;
     private ShooterSetVelocityContinuous shootingCommand;
     private HoodSetPositionContinuous hoodCommand;
     private boolean selectedInnerPort = false;
@@ -29,11 +29,11 @@ public class ShooterLineUpSequence extends SequentialCommandGroup {
     private double[] FLYWHEEL = new double[]{1643.784083, 1882.776796, 1988.624347, 2498.950448, 2982.554941, 3014.254268, 4629.654212, 4608.690124, 5493.781097, 5643.453423, 5736.983746, 5736.983746};
     private boolean inCommandGroup;
 
-    public ShooterLineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup) {
+    public LineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup) {
         this.localization = localizationManager;
         this.inCommandGroup = inCommandGroup;
 
-        this.pointingCommand = new PointToTarget(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false);
+        this.pointingCommand = new PointToTransform(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false);
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> {
             double norm = getDistanceMetersOrDefault(localizationManager);
             return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 1000, 5800);
@@ -72,20 +72,20 @@ public class ShooterLineUpSequence extends SequentialCommandGroup {
     }
 
     private void resetIndicators() {
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", false);
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", false);
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", false);
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", false);
+        SmartDashboard.putBoolean("LineUpSequence/isReadyToShootAll", false);
+        SmartDashboard.putBoolean("LineUpSequence/isPointing", false);
+        SmartDashboard.putBoolean("LineUpSequence/isShooterGoal", false);
+        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", false);
     }
 
     @Override
     public void execute() {
-        SmartDashboard.putNumber("ShooterLineUpSequence/getDistanceMetersOrDefault", getDistanceMetersOrDefault(localization));
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp());
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isPointing", pointingCommand.hasReachedGoal());
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());
-        SmartDashboard.putBoolean("ShooterLineUpSequence/isLimelightTargetFound", localization.isLimelightTargetFound());
+        SmartDashboard.putNumber("LineUpSequence/getDistanceMetersOrDefault", getDistanceMetersOrDefault(localization));
+        SmartDashboard.putBoolean("LineUpSequence/isReadyToShootAll", isLinedUp());
+        SmartDashboard.putBoolean("LineUpSequence/isPointing", pointingCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("LineUpSequence/isShooterGoal", shootingCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", hoodCommand.hasReachedGoal());
+        SmartDashboard.putBoolean("LineUpSequence/isLimelightTargetFound", localization.isLimelightTargetFound());
 
         super.execute();
     }

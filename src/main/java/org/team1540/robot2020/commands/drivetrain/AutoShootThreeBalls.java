@@ -13,14 +13,14 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 public class AutoShootThreeBalls extends ParallelRaceGroup {
 
     public AutoShootThreeBalls(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
 
         addCommands(
-                shooterLineUpSequence, // todo: should start spinning up earlier before shooting
-                sequence(
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp),
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp),
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp)
+                lineUpSequence, // todo: should start spinning up earlier before shooting
+                sequence( // TODO: shoot commands need timeouts
+                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp)
                 )
         );
     }

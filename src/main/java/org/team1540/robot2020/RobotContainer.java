@@ -70,8 +70,8 @@ public class RobotContainer {
 //            climber.zero();
 //            climber.setRatchet(Climber.RatchetState.DISENGAGED);
 //        }).andThen(new HoodZeroSequence(hood));
-        autonomous = new SixBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new ThreeBallAuto(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -81,10 +81,10 @@ public class RobotContainer {
         SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
 
         // Driver
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false);
-        driverController.getButton(LEFT_BUMPER).whileHeld(shooterLineUpSequence);
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false);
+        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
-        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp);
+        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
 //        driverController.getButton(RIGHT_BUMPER).whileHeld(
 //                () -> shootSequence.schedule()
@@ -145,7 +145,7 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTarget(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTransform(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false));
     }
 
     private void initDefaultCommands() {

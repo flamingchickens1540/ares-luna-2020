@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
-public class PointToTarget extends CommandBase {
+public class PointToTransform extends CommandBase {
 
 
     private final LocalizationManager localizationManager;
@@ -31,7 +31,7 @@ public class PointToTarget extends CommandBase {
     private boolean testingMode;
 
 
-    public PointToTarget(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode) {
+    public PointToTransform(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode) {
         this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
         this.targetSupplier = targetSupplier;

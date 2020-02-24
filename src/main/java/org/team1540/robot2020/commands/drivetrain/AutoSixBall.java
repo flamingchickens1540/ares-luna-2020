@@ -18,14 +18,14 @@ import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.List;
 
-public class SixBallAuto extends ParallelCommandGroup {
+public class AutoSixBall extends ParallelCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public SixBallAuto(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
-        ShooterLineUpSequence shooterLineUpSequence = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
-        ShooterLineUpSequence shooterLineUpSequence2 = new ShooterLineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
+        LineUpSequence lineUpSequence2 = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
@@ -34,11 +34,11 @@ public class SixBallAuto extends ParallelCommandGroup {
                 sequence(
                         new HoodZeroSequence(hood),
                         race(
-                                shooterLineUpSequence,
-                                sequence(
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence::isLinedUp)
+                                lineUpSequence,
+                                sequence( // TODO: shoot commands need timeouts
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp)
                                 )
                         ),
                         race(
@@ -64,11 +64,11 @@ public class SixBallAuto extends ParallelCommandGroup {
                                 )
                         ),
                         race(
-                                shooterLineUpSequence2,
+                                lineUpSequence2,
                                 sequence(
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, shooterLineUpSequence2::isLinedUp)
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
+                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp)
                                 )
                         )
                 )

@@ -16,14 +16,14 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 
 import java.util.List;
 
-public class ThreeBallAutoDrive extends SequentialCommandGroup {
+public class AutoThreeBallDrive extends SequentialCommandGroup {
 
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public ThreeBallAutoDrive(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoThreeBallDrive(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
-        SmartDashboard.putBoolean("ThreeBallAuto/DriveForwards", false);
+        SmartDashboard.putBoolean("AutoThreeBall/DriveForwards", false);
         addCommands(new ConditionalCommand(new ChickenRamseteCommand(
                 this::getStartingPose,
                 () -> List.of(
@@ -38,7 +38,7 @@ public class ThreeBallAutoDrive extends SequentialCommandGroup {
                                 new Pose2d(-1.5, 0, new Rotation2d(0))
                         ),
                         true, localizationManager, driveTrain),
-                () -> SmartDashboard.getBoolean("ThreeBallAuto/DriveForwards", false)
+                () -> SmartDashboard.getBoolean("AutoThreeBall/DriveForwards", false)
         ));
     }
 

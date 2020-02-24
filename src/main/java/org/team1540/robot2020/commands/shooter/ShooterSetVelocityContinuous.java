@@ -28,7 +28,7 @@ public class ShooterSetVelocityContinuous extends CommandBase {
     public void execute() {
         double targetRPM = this.targetRPMSupplier.getAsDouble();
         shooter.setVelocityRPM(velocityRateLimiter.calculate(targetRPM));
-        SmartDashboard.putNumber("ShooterLineUpSequence/shooterSetpoint", targetRPM);
+        SmartDashboard.putNumber("LineUpSequence/shooterSetpoint", targetRPM);
     }
 
     public boolean hasReachedGoal() {
