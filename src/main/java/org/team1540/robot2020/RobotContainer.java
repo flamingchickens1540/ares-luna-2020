@@ -69,8 +69,9 @@ public class RobotContainer {
 //            climber.zero();
 //            climber.setRatchet(Climber.RatchetState.DISENGAGED);
 //        }).andThen(new HoodZeroSequence(hood));
-        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
 //        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        autonomous = new AutoDriveTest(driveTrain, localizationManager);
     }
 
     @SuppressWarnings("DanglingJavadoc")

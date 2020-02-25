@@ -39,10 +39,4 @@ public class RamseteConfig {
                     new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter),
                     kDriveKinematics,
                     10);
-
-    public static TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-            kMaxSpeedMetersPerSecond,
-            kMaxAccelerationMetersPerSecondSquared)
-            .setKinematics(kDriveKinematics)
-            .addConstraint(autoVoltageConstraint);
 }

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
+import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
@@ -18,14 +19,14 @@ import org.team1540.robot2020.utils.InstCommand;
 
 import java.util.List;
 
+import static org.team1540.robot2020.utils.LoopCommand.loop;
+
 public class AutoSixBall extends ParallelCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
     public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
-        LineUpSequence lineUpSequence2 = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
@@ -33,22 +34,11 @@ public class AutoSixBall extends ParallelCommandGroup {
                 }),
                 sequence(
                         new HoodZeroSequence(hood),
-                        race(
-                                lineUpSequence,
-                                sequence( // TODO: shoot commands need timeouts
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp)
-                                )
-                        ),
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                         race(
                                 new IntakePercent(intake, 1),
                                 sequence(
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false),
-                                        new IndexerBallQueueSequence(indexer, funnel, false)
+                                        loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually())
                                 ),
                                 sequence(
                                         new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
@@ -59,18 +49,13 @@ public class AutoSixBall extends ParallelCommandGroup {
                                                         new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
                                                         new Pose2d(-4, -.8, new Rotation2d(Math.PI))
                                                 ),
+                                                RamseteConfig.kMaxSpeedMetersPerSecond,
+                                                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                                 false, localizationManager, driveTrain
                                         )
                                 )
                         ),
-                        race(
-                                lineUpSequence2,
-                                sequence(
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp),
-                                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence2::isLinedUp)
-                                )
-                        )
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                 )
         );
     }

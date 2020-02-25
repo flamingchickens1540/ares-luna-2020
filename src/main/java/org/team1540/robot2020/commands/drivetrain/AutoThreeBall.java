@@ -38,12 +38,12 @@ public class AutoThreeBall extends ParallelCommandGroup {
                                         )
                                 ),
                                 new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeShoot", 0)),
-                                new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                         ),
                         sequence(
                                 new HoodZeroSequence(hood),
                                 new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeShoot", 0)),
-                                new AutoShootThreeBalls(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
+                                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                                 new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeDrive", 0)),
                                 new AutoThreeBallDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                         ),
