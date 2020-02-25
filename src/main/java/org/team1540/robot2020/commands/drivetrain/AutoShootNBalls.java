@@ -15,7 +15,7 @@ import static org.team1540.robot2020.utils.LoopCommand.loop;
 public class AutoShootNBalls extends ParallelRaceGroup {
 
     public AutoShootNBalls(int balls, DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true);
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false);
 
         addCommands(
                 lineUpSequence, // todo: should start spinning up earlier before shooting

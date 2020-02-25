@@ -35,7 +35,7 @@ public class ChickenRamseteCommand extends SequentialCommandGroup {
         );
     }
 
-    public ChickenRamseteCommand(LocalizationManager localizationManager, DriveTrain driveTrain, Supplier<Trajectory> trajectorySupplier) {
+    private ChickenRamseteCommand(LocalizationManager localizationManager, DriveTrain driveTrain, Supplier<Trajectory> trajectorySupplier) {
         addCommands(
                 new BaseChickenRamseteCommand(
                         trajectorySupplier,

@@ -29,17 +29,17 @@ public class LineUpSequence extends SequentialCommandGroup {
     private double[] FLYWHEEL = new double[]{1537.4147, 1672.9528, 1643.7841, 1882.7768, 2575.7416, 3000.0000, 4142.5895, 4598.9504, 5208.7773, 5417.347714, 5417.347714, 5417.347714};
     private boolean inCommandGroup;
 
-    public LineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup) {
+    public LineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup, boolean useThrottle) {
         this.localization = localizationManager;
         this.inCommandGroup = inCommandGroup;
 
-        this.pointingCommand = new PointToTransform(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false);
+        this.pointingCommand = new PointToTransform(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false, useThrottle);
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> {
             double norm = getDistanceMetersOrDefault(localizationManager);
             return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 500, 5800);
         });
         this.hoodCommand = new HoodSetPositionContinuous(hood, () -> {
-            double norm = getDistanceMetersOrDefault(localizationManager) + hood.offset;
+            double norm = getDistanceMetersOrDefault(localizationManager) - hood.offset;
             return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -294, -1);
         });
 

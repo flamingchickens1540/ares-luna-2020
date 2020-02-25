@@ -3,6 +3,7 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
@@ -37,9 +38,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                         new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                         race(
                                 new IntakePercent(intake, 1),
-                                sequence(
-                                        loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually())
-                                ),
+                                loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually()),
                                 sequence(
                                         new ChickenRamseteCommand(
                                                 this::getStartingPose,
@@ -64,6 +63,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                                         )
                                 )
                         ),
+//                        new WaitCommand(1),
                         new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
                 )
         );

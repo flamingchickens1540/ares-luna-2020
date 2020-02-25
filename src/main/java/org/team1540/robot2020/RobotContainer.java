@@ -69,8 +69,9 @@ public class RobotContainer {
 //            climber.zero();
 //            climber.setRatchet(Climber.RatchetState.DISENGAGED);
 //        }).andThen(new HoodZeroSequence(hood));
-//        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoEightBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
 //        autonomous = new AutoDriveTest(driveTrain, localizationManager);
     }
 
@@ -81,7 +82,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
 
         // Driver
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false);
+        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
         driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp);
@@ -158,7 +159,7 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTransform(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTransform(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false, true));
     }
 
     private void initDefaultCommands() {
@@ -219,6 +220,7 @@ public class RobotContainer {
             driveTrain.resetEncoders();
             localizationManager.resetOdometry(new Pose2d());
         }, true));
+        SmartDashboard.putNumber("Hood/offset", hood.offset);
     }
 
     Command getAutoCommand() {

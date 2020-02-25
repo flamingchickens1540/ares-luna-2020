@@ -29,15 +29,17 @@ public class PointToTransform extends CommandBase {
     private double lastError = Double.NEGATIVE_INFINITY;
     private PIDConfig config;
     private boolean testingMode;
+    private boolean useThrottle;
 
 
-    public PointToTransform(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode) {
+    public PointToTransform(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode, boolean useThrottle) {
         this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
         this.targetSupplier = targetSupplier;
         this.driver = driver;
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
+        this.useThrottle = useThrottle;
 
         setPID(new PIDConfig(0.4, 0.07, 0.9, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
@@ -89,7 +91,7 @@ public class PointToTransform extends CommandBase {
             leftMotors += triggerValues;
             rightMotors -= triggerValues;
         } else {
-            double throttle = throttleAxis.withDeadzone(0.2).value();
+            double throttle = useThrottle ? throttleAxis.withDeadzone(0.2).value(): 0;
             leftMotors += throttle;
             rightMotors += throttle;
             double actualCValue = Math.abs(throttle) > 0.2 ? 0 : config.c;
