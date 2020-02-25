@@ -18,7 +18,7 @@ import static edu.wpi.first.wpilibj2.command.CommandGroupBase.requireUngrouped;
 public class LoopCommand extends CommandBase {
 
     public static CommandBase loop(Command commandToSchedule) {
-        return new LoopCommand(commandToSchedule);
+        return new LoopCommand(commandToSchedule, () -> true);
     }
 
     public static CommandBase loop(Command commandToSchedule, int numberOfLoops) {
@@ -34,7 +34,7 @@ public class LoopCommand extends CommandBase {
     private Supplier<Boolean> commandShouldBeRunning;
     private boolean commandIsRunning = false;
 
-    public LoopCommand(Command commandToSchedule) {
+    private LoopCommand(Command commandToSchedule) {
         requireUngrouped(commandToSchedule);
 
         this.commandToSchedule = new SequentialCommandGroup(commandToSchedule); // workaround for CommandGroupBase.registerGroupedCommands being package-private
