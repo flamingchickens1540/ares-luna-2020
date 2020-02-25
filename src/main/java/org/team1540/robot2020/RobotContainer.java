@@ -100,7 +100,7 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
-        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
+//        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 //        cargoMech.setDefaultCommand(new CargoMechManualControl(cargoMech, copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y)));
     }
 
