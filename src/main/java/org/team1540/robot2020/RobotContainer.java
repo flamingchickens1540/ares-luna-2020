@@ -103,6 +103,10 @@ public class RobotContainer {
         );
 //        copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
+        copilotController.getButton(ChickenXboxController.XboxButton.LEFT_PRESS).whileHeld(() -> {
+            hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
+            SmartDashboard.putNumber("Hood/offset", hood.offset);
+        });
 
         // Testing Controller - Distance offset tuning
         CommandGroupBase shootSequenceTest = sequence(

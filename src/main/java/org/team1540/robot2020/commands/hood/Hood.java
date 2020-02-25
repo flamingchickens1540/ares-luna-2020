@@ -13,6 +13,8 @@ public class Hood extends SubsystemBase {
     private final double kP = 0.5;
     private final double kD = 0;
 
+    public double offset = 0;
+
     private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANPIDController hoodController = new CANPIDController(hoodMotor);
     private CANEncoder hoodEncoder = hoodMotor.getEncoder();
