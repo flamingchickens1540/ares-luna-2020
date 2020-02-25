@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
+import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
@@ -30,6 +31,8 @@ public class AutoThreeBallDrive extends SequentialCommandGroup {
                         new Pose2d(0, 0, new Rotation2d(localizationManager.getYawRadians())),
                         new Pose2d(1.5, 0, new Rotation2d(0))
                 ),
+                RamseteConfig.kMaxSpeedMetersPerSecond,
+                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                 false, localizationManager, driveTrain),
                 new ChickenRamseteCommand(
                         this::getStartingPose,
@@ -37,6 +40,8 @@ public class AutoThreeBallDrive extends SequentialCommandGroup {
                                 new Pose2d(0, 0, new Rotation2d(localizationManager.getYawRadians())),
                                 new Pose2d(-1.5, 0, new Rotation2d(0))
                         ),
+                        RamseteConfig.kMaxSpeedMetersPerSecond,
+                        RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                         true, localizationManager, driveTrain),
                 () -> SmartDashboard.getBoolean("AutoThreeBall/DriveForwards", false)
         ));
