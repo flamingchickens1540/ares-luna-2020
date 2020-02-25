@@ -55,7 +55,6 @@ public class RobotContainer {
 
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
 
-
     RobotContainer() {
         logger.info("Creating robot container...");
 
@@ -119,7 +118,7 @@ public class RobotContainer {
                 ),
                 new InstCommand(localizationManager::startAcceptingLimelight)
         );
-        distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(() -> shootSequenceTest.schedule()));
+        distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(shootSequenceTest::schedule));
 
         distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));

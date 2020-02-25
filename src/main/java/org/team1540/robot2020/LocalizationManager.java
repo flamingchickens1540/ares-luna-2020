@@ -22,6 +22,7 @@ import org.team1540.robot2020.utils.Limelight;
 import org.team1540.robot2020.utils.NavX;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
+import org.team1540.rooster.wrappers.RevBlinken;
 
 import javax.annotation.Nullable;
 
@@ -36,13 +37,16 @@ public class LocalizationManager extends CommandBase {
     private final double LIMELIGHT_PITCH = Math.toRadians(23);
     private final double LIDAR_PITCH = Math.toRadians(4.5);
     private final double LIDAR_SELECTION_TOLERANCE = Math.toRadians(3);
+    private final double LIDAR_SELECTION_BUFFER = Math.toRadians(0.5);
     private final Transform3D HEXAGON_TO_INNER_PORT = new Transform3D(0.74295, 0, 0);
-
     private final DifferentialDriveOdometry odometry;
+    private boolean lastUsedLidar = false;
+    private boolean forceLimelightLEDOn = false;
     private Limelight limelight = new Limelight("limelight");
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
     private NavX navx = new NavX(SPI.Port.kMXP);
     private DriveTrain driveTrain;
+    private RevBlinken blinken = new RevBlinken(7);
 
     private DigitalOutput buttonLed = new DigitalOutput(4);
     private DigitalInput buttonSignal = new DigitalInput(5);
@@ -110,9 +114,20 @@ public class LocalizationManager extends CommandBase {
         return new Transform3D(odometry.getPoseMeters().getTranslation().getX(), odometry.getPoseMeters().getTranslation().getY(), odometry.getPoseMeters().getRotation().getRadians());
     }
 
-    public boolean useLidarForDistanceEst() {
-        // TODO: Use limelight if they disagree
-        return limelight.isTargetFound() && Math.abs(limelight.getTargetAngles().getX()) < LIDAR_SELECTION_TOLERANCE;
+    public boolean useLidarForDistanceEst() { // TODO: Use limelight if they disagree
+        double limelightAngle = Math.abs(limelight.getTargetAngles().getX());
+
+        if (lastUsedLidar && (limelightAngle > LIDAR_SELECTION_TOLERANCE + LIDAR_SELECTION_BUFFER)) {
+            lastUsedLidar = true;
+            return true;
+        }
+
+        //TODO: This is wrong.
+
+        if (limelightAngle < LIDAR_SELECTION_TOLERANCE - LIDAR_SELECTION_BUFFER) {
+            lastUsedLidar = false;
+            return false;
+        }
     }
 
     private double getBestSensorDistance() {
@@ -149,6 +164,9 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putNumber("localizationManager/odometry/X", poseTranslation.getX());
         SmartDashboard.putNumber("localizationManager/odometry/Y", poseTranslation.getY());
         SmartDashboard.putNumber("localizationManager/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
+
+        setLimelightLEDs();
+        setRobotLEDs();
     }
 
     public void putTransform(Transform3D transform3D, String prefix) {
@@ -209,5 +227,29 @@ public class LocalizationManager extends CommandBase {
 
     public double getYawRadians() {
         return navx.getYawRadians();
+    }
+
+    public void setLimelightLEDs() {
+        if (forceLimelightLEDOn) {
+            setLimelightLeds(true);
+        } else {
+            if (getRobotToHexagonTransform() != null) {
+                double x = getRobotToHexagonTransform().getPosition().getX();
+                double y = getRobotToHexagonTransform().getPosition().getY();
+                if (Math.abs(Math.atan2(y, x)) > 90) {
+                    setLimelightLeds(false);
+                }
+            } else { // If we dont a have a pose then fall back to keeping the LEDs enabled
+                setLimelightLeds(true);
+            }
+        }
+    }
+
+    public void setRobotLEDs() {
+        if (isLimelightTargetFound()) {
+            blinken.set(RevBlinken.ColorPattern.GREEN); // Green
+        } else {
+            blinken.set(RevBlinken.ColorPattern.FIRE_LARGE); // Flame
+        }
     }
 }
