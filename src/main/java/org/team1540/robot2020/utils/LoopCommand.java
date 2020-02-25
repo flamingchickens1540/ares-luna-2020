@@ -88,7 +88,7 @@ public class LoopCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return commandIsRunning;
+        return !commandIsRunning;
     }
 
     @Override

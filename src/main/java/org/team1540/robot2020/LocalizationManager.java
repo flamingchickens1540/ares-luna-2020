@@ -70,7 +70,7 @@ public class LocalizationManager extends CommandBase {
                 new InstCommand(() -> {
                     blinkNotifier.stop();
                     blinkNotifier.startPeriodic(0.07);
-                }),
+                }, true),
                 new WaitCommand(1),
                 new InstCommand(() -> {
                     navx.zeroYaw();
@@ -242,8 +242,10 @@ public class LocalizationManager extends CommandBase {
             if (getRobotToHexagonTransform() != null) {
                 double x = getRobotToHexagonTransform().getPosition().getX();
                 double y = getRobotToHexagonTransform().getPosition().getY();
-                if (Math.abs(Math.atan2(y, x)) > 90) {
+                if (Math.abs(Math.atan2(y, x)) > Math.toRadians(40)) {
                     setLimelightLeds(false);
+                } else {
+                    setLimelightLeds(true);
                 }
             } else { // If we dont a have a pose then fall back to keeping the LEDs enabled
                 setLimelightLeds(true);
@@ -257,5 +259,9 @@ public class LocalizationManager extends CommandBase {
         } else {
             blinken.set(RevBlinken.ColorPattern.FIRE_LARGE); // Flame
         }
+    }
+
+    public void forceLimelightLedsOn(boolean state) {
+        forceLimelightLEDOn = state;
     }
 }

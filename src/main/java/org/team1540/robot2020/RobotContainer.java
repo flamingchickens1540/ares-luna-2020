@@ -70,8 +70,8 @@ public class RobotContainer {
 //            climber.setRatchet(Climber.RatchetState.DISENGAGED);
 //        }).andThen(new HoodZeroSequence(hood));
 //        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-        autonomous = new AutoDriveTest(driveTrain, localizationManager);
+        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoDriveTest(driveTrain, localizationManager);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -86,6 +86,15 @@ public class RobotContainer {
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
+
+        Trigger emergencyDisable = driverController.getButton(LEFT_BUMPER)
+                .and(driverController.getButton(RIGHT_BUMPER))
+                .and(driverController.getButton(RIGHT_PRESS))
+                .and(driverController.getButton(BACK))
+                .and(driverController.getButton(START));
+        emergencyDisable.whenActive(new InstCommand(() -> {
+            throw new NullPointerException("=+=+=+=+= Emergency Disable Triggered! =+=+=+=+=");
+        }));
 //        driverController.getButton(RIGHT_BUMPER).whileHeld(
 //                () -> shootSequence.schedule()
 //        );

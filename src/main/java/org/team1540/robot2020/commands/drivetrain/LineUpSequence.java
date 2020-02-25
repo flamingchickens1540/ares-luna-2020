@@ -24,9 +24,9 @@ public class LineUpSequence extends SequentialCommandGroup {
     private HoodSetPositionContinuous hoodCommand;
     private boolean selectedInnerPort = false;
 
-    private double[] DISTANCE = new double[]{1.901766083, 2.310501969, 3.137942909, 4.573503095, 6.597244189, 7.3940, 7.394777626, 8.012866039, 8.780491971, 10.71451055, 10.715, 11.67940127};
-    private double[] HOOD = new double[]{-235.6041718, -194.8951874, -177.2308197, -134.8553925, -111.3584442, -112.6201859, -78.07411194, -72.45451355, -63.16789246, -59.95329285, -93.8, -93.8};
-    private double[] FLYWHEEL = new double[]{1643.784083, 1882.776796, 1988.624347, 2498.950448, 2982.554941, 3014.254268, 4629.654212, 4608.690124, 5493.781097, 5643.453423, 5736.983746, 5736.983746};
+    private double[] DISTANCE = new double[]{1.7430, 1.8630, 1.9018, 2.3105, 3.1180, 4.0000, 4.5735, 6.0000, 7.1455, 8.11, 9.60, 11.96};
+    private double[] HOOD = new double[]{-284.7406, -262.6959, -235.6042, -194.8952, -138.9739, -112.2393, -111.2870, -94.1226, -79.7886, -89.22, -92.74, -110.53};
+    private double[] FLYWHEEL = new double[]{1537.4147, 1672.9528, 1643.7841, 1882.7768, 2575.7416, 3000.0000, 4142.5895, 4598.9504, 5208.7773, 5417.347714, 5417.347714, 5417.347714};
     private boolean inCommandGroup;
 
     public LineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup) {
@@ -36,11 +36,11 @@ public class LineUpSequence extends SequentialCommandGroup {
         this.pointingCommand = new PointToTransform(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false);
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> {
             double norm = getDistanceMetersOrDefault(localizationManager);
-            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 1000, 5800);
+            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 500, 5800);
         });
         this.hoodCommand = new HoodSetPositionContinuous(hood, () -> {
             double norm = getDistanceMetersOrDefault(localizationManager) + hood.offset;
-            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -230, -1);
+            return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -294, -1);
         });
 
         addCommands(
@@ -61,7 +61,8 @@ public class LineUpSequence extends SequentialCommandGroup {
 
     @Override
     public void initialize() {
-        localization.setLimelightLeds(true);
+        localization.forceLimelightLedsOn(true);
+        super.initialize();
     }
 
     private double getDistanceMetersOrDefault(LocalizationManager localization) {
@@ -99,12 +100,13 @@ public class LineUpSequence extends SequentialCommandGroup {
         if (!inCommandGroup) {
             if (!isScheduled()) return false;
         }
-        return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal() && (localization.isLimelightTargetFound() || getDistanceMetersOrDefault(localization) < 2);
+        return pointingCommand.hasReachedGoal() && shootingCommand.hasReachedGoal() && hoodCommand.hasReachedGoal() && (localization.isLimelightTargetFound() || getDistanceMetersOrDefault(localization) < 2.3);
     }
 
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
         resetIndicators();
+        localization.forceLimelightLedsOn(false);
     }
 }

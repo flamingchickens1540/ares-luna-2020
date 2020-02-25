@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
-import org.team1540.robot2020.RamseteConfig;
 
 import java.util.List;
 
@@ -18,11 +17,22 @@ public class AutoDriveTest extends SequentialCommandGroup {
                 new ChickenRamseteCommand(
                         this::getStartingPose,
                         () -> List.of(
-                                new Pose2d(2, -0.5, new Rotation2d(0))
+                                new Pose2d(0, 0, new Rotation2d(localizationManager.getYawRadians())),
+                                new Pose2d(2, 0, new Rotation2d(0))
                         ),
-                        RamseteConfig.kMaxSpeedMetersPerSecond,
-                        RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
+                        2,
+                        2,
                         false, localizationManager, driveTrain
+                ),
+                new ChickenRamseteCommand(
+                        this::getStartingPose,
+                        () -> List.of(
+                                new Pose2d(2, 0, new Rotation2d(0)),
+                                new Pose2d(0, 0, new Rotation2d(0))
+                        ),
+                        0.5,
+                        1,
+                        true, localizationManager, driveTrain
                 )
         );
     }
