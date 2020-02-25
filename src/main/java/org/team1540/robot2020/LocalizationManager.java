@@ -1,9 +1,6 @@
 package org.team1540.robot2020;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -40,7 +37,7 @@ public class LocalizationManager extends CommandBase {
     private final double LIDAR_SELECTION_BUFFER = Math.toRadians(0.5);
     private final Transform3D HEXAGON_TO_INNER_PORT = new Transform3D(0.74295, 0, 0);
     private final DifferentialDriveOdometry odometry;
-    private boolean lastUsedLidar = false;
+    private boolean useLidar = false;
     private boolean forceLimelightLEDOn = false;
     private Limelight limelight = new Limelight("limelight");
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
@@ -66,11 +63,20 @@ public class LocalizationManager extends CommandBase {
 
         var button = new Trigger(buttonSignal::get);
 
+        Notifier blinkNotifier = new Notifier(() -> buttonLed.set(!buttonLed.get()));
+        blinkNotifier.startPeriodic(0.4);
+
         CommandBase zeroNavxCommand = sequence(
+                new InstCommand(() -> {
+                    blinkNotifier.stop();
+                    blinkNotifier.startPeriodic(0.07);
+                }),
                 new WaitCommand(1),
                 new InstCommand(() -> {
                     navx.zeroYaw();
                     System.out.println("NavX Zeroed!");
+                    blinkNotifier.stop();
+                    buttonLed.set(true);
                 }, true)
         );
         button.whenActive(zeroNavxCommand);
@@ -114,20 +120,20 @@ public class LocalizationManager extends CommandBase {
         return new Transform3D(odometry.getPoseMeters().getTranslation().getX(), odometry.getPoseMeters().getTranslation().getY(), odometry.getPoseMeters().getRotation().getRadians());
     }
 
-    public boolean useLidarForDistanceEst() { // TODO: Use limelight if they disagree
+    public boolean useLidarForDistanceEst() {
         double limelightAngle = Math.abs(limelight.getTargetAngles().getX());
 
-        if (lastUsedLidar && (limelightAngle > LIDAR_SELECTION_TOLERANCE + LIDAR_SELECTION_BUFFER)) {
-            lastUsedLidar = true;
-            return true;
+        // TODO: Make a util for thermostat control
+
+        if (useLidar && (limelightAngle > LIDAR_SELECTION_TOLERANCE + LIDAR_SELECTION_BUFFER)) {
+            useLidar = false;
         }
 
-        //TODO: This is wrong.
-
-        if (limelightAngle < LIDAR_SELECTION_TOLERANCE - LIDAR_SELECTION_BUFFER) {
-            lastUsedLidar = false;
-            return false;
+        if (!useLidar && (limelightAngle < LIDAR_SELECTION_TOLERANCE - LIDAR_SELECTION_BUFFER)) {
+            useLidar = true;
         }
+
+        return useLidar;
     }
 
     private double getBestSensorDistance() {

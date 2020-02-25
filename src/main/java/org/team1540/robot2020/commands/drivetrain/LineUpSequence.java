@@ -16,12 +16,10 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.robot2020.utils.LookupTableUtils;
 import org.team1540.rooster.datastructures.threed.Transform3D;
-import org.team1540.rooster.wrappers.RevBlinken;
 
 public class LineUpSequence extends SequentialCommandGroup {
     private LocalizationManager localization;
     private PointToTransform pointingCommand;
-    private RevBlinken blinken;
     private ShooterSetVelocityContinuous shootingCommand;
     private HoodSetPositionContinuous hoodCommand;
     private boolean selectedInnerPort = false;
@@ -34,7 +32,6 @@ public class LineUpSequence extends SequentialCommandGroup {
     public LineUpSequence(DriveTrain driveTrain, Indexer indexer, Shooter shooter, Hood hood, ChickenXboxController driverController, LocalizationManager localizationManager, boolean inCommandGroup) {
         this.localization = localizationManager;
         this.inCommandGroup = inCommandGroup;
-        this.blinken = blinken;
 
         this.pointingCommand = new PointToTransform(driveTrain, localizationManager, () -> getSelectedTarget(localizationManager), driverController, false);
         this.shootingCommand = new ShooterSetVelocityContinuous(shooter, () -> {

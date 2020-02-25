@@ -44,4 +44,16 @@ public class LookupTableUtils {
         }
         return 0;
     }
+
+    public static double getDoubleStairStep(double input, double[] xarr, double[] yarr) {
+        for (int i = 0; i < xarr.length; i++) {
+            if (xarr[i] > input) {
+                if (i == 0) return yarr[i];
+                double avg = (xarr[i - 1] + xarr[i]) / 2;
+                if (input < avg) return yarr[i - 1];
+                else return yarr[i];
+            }
+        }
+        return yarr[yarr.length - 1];
+    }
 }

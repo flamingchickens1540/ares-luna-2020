@@ -212,7 +212,7 @@
 //     * @return the expected response {@code y} given the value of the predictor
 //     *         variable {@code x}
 //     */
-//    public double predict(double x) {
+//    public double getDoubleStairStep(double x) {
 //        testState();
 //        // horner's method
 //        double y = 0.0;
