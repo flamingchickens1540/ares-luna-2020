@@ -60,8 +60,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
                                 )
-//                       For some reason just putting it in the sequence makes it crash. DON'T TOUCH
-                        ).andThen(new WaitCommand(1))
+                        )
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
         );
