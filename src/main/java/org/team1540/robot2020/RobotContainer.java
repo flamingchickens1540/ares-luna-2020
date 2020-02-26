@@ -217,4 +217,8 @@ public class RobotContainer {
     Command getAutoCommand(boolean zeroHood) {
         return new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, zeroHood);
     }
+
+    Command getZeroHoodCommand() {
+        return new HoodZeroSequence(hood);
+    }
 }
