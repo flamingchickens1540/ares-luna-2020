@@ -28,7 +28,7 @@ public class AutoSixBall extends SequentialCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController, boolean zeroHood) {
+    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
@@ -36,16 +36,19 @@ public class AutoSixBall extends SequentialCommandGroup {
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
                 new ConditionalCommand(
-                        new HoodZeroSequence(hood),
+                        sequence(
+                                new HoodZeroSequence(hood),
+                                new InstCommand(() -> hood.zeroFlag = false)
+                        ),
                         new InstCommand(),
-                        () -> zeroHood
+                        () -> hood.zeroFlag
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                 race(
 //                                new IntakePercent(intake, 1),
                         new IntakeRun(intake, 7000),
 
-                        loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually()),
+                        loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
                                 new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
                                 new ChickenRamseteCommand(

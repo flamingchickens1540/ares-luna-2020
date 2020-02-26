@@ -14,6 +14,7 @@ public class Hood extends SubsystemBase {
     private final double kD = 0;
 
     public static double offset = 0;
+    public boolean zeroFlag = true;
 
     private CANSparkMax hoodMotor = new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless);
     private CANPIDController hoodController = new CANPIDController(hoodMotor);

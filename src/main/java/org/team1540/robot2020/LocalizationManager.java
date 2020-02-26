@@ -15,13 +15,17 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.*;
+import org.team1540.robot2020.utils.Timer;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
 import org.team1540.rooster.wrappers.RevBlinken;
 
 import javax.annotation.Nullable;
+
+import java.util.function.Consumer;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 
@@ -43,6 +47,7 @@ public class LocalizationManager extends CommandBase {
     private final DifferentialDriveOdometry odometry;
     private boolean useLidar = false;
     private boolean forceLimelightLEDOn = false;
+    private final Timer buttonClickTimer = new Timer();
     private Limelight limelight = new Limelight("limelight");
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
     private NavX navx = new NavX(SPI.Port.kMXP);
@@ -58,7 +63,7 @@ public class LocalizationManager extends CommandBase {
     private Transform3D odomToHexagon = null;
     private boolean acceptLimelight = true;
 
-    public LocalizationManager(DriveTrain driveTrain, Shooter shooter, Hood hood) {
+    public LocalizationManager(DriveTrain driveTrain, Shooter shooter, Hood hood, Consumer<Boolean> zeroHoodFunction) {
         this.driveTrain = driveTrain;
         this.shooter = shooter;
         this.hood = hood;
@@ -68,6 +73,8 @@ public class LocalizationManager extends CommandBase {
         navx.zeroYaw();
 
         odometry = new DifferentialDriveOdometry(new Rotation2d(navx.getYawRadians()));
+
+        buttonClickTimer.start();
 
         var button = new Trigger(buttonSignal::get);
 
@@ -88,6 +95,12 @@ public class LocalizationManager extends CommandBase {
                 }, true)
         );
         button.whenActive(zeroNavxCommand);
+        button.whenActive(() -> {
+            if (buttonClickTimer.get() <= 1) {
+                zeroHoodFunction.accept(true);
+            }
+            buttonClickTimer.reset();
+        });
         SmartDashboard.putData("localizationManager/zeroYaw", zeroNavxCommand);
     }
 
