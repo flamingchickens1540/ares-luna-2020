@@ -22,6 +22,7 @@ import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
+import org.team1540.robot2020.utils.AxisButton;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
@@ -77,8 +78,14 @@ public class RobotContainer {
         SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
 
         // Driver
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
-        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
+//        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
+//        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
+        new AxisButton(driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude(), 0.7).whileHeld(new PointDrive(
+                driveTrain, localizationManager,
+                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+                driverController.getButton(ChickenXboxController.XboxButton.Y)
+        ));
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
@@ -160,12 +167,11 @@ public class RobotContainer {
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
-                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                driverController.getButton(ChickenXboxController.XboxButton.Y)));
-//        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter));
-
+//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
+//                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+//                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+//                driverController.getButton(ChickenXboxController.XboxButton.Y)));
+        driveTrain.setDefaultCommand(new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, true));
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
         indexer.setDefaultCommand(indexer.commandStop().perpetually());

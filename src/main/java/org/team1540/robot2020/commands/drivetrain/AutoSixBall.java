@@ -47,7 +47,6 @@ public class AutoSixBall extends SequentialCommandGroup {
                 race(
 //                                new IntakePercent(intake, 1),
                         new IntakeRun(intake, 7000),
-
                         loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
                                 new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),

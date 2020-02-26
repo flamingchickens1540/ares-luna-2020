@@ -1,5 +1,6 @@
 package org.team1540.robot2020.commands.drivetrain;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.commands.climber.Climber;
@@ -15,7 +16,10 @@ import static org.team1540.robot2020.utils.LoopCommand.loop;
 public class AutoShootNBalls extends ParallelRaceGroup {
 
     public AutoShootNBalls(int balls, DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
-        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false);
+        Command lineUpSequence = parallel(
+            new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false),
+            new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, false)
+        );
 
         addCommands(
                 lineUpSequence, // todo: should start spinning up earlier before shooting

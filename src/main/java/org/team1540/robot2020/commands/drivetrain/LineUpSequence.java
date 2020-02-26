@@ -21,7 +21,6 @@ public class LineUpSequence extends SequentialCommandGroup {
                                 new WaitUntilCommand(localizationManager::useLidarForDistanceEst), // TODO: should this really be the trigger?
                                 new InstCommand(localizationManager::selectTarget)
                         ),
-                        new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, useThrottle),
                         new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal)
                 )
         );
