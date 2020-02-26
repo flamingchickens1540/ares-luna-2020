@@ -29,6 +29,7 @@ public class HoodSetPositionContinuous extends CommandBase {
         double position = lastGoal;
         hood.setPosition(position);
         SmartDashboard.putNumber("LineUpSequence/hoodSetpoint", position);
+        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", hasReachedGoal());
     }
 
     public boolean hasReachedGoal() {
@@ -38,5 +39,6 @@ public class HoodSetPositionContinuous extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         hood.setPercent(0);
+        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", false);
     }
 }

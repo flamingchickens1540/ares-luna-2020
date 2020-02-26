@@ -27,13 +27,13 @@ public class ShootOneBall extends SequentialCommandGroup {
                         ),
                         new WaitUntilCommand(isLinedUp)
                 ),
-                new InstCommand(localizationManager::stopAcceptingLimelight),
+                new InstCommand(() -> localizationManager.ignoreLimelight(true)),
                 race(
                         new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
                         new FunnelRun(funnel),
                         new IntakeRun(intake, 7000)
                 ),
-                new InstCommand(localizationManager::startAcceptingLimelight)
+                new InstCommand(() -> localizationManager.ignoreLimelight(false))
         );
     }
 

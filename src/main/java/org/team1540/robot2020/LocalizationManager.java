@@ -9,14 +9,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpiutil.math.MathUtil;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.utils.InstCommand;
-import org.team1540.robot2020.utils.LIDARLite;
-import org.team1540.robot2020.utils.Limelight;
-import org.team1540.robot2020.utils.NavX;
+import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.utils.*;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
 import org.team1540.rooster.wrappers.RevBlinken;
@@ -27,6 +26,10 @@ import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 
 
 public class LocalizationManager extends CommandBase {
+
+    private double[] DISTANCE = new double[]{1.7430, 1.8630, 1.9018, 2.3105, 3.1180, 4.0000, 4.5735, 6.0000, 7.1455, 8.11, 9.60, 11.96};
+    private double[] HOOD = new double[]{-284.7406, -262.6959, -235.6042, -194.8952, -138.9739, -112.2393, -111.2870, -94.1226, -79.7886, -89.22, -92.74, -110.53};
+    private double[] FLYWHEEL = new double[]{1537.4147, 1672.9528, 1643.7841, 1882.7768, 2575.7416, 3000.0000, 4142.5895, 4598.9504, 5208.7773, 5417.347714, 5417.347714, 5417.347714};
 
     private final double HEXAGON_HEIGHT = 2.49;
     private final double VISION_TARGET_HEIGHT = 2.30;
@@ -107,12 +110,8 @@ public class LocalizationManager extends CommandBase {
         return limelight.isTargetFound();
     }
 
-    public void stopAcceptingLimelight() {
+    public void ignoreLimelight(boolean state) {
         acceptLimelight = false;
-    }
-
-    public void startAcceptingLimelight() {
-        acceptLimelight = true;
     }
 
     @NotNull
@@ -159,6 +158,7 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putBoolean("localizationManager/robotToTargetDistanceUseLidar", useLidarForDistanceEst());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLimelight", getLimelightDistance());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLidar", getCorrectedLidarDistance());
+        SmartDashboard.putBoolean("LineUpSequence/isLimelightTargetFound", limelight.isTargetFound());
 
         if (odomToHexagon != null) {
             putTransform(odomToHexagon, "localizationManager/odomToHexagon");
@@ -176,6 +176,7 @@ public class LocalizationManager extends CommandBase {
     }
 
     public void putTransform(Transform3D transform3D, String prefix) {
+        if (transform3D == null) return;
         Vector3D position = transform3D.getPosition();
         SmartDashboard.putNumber(prefix + "/X", position.getX());
         SmartDashboard.putNumber(prefix + "/Y", position.getY());
@@ -236,18 +237,14 @@ public class LocalizationManager extends CommandBase {
     }
 
     public void setLimelightLEDs() {
-        if (forceLimelightLEDOn) {
+        if (forceLimelightLEDOn || getRobotToHexagonTransform() == null) {
             setLimelightLeds(true);
         } else {
-            if (getRobotToHexagonTransform() != null) {
-                double x = getRobotToHexagonTransform().getPosition().getX();
-                double y = getRobotToHexagonTransform().getPosition().getY();
-                if (Math.abs(Math.atan2(y, x)) > Math.toRadians(40)) {
-                    setLimelightLeds(false);
-                } else {
-                    setLimelightLeds(true);
-                }
-            } else { // If we dont a have a pose then fall back to keeping the LEDs enabled
+            double x = getRobotToHexagonTransform().getPosition().getX();
+            double y = getRobotToHexagonTransform().getPosition().getY();
+            if (Math.abs(Math.atan2(y, x)) > Math.toRadians(40)) {
+                setLimelightLeds(false);
+            } else {
                 setLimelightLeds(true);
             }
         }
@@ -264,4 +261,33 @@ public class LocalizationManager extends CommandBase {
     public void forceLimelightLedsOn(boolean state) {
         forceLimelightLEDOn = state;
     }
+
+    public double getDistanceToSelectedTarget() {
+        Transform3D robotToRearHoleTransform = getSelectedTarget();
+        if (robotToRearHoleTransform == null) return 4; // default m
+        Vector3D position = robotToRearHoleTransform.getPosition();
+        Vector2D pos2d = new Vector2D(position.getX(), position.getY());
+        return pos2d.getNorm() + (selectedInnerPort ? 0 : 0.5);
+    }
+
+    private boolean selectedInnerPort = false;
+
+    public Transform3D getSelectedTarget() {
+        return selectedInnerPort ? getRobotToRearHoleTransform() : getRobotToHexagonTransform();
+    }
+
+    public void selectTarget() {
+        selectedInnerPort = shouldTargetInnerPort();
+    }
+
+    public double getShooterRPMForSelectedGoal() {
+        double norm = getDistanceToSelectedTarget();
+        return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 500, 5800);
+    }
+
+    public double getHoodTicksForSelectedGoal() {
+        double norm = getDistanceToSelectedTarget();
+        return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -294, -1) - Hood.offset;
+    }
+
 }

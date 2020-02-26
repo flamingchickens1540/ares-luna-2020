@@ -114,8 +114,8 @@ public class RobotContainer {
 //        copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
         copilotController.getButton(ChickenXboxController.XboxButton.LEFT_PRESS).whileHeld(() -> {
-            hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
-            SmartDashboard.putNumber("Hood/offset", hood.offset);
+            Hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
+            SmartDashboard.putNumber("Hood/offset", Hood.offset);
         });
 
         // Testing Controller - Distance offset tuning
@@ -125,13 +125,13 @@ public class RobotContainer {
                         new FunnelRun(funnel),
                         new IntakeRun(intake, 7000)
                 ),
-                new InstCommand(localizationManager::stopAcceptingLimelight),
+                new InstCommand(() -> localizationManager.ignoreLimelight(true)),
                 race(
                         new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
                         new FunnelRun(funnel),
                         new IntakeRun(intake, 7000)
                 ),
-                new InstCommand(localizationManager::startAcceptingLimelight)
+                new InstCommand(() -> localizationManager.ignoreLimelight(false))
         );
         distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(shootSequenceTest::schedule));
 
@@ -220,7 +220,7 @@ public class RobotContainer {
             driveTrain.resetEncoders();
             localizationManager.resetOdometry(new Pose2d());
         }, true));
-        SmartDashboard.putNumber("Hood/offset", hood.offset);
+        SmartDashboard.putNumber("Hood/offset", Hood.offset);
     }
 
     Command getAutoCommand() {

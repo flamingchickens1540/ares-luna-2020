@@ -51,7 +51,8 @@ public class PointToTransform extends CommandBase {
 
     @Override
     public void initialize() {
-
+        localizationManager.ignoreLimelight(false);
+        localizationManager.forceLimelightLedsOn(true);
         double p = SmartDashboard.getNumber("pointToTarget/P", 0);
         double i = SmartDashboard.getNumber("pointToTarget/I", 0);
         double d = SmartDashboard.getNumber("pointToTarget/D", 0);
@@ -104,6 +105,7 @@ public class PointToTransform extends CommandBase {
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
         driveTrain.setPercent(leftMotors + pidOutput, rightMotors - pidOutput);
+        SmartDashboard.putBoolean("LineUpSequence/isPointing", this.hasReachedGoal());
     }
 
     private double calculateError() {
@@ -126,5 +128,11 @@ public class PointToTransform extends CommandBase {
 
     public boolean hasReachedGoal() {
         return Math.abs(localizationManager.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        localizationManager.forceLimelightLedsOn(false);
+        SmartDashboard.putBoolean("LineUpSequence/isPointing", false);
     }
 }
