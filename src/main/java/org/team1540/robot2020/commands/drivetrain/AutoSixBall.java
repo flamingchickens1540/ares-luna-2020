@@ -3,7 +3,6 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
@@ -37,7 +36,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                 }),
                 new ConditionalCommand(
                         sequence(
-                                new HoodZeroSequence(hood),
+                                new HoodZeroSequence(hood).asProxy(),
                                 new InstCommand(() -> hood.zeroFlag = false)
                         ),
                         new InstCommand(),

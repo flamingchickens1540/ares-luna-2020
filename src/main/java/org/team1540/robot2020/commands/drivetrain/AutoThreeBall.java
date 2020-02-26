@@ -17,7 +17,7 @@ import org.team1540.robot2020.utils.WaitSupplierCommand;
 
 public class AutoThreeBall extends ParallelCommandGroup {
 
-    public AutoThreeBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoThreeBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController, boolean zeroHood) {
 
         SmartDashboard.putNumber("AutoThreeBall/TimeBeforeDrive", 0);
         SmartDashboard.putNumber("AutoThreeBall/TimeBeforeShoot", 0);
@@ -31,7 +31,11 @@ public class AutoThreeBall extends ParallelCommandGroup {
                 new ConditionalCommand(
                         sequence(
                                 parallel(
-                                        new HoodZeroSequence(hood),
+                                        new ConditionalCommand(
+                                                new HoodZeroSequence(hood).asProxy(),
+                                                new InstCommand(),
+                                                () -> zeroHood
+                                        ),
                                         sequence(
                                                 new WaitSupplierCommand(() -> SmartDashboard.getNumber("AutoThreeBall/TimeBeforeDrive", 0)),
                                                 new AutoThreeBallDrive(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)

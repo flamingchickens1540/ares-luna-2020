@@ -2,6 +2,7 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
@@ -25,7 +26,7 @@ public class AutoEightBall extends ParallelCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public AutoEightBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoEightBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController, boolean zeroHood) {
         this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
@@ -33,11 +34,15 @@ public class AutoEightBall extends ParallelCommandGroup {
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
                 sequence(
-                        new HoodZeroSequence(hood),
+                        new ConditionalCommand(
+                                new HoodZeroSequence(hood).asProxy(),
+                                new InstCommand(),
+                                () -> zeroHood
+                        ),
                         new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                         race(
                                 new IntakePercent(intake, 1),
-                                loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually()),
+                                loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                                 sequence(
                                         new ChickenRamseteCommand(
                                                 this::getStartingPose,

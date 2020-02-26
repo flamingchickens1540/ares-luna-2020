@@ -57,6 +57,11 @@ public class RobotContainer {
 
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
 
+    private PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
+            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+            driverController.getButton(ChickenXboxController.XboxButton.Y));
+
     RobotContainer() {
         logger.info("Creating robot container...");
 
@@ -67,6 +72,7 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
+        localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
         autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
@@ -80,12 +86,7 @@ public class RobotContainer {
         // Driver
 //        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
 //        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
-        new AxisButton(driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude(), 0.7).whileHeld(new PointDrive(
-                driveTrain, localizationManager,
-                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                driverController.getButton(ChickenXboxController.XboxButton.Y)
-        ));
+        new AxisButton(driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude(), 0.7).whileHeld(pointDrive);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
