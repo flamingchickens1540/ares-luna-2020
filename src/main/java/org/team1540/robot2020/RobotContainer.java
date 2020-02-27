@@ -38,6 +38,7 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
+    private Command autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
@@ -53,12 +54,11 @@ public class RobotContainer {
     private Climber climber = new Climber();
     private RevBlinken leds = new RevBlinken(0);
 
-    private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood);
+    private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
     private PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
             driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
             driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
             driverController.getButton(ChickenXboxController.XboxButton.Y));
-
 
     RobotContainer() {
         logger.info("Creating robot container...");
@@ -71,6 +71,8 @@ public class RobotContainer {
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
         localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
+
+        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -164,6 +166,7 @@ public class RobotContainer {
         logger.info("Initializing default commands...");
 
         driveTrain.setDefaultCommand(pointDrive);
+//        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter));
 
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
@@ -218,11 +221,14 @@ public class RobotContainer {
         SmartDashboard.putNumber("Hood/offset", Hood.offset);
     }
 
-    Command getAutoCommand(boolean zeroHood) {
-        return new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, zeroHood);
+    Command getAutoCommand() {
+        return autonomous;
     }
 
-    Command getZeroHoodCommand() {
-        return new HoodZeroSequence(hood);
+    public void zeroHoodIfFlag(boolean overrideFlag) {
+        if (hood.zeroFlag || overrideFlag) {
+            new HoodZeroSequence(hood).schedule();
+            hood.zeroFlag = false;
+        }
     }
 }

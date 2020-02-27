@@ -27,7 +27,7 @@ public class AutoSixBall extends SequentialCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController, boolean zeroHood) {
+    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
@@ -35,9 +35,12 @@ public class AutoSixBall extends SequentialCommandGroup {
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
                 new ConditionalCommand(
-                        new HoodZeroSequence(hood).asProxy(),
+                        sequence(
+                                new HoodZeroSequence(hood).asProxy(),
+                                new InstCommand(() -> hood.zeroFlag = false)
+                        ),
                         new InstCommand(),
-                        () -> zeroHood
+                        () -> hood.zeroFlag
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                 race(
@@ -59,8 +62,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
                                 )
-//                       For some reason just putting it in the sequence makes it crash. DON'T TOUCH
-                        ).andThen(new WaitCommand(1))
+                        )
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
         );
