@@ -2,6 +2,8 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
@@ -26,14 +28,18 @@ public class AutoSixBall extends SequentialCommandGroup {
     private LocalizationManager localizationManager;
     private Pose2d startingPose;
 
-    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
+    public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController, boolean zeroHood) {
         this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
-                new HoodZeroSequence(hood),
+                new ConditionalCommand(
+                        new HoodZeroSequence(hood),
+                        new InstCommand(),
+                        () -> zeroHood
+                ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
                 race(
 //                                new IntakePercent(intake, 1),

@@ -21,6 +21,8 @@ public class Robot extends TimedRobot {
 
     private RobotContainer container;
 
+    private boolean zeroHoodFlag = true;
+
     @Override
     public void robotInit() {
         logger.info("Initializing FRC Team 1540 Ares/Luna Robot Code...");
@@ -58,10 +60,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        Command m_autonomousCommand = container.getAutoCommand();
+        Command m_autonomousCommand = container.getAutoCommand(zeroHoodFlag);
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+        zeroHoodFlag = false;
     }
 
     @Override
@@ -70,6 +73,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        zeroHoodFlag = false;
     }
 
     @Override

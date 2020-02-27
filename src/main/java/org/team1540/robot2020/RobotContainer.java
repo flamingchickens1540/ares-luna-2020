@@ -38,7 +38,6 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
-    private final Command autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
@@ -66,14 +65,6 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
-//        autonomous = new InstCommand(() -> {
-//            climber.zero();
-//            climber.setRatchet(Climber.RatchetState.DISENGAGED);
-//        }).andThen(new HoodZeroSequence(hood));
-        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoEightBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoDriveTest(driveTrain, localizationManager);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -224,7 +215,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Hood/offset", Hood.offset);
     }
 
-    Command getAutoCommand() {
-        return autonomous;
+    Command getAutoCommand(boolean zeroHood) {
+        return new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, zeroHood);
     }
 }
