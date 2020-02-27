@@ -3,14 +3,14 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
@@ -29,23 +29,21 @@ public class AutoEightBall2 extends SequentialCommandGroup {
 
     public AutoEightBall2(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
-        SmartDashboard.putBoolean("AutoSixBall/driveUpClose", true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
-//                new ConditionalCommand(
-//                        sequence(
-//                                new HoodZeroSequence(hood).asProxy(),
-//                                new InstCommand(() -> hood.zeroFlag = false)
-//                        ),
-//                        new InstCommand(),
-//                        () -> hood.zeroFlag
-//                ),
-//                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
+                new ConditionalCommand(
+                        sequence(
+                                new HoodZeroSequence(hood).asProxy(),
+                                new InstCommand(() -> hood.zeroFlag = false)
+                        ),
+                        new InstCommand(),
+                        () -> hood.zeroFlag
+                ),
+                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
                 race(
-//                                new IntakePercent(intake, 1),
                         new IntakeRun(intake, 7000),
                         loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
@@ -94,9 +92,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
                                 )
                         )
                 ),
-                new AutoShootNBalls(5, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 6),
-                driveTrain.commandStop(),
-                new WaitCommand(10)
+                new AutoShootNBalls(5, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 6)
         );
     }
 
