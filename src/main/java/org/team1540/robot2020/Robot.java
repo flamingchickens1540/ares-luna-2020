@@ -73,7 +73,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        zeroHoodFlag = false;
+        if (zeroHoodFlag) {
+            container.getZeroHoodCommand().schedule();
+            zeroHoodFlag = false;
+        }
     }
 
     @Override
