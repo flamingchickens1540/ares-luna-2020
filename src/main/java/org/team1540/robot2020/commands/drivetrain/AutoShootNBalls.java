@@ -20,7 +20,7 @@ public class AutoShootNBalls extends ParallelRaceGroup {
         addCommands(
                 lineUpSequence, // todo: should start spinning up earlier before shooting
                 loop(
-                        new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp),
+                        new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp),
                         balls
                 ).withTimeout(3) // todo: tune timeout
         );

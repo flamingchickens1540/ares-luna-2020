@@ -2,40 +2,35 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.ModifiedMiniPID;
 import org.team1540.robot2020.utils.PIDConfig;
-import org.team1540.rooster.datastructures.threed.Transform3D;
 
 import java.util.function.Supplier;
 
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 
-public class PointToTransform extends CommandBase {
+public class PointToError extends CommandBase {
 
 
     private final LocalizationManager localizationManager;
     private final ChickenXboxController.Axis throttleAxis;
     private DriveTrain driveTrain;
-    private Supplier<Transform3D> targetSupplier;
+    private Supplier<Double> errorSupplier;
     private ChickenXboxController driver;
 
     private ModifiedMiniPID pointController = new ModifiedMiniPID(0, 0, 0);
 
-    private double finishedDegreesPerSecond = 0.5;
-    private double finishedDegrees = 0.3;
-    private double lastError = Double.NEGATIVE_INFINITY;
     private PIDConfig config;
     private boolean testingMode;
     private boolean useThrottle;
 
 
-    public PointToTransform(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Transform3D> targetSupplier, ChickenXboxController driver, boolean testingMode, boolean useThrottle) {
+    public PointToError(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Double> errorSupplier, ChickenXboxController driver, boolean testingMode, boolean useThrottle) {
         this.localizationManager = localizationManager;
         this.driveTrain = driveTrain;
-        this.targetSupplier = targetSupplier;
+        this.errorSupplier = errorSupplier;
         this.driver = driver;
         this.throttleAxis = driver.getAxis(LEFT_X);
         this.testingMode = testingMode;
@@ -44,8 +39,6 @@ public class PointToTransform extends CommandBase {
         setPID(new PIDConfig(0.4, 0.07, 0.9, 0.008, 0.25, 0.013));
         addRequirements(driveTrain);
 
-        SmartDashboard.putNumber("pointToTarget/finishedDegrees", finishedDegrees);
-        SmartDashboard.putNumber("pointToTarget/finishedDegreesPerSecond", finishedDegreesPerSecond);
         SmartDashboard.putNumber("distanceCalibration/initialDistanceMeters", 0);
     }
 
@@ -59,10 +52,6 @@ public class PointToTransform extends CommandBase {
         double IMax = SmartDashboard.getNumber("pointToTarget/IMax", 0);
         double outputMax = SmartDashboard.getNumber("pointToTarget/outputMax", 0);
         double C = SmartDashboard.getNumber("pointToTarget/C", 0);
-        double finishedDegrees = SmartDashboard.getNumber("pointToTarget/finishedDegrees", 0);
-        double finishedDegreesPerSecond = SmartDashboard.getNumber("pointToTarget/finishedDegreesPerSecond", 0);
-        this.finishedDegrees = finishedDegrees;
-        this.finishedDegreesPerSecond = finishedDegreesPerSecond;
         config = new PIDConfig(p, i, d, IMax, outputMax, C);
         setPID(config);
     }
@@ -100,34 +89,13 @@ public class PointToTransform extends CommandBase {
             pointController.setC(actualCValue);
         }
 
-        double pidOutput = pointController.getOutput(calculateError());
+        double pidOutput = pointController.getOutput(errorSupplier.get());
 
         SmartDashboard.putNumber("pointToTarget/PIDOutput", pidOutput);
 
         driveTrain.setPercent(leftMotors + pidOutput, rightMotors - pidOutput);
-        SmartDashboard.putBoolean("LineUpSequence/isPointing", this.hasReachedGoal());
-    }
-
-    private double calculateError() {
-        Transform3D robotToGoalTransform = targetSupplier.get();
-        if (robotToGoalTransform == null) return 0;
-
-        Vector3D targetPosition = robotToGoalTransform.getPosition();
-        double targetAngle = Math.atan2(targetPosition.getY(), targetPosition.getX());
-//                - Math.toRadians(1.5);
-        SmartDashboard.putNumber("pointToTarget/targetAngle", targetAngle);
-
-        lastError = targetAngle;
-
         SmartDashboard.putNumber("pointToTarget/currentAngle", Math.toDegrees(localizationManager.getYawRadians()));
-        SmartDashboard.putNumber("pointToTarget/error", Math.toDegrees(targetAngle));
-        SmartDashboard.putBoolean("pointToTarget/hasReachedGoal", hasReachedGoal());
-
-        return targetAngle;
-    }
-
-    public boolean hasReachedGoal() {
-        return Math.abs(localizationManager.getRate()) < finishedDegreesPerSecond && Math.abs(Math.toDegrees(lastError)) < finishedDegrees;
+        SmartDashboard.putBoolean("pointToTarget/hasReachedShooterGoal", localizationManager.hasReachedPointGoal());
     }
 
     @Override

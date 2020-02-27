@@ -15,6 +15,7 @@ import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
+import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
@@ -53,7 +54,7 @@ public class RobotContainer {
     private Climber climber = new Climber();
     private RevBlinken leds = new RevBlinken(0);
 
-    private LocalizationManager localizationManager = new LocalizationManager(driveTrain);
+    private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood);
 
     RobotContainer() {
         logger.info("Creating robot container...");
@@ -85,7 +86,7 @@ public class RobotContainer {
         LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
         driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
         driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
-        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, lineUpSequence::isLinedUp);
+        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
 
         Trigger emergencyDisable = driverController.getButton(LEFT_BUMPER)
@@ -159,7 +160,7 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToTransform(driveTrain, localizationManager, () -> localizationManager.getRobotToRearHoleTransform(), driverController, false, true));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, true));
     }
 
     private void initDefaultCommands() {
@@ -174,7 +175,7 @@ public class RobotContainer {
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
         indexer.setDefaultCommand(indexer.commandStop().perpetually());
         shooter.setDefaultCommand(shooter.commandStop().perpetually());
-        hood.setDefaultCommand(hood.commandStop().perpetually());
+        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
         climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 

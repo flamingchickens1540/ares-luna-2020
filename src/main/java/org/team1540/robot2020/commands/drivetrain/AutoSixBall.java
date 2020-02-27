@@ -2,7 +2,6 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
@@ -14,7 +13,6 @@ import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
-import org.team1540.robot2020.commands.intake.IntakePercent;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.ChickenXboxController;
@@ -43,7 +41,7 @@ public class AutoSixBall extends SequentialCommandGroup {
 
                         loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually()),
                         sequence(
-                                new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
+                                new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
                                 new ChickenRamseteCommand(
                                         this::getStartingPose,
                                         () -> List.of(

@@ -11,7 +11,7 @@ import org.team1540.rooster.util.TrigUtils;
 
 import java.util.function.Supplier;
 
-public class PointToAngle extends CommandBase {
+public class PointToRotation extends CommandBase {
     private DriveTrain driveTrain;
     private LocalizationManager localizationManager;
     private Supplier<Pose2d> offsetSupplier;
@@ -24,7 +24,7 @@ public class PointToAngle extends CommandBase {
     private double goalAngle;
     private double toleranceAngle;
 
-    public PointToAngle(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Pose2d> offsetSupplier, Pose2d goal, double toleranceAngle) {
+    public PointToRotation(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Pose2d> offsetSupplier, Pose2d goal, double toleranceAngle) {
         this.driveTrain = driveTrain;
         this.localizationManager = localizationManager;
         this.offsetSupplier = offsetSupplier;

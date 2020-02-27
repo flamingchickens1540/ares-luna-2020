@@ -3,7 +3,6 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
@@ -50,7 +49,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                                                 RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                                 true, localizationManager, driveTrain
                                         ),
-                                        new PointToAngle(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(90)),
+                                        new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(90)),
                                         new ChickenRamseteCommand(
                                                 this::getStartingPose,
                                                 () -> List.of(

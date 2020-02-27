@@ -15,6 +15,7 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.*;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
@@ -46,6 +47,8 @@ public class LocalizationManager extends CommandBase {
     private LIDARLite lidar = new LIDARLite(I2C.Port.kOnboard);
     private NavX navx = new NavX(SPI.Port.kMXP);
     private DriveTrain driveTrain;
+    private Shooter shooter;
+    private Hood hood;
     private RevBlinken blinken = new RevBlinken(7);
 
     private DigitalOutput buttonLed = new DigitalOutput(4);
@@ -55,8 +58,10 @@ public class LocalizationManager extends CommandBase {
     private Transform3D odomToHexagon = null;
     private boolean acceptLimelight = true;
 
-    public LocalizationManager(DriveTrain driveTrain) {
+    public LocalizationManager(DriveTrain driveTrain, Shooter shooter, Hood hood) {
         this.driveTrain = driveTrain;
+        this.shooter = shooter;
+        this.hood = hood;
 
         // TODO: This is currently being done for the odometry-- remove this in future
         driveTrain.resetEncoders();
@@ -159,6 +164,12 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLimelight", getLimelightDistance());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLidar", getCorrectedLidarDistance());
         SmartDashboard.putBoolean("LineUpSequence/isLimelightTargetFound", limelight.isTargetFound());
+        SmartDashboard.putNumber("LineUpSequence/getDistanceToSelectedTarget", getDistanceToSelectedTarget());
+        SmartDashboard.putBoolean("LineUpSequence/isReadyToShootAll", isLinedUp());
+        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", hasReachedHoodGoal());
+        SmartDashboard.putBoolean("LineUpSequence/isShooterGoal", hasReachedShooterGoal());
+        SmartDashboard.putBoolean("LineUpSequence/isPointGoal", hasReachedPointGoal());
+
 
         if (odomToHexagon != null) {
             putTransform(odomToHexagon, "localizationManager/odomToHexagon");
@@ -290,4 +301,26 @@ public class LocalizationManager extends CommandBase {
         return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -294, -1) - Hood.offset;
     }
 
+    public double getPointErrorForSelectedGoal() {
+        Transform3D robotToGoalTransform = getSelectedTarget();
+        if (robotToGoalTransform == null) return 0;
+        Vector3D targetPosition = robotToGoalTransform.getPosition();
+        return Math.atan2(targetPosition.getY(), targetPosition.getX());
+    }
+
+    public boolean hasReachedPointGoal() {
+        return Math.abs(Math.toDegrees(getRate())) < 3 && Math.abs(Math.toDegrees(getPointErrorForSelectedGoal())) < 0.3;
+    }
+
+    public boolean hasReachedShooterGoal() {
+        return Math.abs(shooter.getVelocityRPM() - getShooterRPMForSelectedGoal()) < 100;
+    }
+
+    public boolean hasReachedHoodGoal() {
+        return Math.abs(getHoodTicksForSelectedGoal() - hood.getPosition()) < 0.1;
+    }
+
+    public boolean isLinedUp() {
+        return hasReachedPointGoal() && hasReachedShooterGoal() && hasReachedHoodGoal() && (isLimelightTargetFound() || getDistanceToSelectedTarget() < 2.3);
+    }
 }
