@@ -15,16 +15,14 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.jetbrains.annotations.NotNull;
 import org.team1540.robot2020.commands.drivetrain.DriveTrain;
 import org.team1540.robot2020.commands.hood.Hood;
-import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.utils.*;
 import org.team1540.robot2020.utils.Timer;
+import org.team1540.robot2020.utils.*;
 import org.team1540.rooster.datastructures.threed.Transform3D;
 import org.team1540.rooster.datastructures.utils.RotationUtils;
 import org.team1540.rooster.wrappers.RevBlinken;
 
 import javax.annotation.Nullable;
-
 import java.util.function.Consumer;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
@@ -60,6 +58,8 @@ public class LocalizationManager extends CommandBase {
     private DigitalOutput buttonLed = new DigitalOutput(4);
     private DigitalInput buttonSignal = new DigitalInput(5);
 
+    private boolean limelightBlinkState = false;
+
     @Nullable
     private Transform3D odomToHexagon = null;
     private boolean acceptLimelight = true;
@@ -73,26 +73,38 @@ public class LocalizationManager extends CommandBase {
         driveTrain.resetEncoders();
         navx.zeroYaw();
 
-        odometry = new DifferentialDriveOdometry(new Rotation2d(navx.getYawRadians()));
+        odometry = new DifferentialDriveOdometry(new Rotation2d(0));
 
         buttonClickTimer.start();
 
         var button = new Trigger(buttonSignal::get);
 
-        Notifier blinkNotifier = new Notifier(() -> buttonLed.set(!buttonLed.get()));
-        blinkNotifier.startPeriodic(0.4);
+        Notifier buttonBlinkNotifier = new Notifier(() -> buttonLed.set(!buttonLed.get()));
+        buttonBlinkNotifier.startPeriodic(0.4);
+
+        Notifier limelightBlinkOnNotifier = new Notifier(() -> {
+        });
+        limelightBlinkOnNotifier.setHandler(() -> {
+            limelightBlinkState = !limelightBlinkState;
+            limelightBlinkOnNotifier.startSingle(limelightBlinkState ? 0.1 : 4);
+        });
+        limelightBlinkOnNotifier.startSingle(0.00001);
 
         CommandBase zeroNavxCommand = sequence(
                 new InstCommand(() -> {
-                    blinkNotifier.stop();
-                    blinkNotifier.startPeriodic(0.07);
+                    buttonBlinkNotifier.stop();
+                    limelightBlinkOnNotifier.stop();
+                    buttonBlinkNotifier.startPeriodic(0.07);
+                    limelightBlinkState = true;
                 }, true),
                 new WaitCommand(1),
                 new InstCommand(() -> {
+                    limelightBlinkState = false;
                     navx.zeroYaw();
                     System.out.println("NavX Zeroed!" + navx.getYawRadians());
-                    odomToHexagon = getOdomToRobot().add(new Transform3D(-1.0934992, 0, HEXAGON_HEIGHT, 0, 0, 0));
-                    blinkNotifier.stop();
+                    updateOdometry();
+                    odomToHexagon = getOdomToRobot().add(new Transform3D(1.0934992, 0, HEXAGON_HEIGHT, 0, 0, 0));
+                    buttonBlinkNotifier.stop();
                     buttonLed.set(true);
                     if (onNavxZero != null) onNavxZero.run();
                 }, true)
@@ -115,13 +127,11 @@ public class LocalizationManager extends CommandBase {
         lidar.startMeasuring();
     }
 
-    public void setLimelightLeds(boolean state) {
-        limelight.setLeds(state);
-    }
-
     private void updateOdomToHexagonTransform() {
         SmartDashboard.putBoolean("localizationManager/isAcceptingLimelight", acceptLimelight);
-        if (acceptLimelight && isLimelightTargetFound()) {
+        boolean lookingAtCorrectTarget = Math.abs(getYawRadians()) < Math.PI / 2;
+        SmartDashboard.putBoolean("localizationManager/isLookingAtCorrectTarget", lookingAtCorrectTarget);
+        if (acceptLimelight && isLimelightTargetFound() && lookingAtCorrectTarget) {
             double robotToTargetDistance = getBestSensorDistance();
             double robotToTargetAngle = -limelight.getTargetAngles().getX();
             double targetAngleRelativeToRobot = -navx.getYawRadians();
@@ -145,6 +155,7 @@ public class LocalizationManager extends CommandBase {
     }
 
     public boolean useLidarForDistanceEst() {
+        if (!isLimelightTargetFound()) return false;
         double limelightAngle = Math.abs(limelight.getTargetAngles().getX());
 
         // TODO: Make a util for thermostat control
@@ -203,7 +214,7 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putNumber("localizationManager/odometry/Y", poseTranslation.getY());
         SmartDashboard.putNumber("localizationManager/odometry/rotationDegrees", poseMeters.getRotation().getDegrees());
 
-        setLimelightLEDs();
+        limelight.setLeds(getLimelightLEDState());
         setRobotLEDs();
     }
 
@@ -268,18 +279,12 @@ public class LocalizationManager extends CommandBase {
         return navx.getYawRadians();
     }
 
-    public void setLimelightLEDs() {
-        if (forceLimelightLEDOn || getRobotToHexagonTransform() == null) {
-            setLimelightLeds(true);
-        } else {
-            double x = getRobotToHexagonTransform().getPosition().getX();
-            double y = getRobotToHexagonTransform().getPosition().getY();
-            if (Math.abs(Math.atan2(y, x)) > Math.toRadians(40)) {
-                setLimelightLeds(false);
-            } else {
-                setLimelightLeds(true);
-            }
-        }
+    public boolean getLimelightLEDState() {
+        if (RobotState.isDisabled()) return limelightBlinkState;
+        if (forceLimelightLEDOn || getRobotToHexagonTransform() == null) return true;
+        double x = getRobotToHexagonTransform().getPosition().getX();
+        double y = getRobotToHexagonTransform().getPosition().getY();
+        return Math.abs(Math.atan2(y, x)) < Math.toRadians(40);
     }
 
     public void setRobotLEDs() {

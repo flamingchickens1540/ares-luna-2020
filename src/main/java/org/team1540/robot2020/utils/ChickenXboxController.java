@@ -3,7 +3,6 @@ package org.team1540.robot2020.utils;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.team1540.rooster.triggers.AxisButton;
 import org.team1540.rooster.triggers.DPadAxis;
 import org.team1540.rooster.triggers.MultiAxisButton;
 import org.team1540.rooster.triggers.StrictDPadButton;
@@ -147,10 +146,6 @@ public class ChickenXboxController {
         return new JoystickButton(controller, button.value);
     }
 
-    public AxisButton getButton(double threshold, XboxAxis axis) {
-        return new AxisButton(controller, threshold, axis.remappedTo);
-    }
-
     public MultiAxisButton getButton(double threshold, XboxAxis... axes) {
         int[] axesIds = new int[axes.length];
         for (int i = 0; i < axes.length; i++) {
@@ -190,6 +185,10 @@ public class ChickenXboxController {
         default double value() {
             return getAsDouble();
         }
+
+        default AxisButton button(double threshold) {
+            return new AxisButton(this, threshold);
+        }
     }
 
     public interface Axis2D extends Supplier<Vector2D> {
@@ -211,11 +210,6 @@ public class ChickenXboxController {
 
         default Axis y() {
             return () -> value().getY();
-        }
-
-        default Axis2D withDeadzone(double deadzone) {
-            // TODO this is a square deadzone, make a circular deadzone
-            return () -> new Vector2D(deadzone(value().getX(), deadzone), deadzone(value().getY(), deadzone));
         }
 
         default Vector2D value() {

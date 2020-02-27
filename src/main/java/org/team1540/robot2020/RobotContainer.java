@@ -22,7 +22,7 @@ import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
-import org.team1540.robot2020.utils.AxisButton;
+import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
@@ -51,7 +51,6 @@ public class RobotContainer {
     private Indexer indexer = new Indexer();
     private Shooter shooter = new Shooter();
     private Hood hood = new Hood();
-    //    private ControlPanel controlPanel = new ControlPanel();
     private Climber climber = new Climber();
     private RevBlinken leds = new RevBlinken(0);
 
@@ -77,19 +76,27 @@ public class RobotContainer {
         autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
-    @SuppressWarnings("DanglingJavadoc")
     private void initButtonBindings() {
         logger.info("Initializing button bindings...");
 
         SmartDashboard.putNumber("robotContainer/shootIndexDistance", 0.11);
 
+        // Commands
+        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
+        Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
+
         // Driver
-//        LineUpSequence lineUpSequence = new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, false, true);
-//        driverController.getButton(LEFT_BUMPER).whileHeld(lineUpSequence);
-        new AxisButton(driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude(), 0.7).whileHeld(pointDrive);
-        driverController.getButton(START).whileHeld(parallel(indexer.commandPercent(1), new FunnelRun(funnel), new IntakeRun(intake, 7000)));
+        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
+
+        driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
+        Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
-        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence);
+        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.alongWith(flywheelSpinUp));
+
+        // TODO: Delete this
+        driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
+        driverController.getButton(B).cancelWhenPressed(intakeCommand);
+        driverController.getButton(X).cancelWhenPressed(ballQueueCommand);
 
         Trigger emergencyDisable = driverController.getButton(LEFT_BUMPER)
                 .and(driverController.getButton(RIGHT_BUMPER))
@@ -99,14 +106,8 @@ public class RobotContainer {
         emergencyDisable.whenActive(new InstCommand(() -> {
             throw new NullPointerException("=+=+=+=+= Emergency Disable Triggered! =+=+=+=+=");
         }));
-//        driverController.getButton(RIGHT_BUMPER).whileHeld(
-//                () -> shootSequence.schedule()
-//        );
-//        driverController.getButton(LEFT_BUMPER).whenReleased(() -> shootSequence.cancel());
 
         // Copilot
-        Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
-        Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
@@ -114,7 +115,6 @@ public class RobotContainer {
         copilotController.getButton(RIGHT_BUMPER).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
         );
-//        copilotController.getButton(Y).whenPressed(new ClimberSequenceSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X), copilotController.getButton(START)));
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
         copilotController.getButton(ChickenXboxController.XboxButton.LEFT_PRESS).whileHeld(() -> {
             Hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
@@ -162,17 +162,13 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, true));
+        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, true));
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-//        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
-//                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-//                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-//                driverController.getButton(ChickenXboxController.XboxButton.Y)));
-        driveTrain.setDefaultCommand(new PointToError(driveTrain, localizationManager, localizationManager::getPointErrorForSelectedGoal, driverController, false, true));
+        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
         indexer.setDefaultCommand(indexer.commandStop().perpetually());
@@ -193,7 +189,6 @@ public class RobotContainer {
             intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
-            localizationManager.setLimelightLeds(true);
             logger.info("Mechanism brakes enabled");
             leds.set(RevBlinken.ColorPattern.AQUA);
         });
@@ -201,7 +196,6 @@ public class RobotContainer {
         disabled.whenActive(new WaitCommand(2)
                 .alongWith(new InstCommand(() -> {
                     leds.set(RevBlinken.ColorPattern.FIRE_LARGE);
-                    localizationManager.setLimelightLeds(false);
                     logger.debug("Disabling mechanism brakes in 2 seconds");
                 }, true))
                 .andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
@@ -211,11 +205,6 @@ public class RobotContainer {
                     climber.setBrake(NeutralMode.Coast);
                     logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
-
-        new WaitCommand(20).andThen(new ConditionalCommand(new InstCommand(true), new InstCommand(() -> {
-            logger.info("Turning off limelight LEDs 20 seconds after boot...");
-            localizationManager.setLimelightLeds(false);
-        }, true), RobotState::isEnabled)).schedule();
     }
 
     private void initDashboard() {

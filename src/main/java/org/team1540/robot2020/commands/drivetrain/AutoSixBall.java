@@ -2,9 +2,9 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.RamseteConfig;
 import org.team1540.robot2020.commands.climber.Climber;
@@ -29,6 +29,7 @@ public class AutoSixBall extends SequentialCommandGroup {
 
     public AutoSixBall(DriveTrain driveTrain, Intake intake, Funnel funnel, Indexer indexer, Shooter shooter, Hood hood, Climber climber, LocalizationManager localizationManager, ChickenXboxController driverController) {
         this.localizationManager = localizationManager;
+        SmartDashboard.putBoolean("AutoSixBall/driveUpClose", true);
         addCommands(
                 new InstCommand(() -> {
                     climber.zero();
@@ -42,13 +43,13 @@ public class AutoSixBall extends SequentialCommandGroup {
                         new InstCommand(),
                         () -> hood.zeroFlag
                 ),
-                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
+                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
                 race(
 //                                new IntakePercent(intake, 1),
                         new IntakeRun(intake, 7000),
                         loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
-                                new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
+                                new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
                                 new ChickenRamseteCommand(
                                         this::getStartingPose,
                                         () -> List.of(
@@ -56,14 +57,28 @@ public class AutoSixBall extends SequentialCommandGroup {
                                                 new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
                                                 new Pose2d(-4, -.8, new Rotation2d(Math.PI))
                                         ),
-                                        RamseteConfig.kMaxSpeedMetersPerSecond,
-//                                        1.25,
+//                                        RamseteConfig.kMaxSpeedMetersPerSecond,
+                                        1.25,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
                                 )
                         )
                 ),
-                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                new ConditionalCommand(sequence(
+                        new PointToRotation(driveTrain, localizationManager, new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))), Math.toRadians(10)),
+                        new ChickenRamseteCommand(
+                                this::getStartingPose,
+                                () -> List.of(
+                                        new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))),
+                                        new Pose2d(0, 0, new Rotation2d(Math.toRadians(10)))
+                                ),
+                                RamseteConfig.kMaxSpeedMetersPerSecond,
+//                                1.25,
+                                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
+                                false, localizationManager, driveTrain
+                        )
+                ), new InstCommand(), () -> SmartDashboard.getBoolean("AutoSixBall/driveUpClose", true)),
+                new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 6)
         );
     }
 

@@ -6,15 +6,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.LocalizationManager;
 import org.team1540.robot2020.utils.ControlUtils;
 import org.team1540.robot2020.utils.MiniPID;
-import org.team1540.robot2020.utils.TransformUtils;
 import org.team1540.rooster.util.TrigUtils;
-
-import java.util.function.Supplier;
 
 public class PointToRotation extends CommandBase {
     private DriveTrain driveTrain;
     private LocalizationManager localizationManager;
-    private Supplier<Pose2d> offsetSupplier;
     private Pose2d goal;
 
     private MiniPID pointController;
@@ -24,10 +20,9 @@ public class PointToRotation extends CommandBase {
     private double goalAngle;
     private double toleranceAngle;
 
-    public PointToRotation(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Pose2d> offsetSupplier, Pose2d goal, double toleranceAngle) {
+    public PointToRotation(DriveTrain driveTrain, LocalizationManager localizationManager, Pose2d goal, double toleranceAngle) {
         this.driveTrain = driveTrain;
         this.localizationManager = localizationManager;
-        this.offsetSupplier = offsetSupplier;
         this.goal = goal;
         this.toleranceAngle = toleranceAngle;
 
@@ -52,8 +47,7 @@ public class PointToRotation extends CommandBase {
         min = SmartDashboard.getNumber("pointToAngle/min", 0);
         deadzone = SmartDashboard.getNumber("pointToAngle/deadzone", 0);
         pointController.setPID(p, i, d);
-        Pose2d translatePose = TransformUtils.translatePose(offsetSupplier.get(), goal);
-        goalAngle = translatePose.getRotation().getRadians();
+        goalAngle = goal.getRotation().getRadians();
     }
 
 

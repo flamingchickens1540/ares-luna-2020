@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team1540.robot2020.utils.ChickenTalonFX;
 import org.team1540.robot2020.utils.MotorConfigUtils;
@@ -104,5 +106,13 @@ public class DriveTrain extends SubsystemBase {
     public void resetEncoders() {
         driveMotorLeftA.setSelectedSensorPosition(0);
         driveMotorRightA.setSelectedSensorPosition(0);
+    }
+
+    public Command commandStop() {
+        return new InstantCommand(this::disableMotors, this);
+    }
+
+    public void disableMotors() {
+        setPercent(0, 0);
     }
 }

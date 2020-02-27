@@ -39,7 +39,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                                 new InstCommand(),
                                 () -> zeroHood
                         ),
-                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController),
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
                         race(
                                 new IntakePercent(intake, 1),
                                 loop(new IndexerBallQueueSequence(indexer, funnel, false)),
@@ -54,7 +54,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                                                 RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                                 true, localizationManager, driveTrain
                                         ),
-                                        new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(90)),
+                                        new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(90)),
                                         new ChickenRamseteCommand(
                                                 this::getStartingPose,
                                                 () -> List.of(
@@ -68,7 +68,7 @@ public class AutoEightBall extends ParallelCommandGroup {
                                 )
                         ),
 //                        new WaitCommand(1),
-                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)
+                        new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3)
                 )
         );
     }
