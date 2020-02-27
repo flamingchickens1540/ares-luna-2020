@@ -49,11 +49,11 @@ public class AutoSixBall extends SequentialCommandGroup {
                         new IntakeRun(intake, 7000),
                         loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
-                                new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
+                                new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-120))), Math.toRadians(20)),
                                 new ChickenRamseteCommand(
                                         this::getStartingPose,
                                         () -> List.of(
-                                                new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))),
+                                                new Pose2d(0, 0, new Rotation2d(Math.toRadians(-120))),
                                                 new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
                                                 new Pose2d(-4, -.8, new Rotation2d(Math.PI))
                                         ),
