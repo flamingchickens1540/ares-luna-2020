@@ -54,6 +54,11 @@ public class RobotContainer {
     private RevBlinken leds = new RevBlinken(0);
 
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood);
+    private PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
+            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+            driverController.getButton(ChickenXboxController.XboxButton.Y));
+
 
     RobotContainer() {
         logger.info("Creating robot container...");
@@ -65,6 +70,7 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
+        localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
     }
 
     @SuppressWarnings("DanglingJavadoc")
@@ -157,10 +163,7 @@ public class RobotContainer {
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new PointDrive(driveTrain, localizationManager,
-                driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-                driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-                driverController.getButton(ChickenXboxController.XboxButton.Y)));
+        driveTrain.setDefaultCommand(pointDrive);
 
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());

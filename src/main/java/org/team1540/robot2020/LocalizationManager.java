@@ -28,6 +28,7 @@ import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 
 public class LocalizationManager extends CommandBase {
 
+    private Runnable onNavxZero;
     private double[] DISTANCE = new double[]{1.7430, 1.8630, 1.9018, 2.3105, 3.1180, 4.0000, 4.5735, 6.0000, 7.1455, 8.11, 9.60, 11.96};
     private double[] HOOD = new double[]{-284.7406, -262.6959, -235.6042, -194.8952, -138.9739, -112.2393, -111.2870, -94.1226, -79.7886, -89.22, -92.74, -110.53};
     private double[] FLYWHEEL = new double[]{1537.4147, 1672.9528, 1643.7841, 1882.7768, 2575.7416, 3000.0000, 4142.5895, 4598.9504, 5208.7773, 5417.347714, 5417.347714, 5417.347714};
@@ -82,13 +83,19 @@ public class LocalizationManager extends CommandBase {
                 new WaitCommand(1),
                 new InstCommand(() -> {
                     navx.zeroYaw();
-                    System.out.println("NavX Zeroed!");
+                    System.out.println("NavX Zeroed!" + navx.getYawRadians());
+                    odomToHexagon = getOdomToRobot().add(new Transform3D(-1.0934992, 0, HEXAGON_HEIGHT, 0, 0, 0));
                     blinkNotifier.stop();
                     buttonLed.set(true);
+                    if (onNavxZero != null) onNavxZero.run();
                 }, true)
         );
         button.whenActive(zeroNavxCommand);
         SmartDashboard.putData("localizationManager/zeroYaw", zeroNavxCommand);
+    }
+
+    public void setOnNavxZeroCallback(Runnable onNavxZero) {
+        this.onNavxZero = onNavxZero;
     }
 
     public void initialize() {
@@ -116,7 +123,7 @@ public class LocalizationManager extends CommandBase {
     }
 
     public void ignoreLimelight(boolean state) {
-        acceptLimelight = false;
+        acceptLimelight = !state;
     }
 
     @NotNull
@@ -163,17 +170,18 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putBoolean("localizationManager/robotToTargetDistanceUseLidar", useLidarForDistanceEst());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLimelight", getLimelightDistance());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLidar", getCorrectedLidarDistance());
-        SmartDashboard.putBoolean("LineUpSequence/isLimelightTargetFound", limelight.isTargetFound());
-        SmartDashboard.putNumber("LineUpSequence/getDistanceToSelectedTarget", getDistanceToSelectedTarget());
-        SmartDashboard.putBoolean("LineUpSequence/isReadyToShootAll", isLinedUp());
-        SmartDashboard.putBoolean("LineUpSequence/isHoodGoal", hasReachedHoodGoal());
-        SmartDashboard.putBoolean("LineUpSequence/isShooterGoal", hasReachedShooterGoal());
-        SmartDashboard.putBoolean("LineUpSequence/isPointGoal", hasReachedPointGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isLimelightTargetFound", limelight.isTargetFound());
+        SmartDashboard.putNumber("ShooterLineUpSequence/getDistanceToSelectedTarget", getDistanceToSelectedTarget());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isReadyToShootAll", isLinedUp());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isHoodGoal", hasReachedHoodGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isShooterGoal", hasReachedShooterGoal());
+        SmartDashboard.putBoolean("ShooterLineUpSequence/isPointGoal", hasReachedPointGoal());
 
 
         if (odomToHexagon != null) {
             putTransform(odomToHexagon, "localizationManager/odomToHexagon");
             putTransform(getRobotToRearHoleTransform(), "localizationManager/robotToRearHole");
+            putTransform(getRobotToHexagonTransform(), "localizationManager/robotToHexagon");
         }
 
         Pose2d poseMeters = odometry.getPoseMeters();
@@ -298,7 +306,7 @@ public class LocalizationManager extends CommandBase {
 
     public double getHoodTicksForSelectedGoal() {
         double norm = getDistanceToSelectedTarget();
-        return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -294, -1) - Hood.offset;
+        return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -292, -1) - Hood.offset;
     }
 
     public double getPointErrorForSelectedGoal() {

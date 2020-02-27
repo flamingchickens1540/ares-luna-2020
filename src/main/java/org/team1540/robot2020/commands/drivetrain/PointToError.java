@@ -101,6 +101,5 @@ public class PointToError extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         localizationManager.forceLimelightLedsOn(false);
-        SmartDashboard.putBoolean("LineUpSequence/isPointing", false);
     }
 }

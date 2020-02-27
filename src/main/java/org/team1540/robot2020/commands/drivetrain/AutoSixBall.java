@@ -3,7 +3,6 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.team1540.robot2020.LocalizationManager;
@@ -36,7 +35,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
                 new ConditionalCommand(
-                        new HoodZeroSequence(hood),
+                        new HoodZeroSequence(hood).asProxy(),
                         new InstCommand(),
                         () -> zeroHood
                 ),
@@ -45,7 +44,7 @@ public class AutoSixBall extends SequentialCommandGroup {
 //                                new IntakePercent(intake, 1),
                         new IntakeRun(intake, 7000),
 
-                        loop(new IndexerBallQueueSequence(indexer, funnel, false).perpetually()),
+                        loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
                                 new PointToRotation(driveTrain, localizationManager, this::getStartingPose, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-150))), Math.toRadians(20)),
                                 new ChickenRamseteCommand(
