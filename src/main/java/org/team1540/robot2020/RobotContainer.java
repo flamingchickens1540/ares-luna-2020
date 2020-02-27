@@ -92,7 +92,7 @@ public class RobotContainer {
         driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
         Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);
         CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
-        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.alongWith(flywheelSpinUp));
+        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.raceWith(flywheelSpinUp));
 
         // TODO: Delete this
         driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
