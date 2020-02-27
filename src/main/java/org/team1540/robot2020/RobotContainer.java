@@ -73,7 +73,8 @@ public class RobotContainer {
         localizationManager.schedule();
         localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
-        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        autonomous = new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
     }
 
     private void initButtonBindings() {
