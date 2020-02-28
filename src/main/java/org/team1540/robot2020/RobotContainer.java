@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
-import static java.util.Map.entry;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
@@ -166,18 +165,18 @@ public class RobotContainer {
         copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
         copilotController.getButton(LEFT_BUMPER).whileHeld(intake.commandPercent(-1));
         copilotController.getButton(RIGHT_BUMPER).whileHeld(
-                parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1))
+                parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1), new InstCommand(intakeCommand::cancel))
         );
         copilotController.getButton(BACK).and(copilotController.getButton(START)).whenActive(new ClimberSequenceNoSensor(climber, copilotController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X), copilotController.getButton(BACK)));
         copilotController.getButton(ChickenXboxController.XboxButton.LEFT_PRESS).whileHeld(() -> {
             Hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
-            SmartDashboard.putNumber("Hood/offset", Hood.offset);
+            SmartDashboard.putNumber("hood/offset", Hood.offset);
         });
 
         // Testing Controller - Distance offset tuning
         CommandGroupBase shootSequenceTest = sequence(
                 race(
-                        new ConditionalCommand(new InstCommand(), new IndexerBallsToTop(indexer, 0.2), indexer::getShooterStagedSensor),
+                        new ConditionalCommand(new InstCommand(), new IndexerBallsUpOrDownToTop(indexer, 0.2), indexer::getShooterStagedSensor),
                         new FunnelRun(funnel),
                         new IntakeRun(intake, 7000)
                 ),
@@ -244,6 +243,7 @@ public class RobotContainer {
             climber.setBrake(NeutralMode.Brake);
             logger.info("Mechanism brakes enabled");
             leds.set(RevBlinken.ColorPattern.AQUA);
+            climber.setRatchet(Climber.RatchetState.DISENGAGED);
         });
 
         disabled.whenActive(new WaitCommand(2)
@@ -265,7 +265,7 @@ public class RobotContainer {
             driveTrain.resetEncoders();
             localizationManager.resetOdometry(new Pose2d());
         }, true));
-        SmartDashboard.putNumber("Hood/offset", Hood.offset);
+        SmartDashboard.putNumber("hood/offset", Hood.offset);
     }
 
     Command getAutoCommand() {
