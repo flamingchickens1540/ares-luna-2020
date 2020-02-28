@@ -31,9 +31,9 @@ import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 public class LocalizationManager extends CommandBase {
 
     private Runnable onNavxZero;
-    private double[] DISTANCE = new double[]{1.7430, 1.8630, 1.9018, 2.3105, 3.1180, 4.0000, 4.5735, 6.0000, 7.1455, 8.11, 9.60, 11.96};
-    private double[] HOOD = new double[]{-284.7406, -262.6959, -235.6042, -194.8952, -138.9739, -112.2393, -111.2870, -94.1226, -79.7886, -89.22, -92.74, -110.53};
-    private double[] FLYWHEEL = new double[]{1537.4147, 1672.9528, 1643.7841, 1882.7768, 2575.7416, 3000.0000, 4142.5895, 4598.9504, 5208.7773, 5417.347714, 5417.347714, 5417.347714};
+    private double[] DISTANCE = new double[]{1.901766083, 2.310501969, 3.137942909, 4.573503095, 6.597244189, 7.3940, 7.394777626, 8.012866039, 8.780491971, 10.71451055, 10.715, 11.67940127};
+    private double[] HOOD = new double[]{-235.6041718, -194.8951874, -177.2308197, -134.8553925, -111.3584442, -112.6201859, -78.07411194, -72.45451355, -63.16789246, -59.95329285, -93.8, -93.8};
+    private double[] FLYWHEEL = new double[]{1643.784083, 1882.776796, 1988.624347, 2498.950448, 2982.554941, 3014.254268, 4629.654212, 4608.690124, 5493.781097, 5643.453423, 5736.983746, 5736.983746};
 
     private final double HEXAGON_HEIGHT = 2.49;
     private final double VISION_TARGET_HEIGHT = 2.30;

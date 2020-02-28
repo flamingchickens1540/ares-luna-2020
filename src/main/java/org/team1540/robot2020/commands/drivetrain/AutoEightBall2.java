@@ -55,7 +55,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
                                                 new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
                                                 new Pose2d(-4, -.8, new Rotation2d(Math.PI))
                                         ),
-                                        1.25,
+                                        1.75,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
                                 ),
@@ -65,7 +65,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
                                                 new Pose2d(-4, -.8, new Rotation2d(Math.PI)),
                                                 new Pose2d(-2, 0.5, new Rotation2d(Math.toRadians(-150)))
                                         ),
-                                        RamseteConfig.kMaxSpeedMetersPerSecond,
+                                        2.5,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         true, localizationManager, driveTrain
                                 ),
@@ -86,7 +86,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
                                                 new Pose2d(-1.7, 0.5, new Rotation2d(Math.toRadians(130))).plus(new Transform2d(new Pose2d(), new Pose2d(0.65, 0, new Rotation2d()))),
                                                 new Pose2d(-0.5, 0, new Rotation2d(Math.PI))
                                         ),
-                                        RamseteConfig.kMaxSpeedMetersPerSecond,
+                                        2.5,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         true, localizationManager, driveTrain
                                 )
