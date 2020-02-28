@@ -86,7 +86,7 @@ public class LocalizationManager extends CommandBase {
         });
         limelightBlinkOnNotifier.setHandler(() -> {
             limelightBlinkState = !limelightBlinkState;
-            limelightBlinkOnNotifier.startSingle(limelightBlinkState ? 0.1 : 4);
+            limelightBlinkOnNotifier.startSingle(limelightBlinkState ? 0.1 : 2);
         });
         limelightBlinkOnNotifier.startSingle(0.00001);
 

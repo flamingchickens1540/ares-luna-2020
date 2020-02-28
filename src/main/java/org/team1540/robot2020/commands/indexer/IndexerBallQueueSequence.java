@@ -31,7 +31,7 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
                                         new ConditionalCommand(
                                                 sequence(
                                                         new IndexerBallsToTop(indexer, Indexer.secondIndexingSpeed),
-                                                        indexer.commandPercent(Indexer.secondIndexingSpeed).withTimeout(0.1)
+                                                        indexer.commandPercent(Indexer.secondIndexingSpeed).withTimeout(0.05)
                                                 ),
                                                 new InstCommand(), indexer::getShooterStagedSensor
                                         )

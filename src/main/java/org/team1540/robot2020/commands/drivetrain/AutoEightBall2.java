@@ -3,6 +3,7 @@ package org.team1540.robot2020.commands.drivetrain;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.team1540.robot2020.LocalizationManager;
@@ -31,6 +32,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
         this.localizationManager = localizationManager;
         addCommands(
                 new InstCommand(() -> {
+                    SmartDashboard.putString("AutoSelector/SelectedAuto", "EightBall");
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
@@ -40,7 +42,7 @@ public class AutoEightBall2 extends SequentialCommandGroup {
                                 new InstCommand(() -> hood.zeroFlag = false)
                         ),
                         new InstCommand(),
-                        () -> hood.zeroFlag
+                        () -> true
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
                 race(

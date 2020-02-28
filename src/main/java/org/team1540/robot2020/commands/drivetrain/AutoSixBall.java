@@ -32,6 +32,7 @@ public class AutoSixBall extends SequentialCommandGroup {
         SmartDashboard.putBoolean("AutoSixBall/driveUpClose", true);
         addCommands(
                 new InstCommand(() -> {
+                    SmartDashboard.putString("AutoSelector/SelectedAuto", "SixBall");
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
@@ -41,7 +42,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                                 new InstCommand(() -> hood.zeroFlag = false)
                         ),
                         new InstCommand(),
-                        () -> hood.zeroFlag
+                        () -> true
                 ),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 3),
                 race(

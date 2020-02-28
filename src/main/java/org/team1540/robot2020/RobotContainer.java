@@ -28,9 +28,12 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
+import static java.util.Map.entry;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
@@ -39,7 +42,6 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
-    private Command autonomous;
 
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
@@ -54,7 +56,55 @@ public class RobotContainer {
     private Climber climber = new Climber();
     private RevBlinken leds = new RevBlinken(0);
 
+    private enum CommandSelector {
+        THREE(3), SIX(6), EIGHT(8);
+
+        @SuppressWarnings("MemberName")
+        public final int value;
+        @SuppressWarnings("PMD.UseConcurrentHashMap")
+        private static final Map<Integer, CommandSelector> map = new HashMap<>();
+
+        CommandSelector(int value) {
+            this.value = value;
+        }
+
+        static {
+            for (CommandSelector autoCommand : CommandSelector.values()) {
+                map.put(autoCommand.value, autoCommand);
+            }
+        }
+
+        public static CommandSelector of(int key) {
+            if (!map.containsKey(key)) return CommandSelector.THREE;
+            return map.get(key);
+        }
+    }
+
+    // An example selector method for the selectcommand.  Returns the selector that will select
+    // which command to run.  Can base this choice on logical conditions evaluated at runtime.
+    private CommandSelector select() {
+        int smartDashboardAutoSelection = (int) SmartDashboard.getNumber("AutoSelector/SelectedBallNumber", 3);
+        return CommandSelector.of(smartDashboardAutoSelection);
+    }
+
     private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
+
+    // An example selectcommand.  Will select from the three commands based on the value returned
+    // by the selector method at runtime.  Note that selectcommand works on Object(), so the
+    // selector does not have to be an enum; it could be any desired type (string, integer,
+    // boolean, double...)
+    private final Command autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//            new SelectCommand(
+//                     Maps selector values to commands
+//                    Map.ofEntries(
+//                            entry(CommandSelector.THREE, new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)),
+//                            entry(CommandSelector.SIX, new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)),
+//                            entry(CommandSelector.EIGHT, new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController))
+//                    ),
+//                    this::select
+//            );
+//
+
 
     private PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
             driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
@@ -73,8 +123,10 @@ public class RobotContainer {
         localizationManager.schedule();
         localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
-        autonomous = new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+        SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", 3);
+
+//        autonomous = new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, true);
     }
 
     private void initButtonBindings() {
@@ -96,8 +148,8 @@ public class RobotContainer {
 
         // TODO: Delete this
         driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
-        driverController.getButton(B).cancelWhenPressed(intakeCommand);
-        driverController.getButton(X).cancelWhenPressed(ballQueueCommand);
+//        driverController.getButton(B).cancelWhenPressed(intakeCommand);
+//        driverController.getButton(X).cancelWhenPressed(ballQueueCommand);
 
         Trigger emergencyDisable = driverController.getButton(LEFT_BUMPER)
                 .and(driverController.getButton(RIGHT_BUMPER))
