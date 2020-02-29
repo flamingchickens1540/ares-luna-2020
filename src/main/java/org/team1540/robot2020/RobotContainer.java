@@ -28,7 +28,9 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
