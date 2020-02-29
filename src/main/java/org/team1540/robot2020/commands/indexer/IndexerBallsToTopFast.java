@@ -21,6 +21,7 @@ public class IndexerBallsToTopFast extends CommandBase {
 
     @Override
     public void execute() {
+        if (indexer.getShooterStagedSensor()) return;
         if (indexer.getAlmostShooterStagedSensor()) {
             indexer.setPercent(slowSpeed);
         } else {
