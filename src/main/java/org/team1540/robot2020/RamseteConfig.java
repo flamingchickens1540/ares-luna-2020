@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
 public class RamseteConfig {
-//    Calculated in frc-characterization
+    //    Calculated in frc-characterization
     public static final double ksVolts = 0.127;
     public static final double kvVoltSecondsPerMeter = 2.6;
     public static final double kaVoltSecondsSquaredPerMeter = 0.292;
