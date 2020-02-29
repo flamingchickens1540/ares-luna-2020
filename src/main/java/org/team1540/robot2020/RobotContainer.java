@@ -28,9 +28,7 @@ import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
@@ -41,11 +39,12 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
-
+    Command threeBallAutonomous;
+    Command sixBallAutonomous;
+    Command eightBallAutonomous;
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
     private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
-
     private DriveTrain driveTrain = new DriveTrain();
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
@@ -54,6 +53,9 @@ public class RobotContainer {
     private Hood hood = new Hood();
     private Climber climber = new Climber();
     private RevBlinken leds = new RevBlinken(0);
+
+    private final int defaultAuto = 6; // TODO: DANGER! This only sets the smartdashboard value. Not the switch case.
+
 
     private enum CommandSelector {
         THREE(3), SIX(6), EIGHT(8);
@@ -122,7 +124,7 @@ public class RobotContainer {
         localizationManager.schedule();
         localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
-        SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", 3);
+        SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", defaultAuto);
 
 //        autonomous = new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
 //        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, true);
