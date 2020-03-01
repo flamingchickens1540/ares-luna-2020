@@ -9,62 +9,83 @@ package org.team1540.robot2020;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.apache.log4j.Logger;
 
 public class Robot extends TimedRobot {
-  private static final Logger logger = Logger.getLogger(Robot.class);
 
-  private RobotContainer container;
+    private static final Logger logger = Logger.getLogger(Robot.class);
 
-  @Override
-  public void robotInit() {
-    logger.info("Initializing FRC Team 1540 Ares/Luna Robot Code...");
-    var start = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
+    private RobotContainer container;
 
-    container = new RobotContainer();
+    @Override
+    public void robotInit() {
+        logger.info("Initializing FRC Team 1540 Ares/Luna Robot Code...");
+        var start = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
 
-    logger.info("Setting up command logging hooks...");
-    CommandScheduler.getInstance().onCommandInitialize(command -> {
-      logger.debug("Starting command: " + command.getName() + " " + command.getRequirements());
-    });
-    CommandScheduler.getInstance().onCommandFinish(command -> {
-      logger.debug("Command finished: " + command.getName());
-    });
-    CommandScheduler.getInstance().onCommandInterrupt(command -> {
-      logger.debug("Command interrupted: " + command.getName());
-    });
+        container = new RobotContainer();
 
-    var end = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
-    logger.info("Robot ready. (" + (end - start) + "ms)");
-  }
+        logger.info("Setting up command logging hooks...");
+        CommandScheduler.getInstance().onCommandInitialize(command -> {
+            logger.debug("Starting command: " + command.getName() + " - Requires: " + command.getRequirements());
+        });
+        CommandScheduler.getInstance().onCommandFinish(command -> {
+            logger.debug("Command finished: " + command.getName());
+        });
+        CommandScheduler.getInstance().onCommandInterrupt(command -> {
+            logger.debug("Command interrupted: " + command.getName());
+        });
 
-  @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
+        var end = RobotController.getFPGATime() / 1000.0; // getFPGATime returns microseconds
+        logger.info("Robot ready. (" + (end - start) + "ms)");
+    }
 
-  @Override
-  public void disabledInit() {
-  }
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
-  @Override
-  public void disabledPeriodic() {
-  }
+    @Override
+    public void disabledInit() {
+    }
 
-  @Override
-  public void autonomousInit() {
-  }
+    @Override
+    public void disabledPeriodic() {
+    }
 
-  @Override
-  public void autonomousPeriodic() {
-  }
+    @Override
+    public void autonomousInit() {
+        Command m_autonomousCommand = container.getAutoCommand();
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.schedule();
+        }
+    }
 
-  @Override
-  public void teleopInit() {
-  }
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-  @Override
-  public void teleopPeriodic() {
-  }
+    @Override
+    public void teleopInit() {
+        container.zeroHoodIfFlag(false);
+    }
+
+    @Override
+    public void teleopPeriodic() {
+    }
+
+    @Override
+    public void testInit() {
+        // *** Disable LiveWindow and ActuatorWidgets so testInit is just like teleopInit
+        LiveWindow.setEnabled(false);
+        Shuffleboard.disableActuatorWidgets();
+        // ***
+    }
+
+    @Override
+    public void testPeriodic() {
+    }
 }
