@@ -2,31 +2,25 @@ package org.team1540.robot2020.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class IndexerBallsToTopFast extends CommandBase {
+public class IndexerBallsUpToTop extends CommandBase {
     private Indexer indexer;
     private double slowSpeed;
-    private double fastSpeed;
 
-    public IndexerBallsToTopFast(Indexer indexer, double slowSpeed, double fastSpeed) {
+    public IndexerBallsUpToTop(Indexer indexer, double slowSpeed) {
         this.indexer = indexer;
         this.slowSpeed = slowSpeed;
-        this.fastSpeed = fastSpeed;
         addRequirements(indexer);
     }
 
     @Override
     public void initialize() {
-        indexer.getShooterStagedSensor();
+
     }
 
     @Override
     public void execute() {
         if (indexer.getShooterStagedSensor()) return;
-        if (indexer.getAlmostShooterStagedSensor()) {
-            indexer.setPercent(slowSpeed);
-        } else {
-            indexer.setPercent(fastSpeed);
-        }
+        indexer.setPercent(slowSpeed);
     }
 
     @Override

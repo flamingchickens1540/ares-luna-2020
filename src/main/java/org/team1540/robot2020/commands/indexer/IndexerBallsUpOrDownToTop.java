@@ -2,12 +2,12 @@ package org.team1540.robot2020.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class IndexerBallsToTop extends CommandBase {
+public class IndexerBallsUpOrDownToTop extends CommandBase {
     private Indexer indexer;
     private double speed;
     private boolean shooterInitiallyStaged;
 
-    public IndexerBallsToTop(Indexer indexer, double speed) {
+    public IndexerBallsUpOrDownToTop(Indexer indexer, double speed) {
         this.indexer = indexer;
         this.speed = speed;
         addRequirements(indexer);

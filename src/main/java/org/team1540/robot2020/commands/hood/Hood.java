@@ -32,6 +32,8 @@ public class Hood extends SubsystemBase {
         updatePIDs();
 
         NetworkTableInstance.getDefault().getTable("SmartDashboard/hood/tuning").addEntryListener((table, key, entry, value, flags) -> updatePIDs(), EntryListenerFlags.kUpdate);
+
+        SmartDashboard.putBoolean("hood/flag", zeroFlag);
     }
 
     @Override
@@ -40,6 +42,8 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("hood/current", hoodMotor.getOutputCurrent());
         SmartDashboard.putBoolean("hood/limitSwitch", limitSwitch.get());
         SmartDashboard.putNumber("hood/error", hoodEncoder.getPosition() - lastSetpoint); // https://trello.com/c/xymF8avF/84-get-closed-loop-error-function
+
+        SmartDashboard.putBoolean("hood/flag", zeroFlag);
     }
 
     public void stop() {

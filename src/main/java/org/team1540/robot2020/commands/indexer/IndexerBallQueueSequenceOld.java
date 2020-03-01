@@ -15,7 +15,7 @@ public class IndexerBallQueueSequenceOld extends SequentialCommandGroup {
                                         new WaitUntilCommand(indexer::getShooterStagedSensor),
                                         // schedulecommand so that it immediately interrupts this command group even if we're moving a ball in from the funnel
                                         new ScheduleCommand(sequence(
-                                                new IndexerBallsToTop(indexer, Indexer.secondIndexingSpeed),
+                                                new IndexerBallsUpOrDownToTop(indexer, Indexer.secondIndexingSpeed),
                                                 indexer.commandPercent(Indexer.secondIndexingSpeed).withTimeout(0.1)
                                         ))
                                 ),

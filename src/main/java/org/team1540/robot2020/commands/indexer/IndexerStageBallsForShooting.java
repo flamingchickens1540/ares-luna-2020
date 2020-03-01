@@ -11,10 +11,10 @@ public class IndexerStageBallsForShooting extends SequentialCommandGroup {
         addCommands(
                 new ConditionalCommand(
                         new InstCommand(),
-                        new IndexerBallsToTop(indexer, Indexer.firstIndexingSpeed),
+                        new IndexerBallsUpOrDownToTop(indexer, Indexer.firstIndexingSpeed),
                         indexer::getShooterStagedSensor
                 ),
-                new IndexerBallsToTop(indexer, Indexer.secondIndexingSpeed)
+                new IndexerBallsUpOrDownToTop(indexer, Indexer.secondIndexingSpeed)
         );
     }
 }
