@@ -190,6 +190,8 @@ public class LocalizationManager extends CommandBase {
 
         SmartDashboard.putNumber("localizationManager/angleRadians", navx.getAngleRadians());
         SmartDashboard.putNumber("localizationManager/yawRadians", navx.getYawRadians());
+        SmartDashboard.putNumber("localizationManager/pitchRadians", navx.getPitch());
+        SmartDashboard.putNumber("localizationManager/pitchDegrees", Math.toDegrees(navx.getPitch()));
         SmartDashboard.putBoolean("localizationManager/isLimelightTargetFound", limelight.isTargetFound());
         SmartDashboard.putBoolean("localizationManager/robotToTargetDistanceUseLidar", useLidarForDistanceEst());
         SmartDashboard.putNumber("localizationManager/robotToTargetDistanceLimelight", getLimelightDistance());
@@ -348,5 +350,9 @@ public class LocalizationManager extends CommandBase {
 
     public boolean isLinedUp() {
         return hasReachedPointGoal() && hasReachedShooterGoal() && hasReachedHoodGoal() && (isLimelightTargetFound() || getDistanceToSelectedTarget() < 2.3);
+    }
+
+    public NavX getNavx() {
+        return navx;
     }
 }

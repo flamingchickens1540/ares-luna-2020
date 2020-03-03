@@ -15,7 +15,6 @@ import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodManualControl;
-import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
@@ -41,12 +40,14 @@ public class RobotContainer {
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
+    private final SegwayDriveNoCallback segwayDrive;
     Command threeBallAutonomous;
     Command sixBallAutonomous;
     Command eightBallAutonomous;
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
     private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
+    private ChickenXboxController segwayController = new ChickenXboxController(3);
     private DriveTrain driveTrain = new DriveTrain();
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
@@ -116,6 +117,8 @@ public class RobotContainer {
 
     RobotContainer() {
         logger.info("Creating robot container...");
+
+        segwayDrive = new SegwayDriveNoCallback(localizationManager.getNavx(), driveTrain);
 
         initButtonBindings();
         initDefaultCommands();
@@ -219,17 +222,23 @@ public class RobotContainer {
                 distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
 
         distanceOffsetTestingController.getButton(A).toggleWhenPressed(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, true));
+
+        segwayController.getButton(A).whenPressed(new InstCommand(() -> {
+            System.out.println("Set balance point!");
+            segwayDrive.setBalancePoint();
+        }, true));
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
+        driveTrain.setDefaultCommand(segwayDrive);
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
         indexer.setDefaultCommand(indexer.commandStop().perpetually());
         shooter.setDefaultCommand(shooter.commandStop().perpetually());
-        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
+        hood.setDefaultCommand(hood.commandStop().perpetually());
+//        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
         climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 
