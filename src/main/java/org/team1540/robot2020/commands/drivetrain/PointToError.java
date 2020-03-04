@@ -36,7 +36,7 @@ public class PointToError extends CommandBase {
         this.testingMode = testingMode;
         this.useThrottle = useThrottle;
 
-        setPID(new PIDConfig(0.4, 0.07, 0.9, 0.008, 0.25, 0.013));
+        setPID(new PIDConfig(0.4, 0.07, 0.9, 0.008, 0.5, 0.02));
         addRequirements(driveTrain);
 
         SmartDashboard.putNumber("distanceCalibration/initialDistanceMeters", 0);
