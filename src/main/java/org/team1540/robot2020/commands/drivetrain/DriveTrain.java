@@ -2,6 +2,7 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +14,7 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 public class DriveTrain extends SubsystemBase {
 
     public static final double kTrackwidthMeters = 0.761388065;
+    public static final double driveTrueMaxSpeedMetersPerSecond = 4.5;
 
     private final double drivetrainTicksPerMeter = 49866;
 

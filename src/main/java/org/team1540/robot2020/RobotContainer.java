@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
+import static org.team1540.robot2020.utils.ChickenXboxController.XboxAxis.*;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
@@ -142,7 +143,8 @@ public class RobotContainer {
         Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
 
         // Driver
-        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
+//        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
+        driverController.getButton(LEFT_BUMPER).whileHeld(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false));
 
         driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
         Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);
@@ -150,7 +152,7 @@ public class RobotContainer {
         driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.raceWith(flywheelSpinUp));
 
         // TODO: Delete this
-        driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
+//        driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
 //        driverController.getButton(B).cancelWhenPressed(intakeCommand);
 //        driverController.getButton(X).cancelWhenPressed(ballQueueCommand);
 
@@ -195,7 +197,7 @@ public class RobotContainer {
         distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(shootSequenceTest::schedule));
 
         distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
+                distanceOffsetTestingController.getAxis(LEFT_Y).withDeadzone(0.1)));
 
         distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
 
@@ -224,7 +226,8 @@ public class RobotContainer {
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
 
-        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
+//        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
+        driveTrain.setDefaultCommand(new CurvatureDrive(driveTrain, driverController.getAxis(LEFT_X), driverController.getAxis(RIGHT_Y).inverted(), driverController.getButton(RIGHT_BUMPER)::get));
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
         indexer.setDefaultCommand(indexer.commandStop().perpetually());
