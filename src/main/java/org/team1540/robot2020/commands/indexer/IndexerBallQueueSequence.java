@@ -10,7 +10,16 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
         addRequirements(indexer, funnel);
         addCommands(
                 new ConditionalCommand( // only run if the top sensor isn't tripped
-                        new PrintCommand("Indexer not running because top sensor is tripped"),
+                        new ConditionalCommand(
+                                sequence(
+                                        new IndexerBallsToBottom(indexer, Indexer.secondIndexingSpeed),
+                                        new InstCommand(() -> {
+                                            if (repeat) new IndexerBallQueueSequence(indexer, funnel, true).schedule();
+                                        })
+                                ),
+                                new InstCommand(),
+                                indexer::getIndexerDefinitelyStagedSensor
+                        ),
                         race(
                                 new FunnelRun(funnel),
                                 sequence(
@@ -22,8 +31,7 @@ public class IndexerBallQueueSequence extends SequentialCommandGroup {
                                                         new InstantCommand(() -> {
                                                             indexer.ballAdded();
                                                             // not a schedulecommand to avoid stack overflow on init
-                                                            if (repeat)
-                                                                new IndexerBallQueueSequence(indexer, funnel, true).schedule();
+                                                            if (repeat) new IndexerBallQueueSequence(indexer, funnel, true).schedule();
                                                         })
                                                 ),
                                                 new WaitUntilCommand(indexer::getShooterStagedSensor)

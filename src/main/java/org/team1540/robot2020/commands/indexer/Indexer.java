@@ -21,6 +21,7 @@ public class Indexer extends SubsystemBase {
     private TalonFX indexerMotor = new TalonFX(8);
 
     private DigitalInput indexerStagedSensor = new DigitalInput(0);
+    private DigitalInput indexerDefinitelyStagedSensor = new DigitalInput(7);
     private DigitalInput shooterStagedSensor = new DigitalInput(1);
     private DigitalInput almostShooterStagedSensor = new DigitalInput(3);
 
@@ -101,6 +102,10 @@ public class Indexer extends SubsystemBase {
 
     public boolean getIndexerStagedSensor() {
         return !indexerStagedSensor.get();
+    }
+
+    public boolean getIndexerDefinitelyStagedSensor() {
+        return !indexerDefinitelyStagedSensor.get();
     }
 
     public boolean getShooterStagedSensor() {
