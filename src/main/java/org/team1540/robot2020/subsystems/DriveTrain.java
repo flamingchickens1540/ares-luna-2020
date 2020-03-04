@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.team1540.robot2020.shouldbeinrooster.*;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.ChickenTalon;
@@ -84,12 +86,12 @@ public class DriveTrain extends SubsystemBase {
 
         initEncoders();
 
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftA, 0, "driveLeftA"));
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftB, 1, "driveLeftB"));
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftC, 2, "driveLeftC"));
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightA, 3, "driveRightA"));
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightB, 4, "driveRightB"));
-        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightC, 5, "driveRightC"));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftA, 0));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftB, 1));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorLeftC, 2));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightA, 3));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightB, 4));
+        MotorTesting.getInstance().addMotor(new GenericMotor(driveMotorRightC, 5));
 
     }
 
@@ -230,5 +232,9 @@ public class DriveTrain extends SubsystemBase {
 
     public double getNavxOffset() {
         return navxOffset;
+    }
+
+    public Command commandStop(){
+        return new InstantCommand(this::stop, this);
     }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
@@ -17,9 +18,6 @@ import org.team1540.robot2020.subsystems.CargoMech;
 import org.team1540.robot2020.subsystems.DriveTrain;
 import org.team1540.rooster.util.ChickenXboxController;
 import org.team1540.rooster.wrappers.NavX;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RobotContainer {
 
@@ -61,7 +59,20 @@ public class RobotContainer {
     }
 
     public void testMotors() {
-        MotorTesting.getInstance().testMotors(test.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y));
+        MotorTesting motorTesting = MotorTesting.getInstance();
+        test.getButton(ChickenXboxController.XboxButton.RB).whenPressed(() -> {
+            if (motorTesting.hasMotor(motorTesting.testIndex + 1)) {
+                motorTesting.testIndex++;
+                motorTesting.indexToShuffleboard();
+            }
+        });
+        test.getButton(ChickenXboxController.XboxButton.LB).whenPressed(() -> {
+            if (motorTesting.testIndex != 0) {
+                motorTesting.testIndex--;
+                motorTesting.indexToShuffleboard();
+            }
+        });
+        MotorTesting.getInstance().testMotors(test.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y).withDeadzone(0.1));
     }
 
     private void initButtonBindings() {
@@ -89,6 +100,9 @@ public class RobotContainer {
             // enable brakes
             logger.info("Mechanism brakes enabled");
         });
+        Command tankDrive = new TankDrive(driveTrain, driver);
+        enabled.whenActive(tankDrive);
+        disabled.cancelWhenActive(tankDrive);
 
         disabled.whenActive(new WaitCommand(2)
             .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
@@ -100,6 +114,8 @@ public class RobotContainer {
     }
 
     private void initDefaultCommands() {
+        driveTrain.setDefaultCommand(driveTrain.commandStop().perpetually());
+        cargoMech.setDefaultCommand(cargoMech.commandStop().perpetually());
 //        driveTrain.setDefaultCommand(new TankDrive(driveTrain, driver));
 //        cargoMech.setDefaultCommand(new CargoMechManualControl(cargoMech, copilot.getAxis(ChickenXboxController.XboxAxis.RIGHT_Y)));
     }
@@ -107,5 +123,4 @@ public class RobotContainer {
     public Command getAutoCommand() {
         return new Autonomous(driveTrain, cargoMech, driver);
     }
-
 }
