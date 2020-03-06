@@ -40,7 +40,7 @@ public class PointDrive extends CommandBase {
         SmartDashboard.putNumber("pointDrive/P", 0.3);
         SmartDashboard.putNumber("pointDrive/I", 0);
         SmartDashboard.putNumber("pointDrive/D", 0);
-        SmartDashboard.putNumber("pointDrive/max", 0.45);
+        SmartDashboard.putNumber("pointDrive/max", 1);
         SmartDashboard.putNumber("pointDrive/min", 0);
         SmartDashboard.putNumber("pointDrive/deadzone", 0);
         SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 1.6);

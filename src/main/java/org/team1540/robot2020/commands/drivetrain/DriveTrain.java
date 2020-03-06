@@ -12,7 +12,7 @@ import org.team1540.robot2020.utils.MotorConfigUtils;
 
 public class DriveTrain extends SubsystemBase {
 
-    public static final double kTrackwidthMeters = 0.761388065;
+    public static final double kTrackwidthMeters = .706032166; //0.761388065;
 
     private final double drivetrainTicksPerMeter = 49866;
 

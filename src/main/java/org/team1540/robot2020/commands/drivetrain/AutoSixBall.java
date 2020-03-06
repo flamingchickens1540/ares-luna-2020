@@ -1,5 +1,7 @@
 package org.team1540.robot2020.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,6 +38,7 @@ public class AutoSixBall extends SequentialCommandGroup {
                     climber.zero();
                     climber.setRatchet(Climber.RatchetState.DISENGAGED);
                 }),
+                driveTrain.commandStop(),
                 new ConditionalCommand(
                         sequence(
                                 new HoodZeroSequence(hood).asProxy(),
@@ -50,35 +53,35 @@ public class AutoSixBall extends SequentialCommandGroup {
                         new IntakeRun(intake, 7000),
                         loop(new IndexerBallQueueSequence(indexer, funnel, false)),
                         sequence(
-                                new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-120))), Math.toRadians(20)),
+                                new PointToRotation(driveTrain, localizationManager, new Pose2d(0, 0, new Rotation2d(Math.toRadians(-170))), Math.toRadians(10)),
                                 new ChickenRamseteCommand(
                                         this::getStartingPose,
                                         () -> List.of(
-                                                new Pose2d(0, 0, new Rotation2d(Math.toRadians(-120))),
-                                                new Pose2d(-2, -.8, new Rotation2d(Math.PI)),
-                                                new Pose2d(-4, -.8, new Rotation2d(Math.PI))
+                                                new Pose2d(0, 0, new Rotation2d(Math.toRadians(-170))),
+                                                new Pose2d(-2, -.6, new Rotation2d(Math.PI)),
+                                                new Pose2d(-4, -.6, new Rotation2d(Math.PI))
                                         ),
 //                                        RamseteConfig.kMaxSpeedMetersPerSecond,
                                         1.25,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
-                                )
+                                ),
+                                new ConditionalCommand(sequence(
+                                        new PointToRotation(driveTrain, localizationManager, new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))), Math.toRadians(10)),
+                                        new ChickenRamseteCommand(
+                                                this::getStartingPose,
+                                                () -> List.of(
+                                                        new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))),
+                                                        new Pose2d(0, 0, new Rotation2d(Math.toRadians(10)))
+                                                ),
+                                                RamseteConfig.kMaxSpeedMetersPerSecond,
+//                                1.25,
+                                                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
+                                                false, localizationManager, driveTrain
+                                        )
+                                ), new InstCommand(), () -> SmartDashboard.getBoolean("AutoSixBall/driveUpClose", true))
                         )
                 ),
-                new ConditionalCommand(sequence(
-                        new PointToRotation(driveTrain, localizationManager, new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))), Math.toRadians(10)),
-                        new ChickenRamseteCommand(
-                                this::getStartingPose,
-                                () -> List.of(
-                                        new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))),
-                                        new Pose2d(0, 0, new Rotation2d(Math.toRadians(10)))
-                                ),
-                                RamseteConfig.kMaxSpeedMetersPerSecond,
-//                                1.25,
-                                RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
-                                false, localizationManager, driveTrain
-                        )
-                ), new InstCommand(), () -> SmartDashboard.getBoolean("AutoSixBall/driveUpClose", true)),
                 new AutoShootNBalls(3, driveTrain, intake, funnel, indexer, shooter, hood, localizationManager, driverController, 6)
         );
     }
@@ -88,6 +91,7 @@ public class AutoSixBall extends SequentialCommandGroup {
         Pose2d startingPose = localizationManager.odometryGetPose();
         this.startingPose = new Pose2d(startingPose.getTranslation(), new Rotation2d());
         super.initialize();
+
     }
 
     private Pose2d getStartingPose() {
