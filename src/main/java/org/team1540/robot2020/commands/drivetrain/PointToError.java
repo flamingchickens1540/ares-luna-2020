@@ -1,5 +1,6 @@
 package org.team1540.robot2020.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.LocalizationManager;
@@ -25,6 +26,8 @@ public class PointToError extends CommandBase {
     private PIDConfig config;
     private boolean testingMode;
     private boolean useThrottle;
+
+    private Notifier notifier = new Notifier(this::run);
 
 
     public PointToError(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Double> errorSupplier, ChickenXboxController driver, boolean testingMode, boolean useThrottle) {
@@ -54,6 +57,7 @@ public class PointToError extends CommandBase {
         double C = SmartDashboard.getNumber("pointToTarget/C", 0);
         config = new PIDConfig(p, i, d, IMax, outputMax, C);
         setPID(config);
+        notifier.startPeriodic(0.01);
     }
 
     private void setPID(PIDConfig config) {
@@ -71,6 +75,9 @@ public class PointToError extends CommandBase {
 
     @Override
     public void execute() {
+    }
+
+    private void run() {
         double leftMotors = 0;
         double rightMotors = 0;
 
@@ -84,7 +91,7 @@ public class PointToError extends CommandBase {
             double throttle = useThrottle ? throttleAxis.withDeadzone(0.2).value(): 0;
             leftMotors += throttle;
             rightMotors += throttle;
-            double actualCValue = Math.abs(throttle) > 0.2 ? 0 : config.c;
+            double actualCValue = (Math.abs(throttle) > 0.2 || localizationManager.hasReachedPointGoal()) ? 0 : config.c;
             SmartDashboard.putNumber("pointToTarget/actualCValue", actualCValue);
             pointController.setC(actualCValue);
         }
@@ -100,6 +107,7 @@ public class PointToError extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        notifier.stop();
         localizationManager.forceLimelightLedsOn(false);
     }
 }
