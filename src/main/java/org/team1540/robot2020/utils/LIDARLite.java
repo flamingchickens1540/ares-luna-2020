@@ -20,18 +20,18 @@ public class LIDARLite {
         I2CJNI.i2CInitialize(m_port);
     }
 
-    public void startMeasuring() {
+    public synchronized void startMeasuring() {
         writeRegister(0x04, 0x08 | 32); // Enable reference filter, averages 8 reference measurements for increased consistency
         writeRegister(0x11, 0xff); // Indefinite repetitions after initial distance measurement command
         writeRegister(0x00, 0x04); // Start measuring
     }
 
-    public void stopMeasuring() {
+    public synchronized void stopMeasuring() {
         writeRegister(0x11, 0x00); // One measurement per distance measurement command. (Terminate the previous 0xff to register 0x11)
     }
 
     // TODO document that this returns inches or whatever?
-    public double getDistance() {
+    public synchronized double getDistance() {
         return filter.calculate(UnitsUtils.inchesToMeters(getRawDistance()));
     }
 

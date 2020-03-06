@@ -119,7 +119,7 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putData("localizationManager/zeroYaw", zeroNavxCommand);
     }
 
-    public void setOnNavxZeroCallback(Runnable onNavxZero) {
+    public synchronized void setOnNavxZeroCallback(Runnable onNavxZero) {
         this.onNavxZero = onNavxZero;
     }
 
@@ -127,7 +127,7 @@ public class LocalizationManager extends CommandBase {
         lidar.startMeasuring();
     }
 
-    private void updateOdomToHexagonTransform() {
+    private synchronized void updateOdomToHexagonTransform() {
         SmartDashboard.putBoolean("localizationManager/isAcceptingLimelight", acceptLimelight);
         boolean lookingAtCorrectTarget = Math.abs(getYawRadians()) < Math.PI / 2;
         SmartDashboard.putBoolean("localizationManager/isLookingAtCorrectTarget", lookingAtCorrectTarget);
@@ -145,16 +145,16 @@ public class LocalizationManager extends CommandBase {
         return limelight.isTargetFound();
     }
 
-    public void ignoreLimelight(boolean state) {
+    public synchronized void ignoreLimelight(boolean state) {
         acceptLimelight = !state;
     }
 
     @NotNull
-    private Transform3D getOdomToRobot() {
+    private synchronized Transform3D getOdomToRobot() {
         return new Transform3D(odometry.getPoseMeters().getTranslation().getX(), odometry.getPoseMeters().getTranslation().getY(), odometry.getPoseMeters().getRotation().getRadians());
     }
 
-    public boolean useLidarForDistanceEst() {
+    public synchronized boolean useLidarForDistanceEst() {
         if (!isLimelightTargetFound()) return false;
         double limelightAngle = Math.abs(limelight.getTargetAngles().getX());
 
@@ -218,7 +218,7 @@ public class LocalizationManager extends CommandBase {
         setRobotLEDs();
     }
 
-    public void putTransform(Transform3D transform3D, String prefix) {
+    public synchronized void putTransform(Transform3D transform3D, String prefix) {
         if (transform3D == null) return;
         Vector3D position = transform3D.getPosition();
         SmartDashboard.putNumber(prefix + "/X", position.getX());
@@ -231,7 +231,7 @@ public class LocalizationManager extends CommandBase {
         SmartDashboard.putNumber(prefix + "/xyMagnitude", new Vector2D(position.getX(), position.getY()).getNorm());
     }
 
-    private void updateOdometry() {
+    private synchronized void updateOdometry() {
         odometry.update(new Rotation2d(navx.getYawRadians()), driveTrain.getDistanceLeft(), driveTrain.getDistanceRight());
     }
 
@@ -240,16 +240,16 @@ public class LocalizationManager extends CommandBase {
         return true;
     }
 
-    public void resetOdometry(Pose2d pose) {
+    public synchronized void resetOdometry(Pose2d pose) {
         odometry.resetPosition(pose, new Rotation2d(navx.getYawRadians()));
     }
 
-    public Pose2d odometryGetPose() {
+    public synchronized Pose2d odometryGetPose() {
         return odometry.getPoseMeters();
     }
 
     @Nullable
-    public Transform3D getRobotToHexagonTransform() {
+    public synchronized Transform3D getRobotToHexagonTransform() {
         if (odomToHexagon == null) return null;
         return getOdomToRobot().negate().add(odomToHexagon);
     }
@@ -279,7 +279,7 @@ public class LocalizationManager extends CommandBase {
         return navx.getYawRadians();
     }
 
-    public boolean getLimelightLEDState() {
+    public synchronized boolean getLimelightLEDState() {
         if (RobotState.isDisabled()) return limelightBlinkState;
         if (forceLimelightLEDOn || getRobotToHexagonTransform() == null) return true;
         double x = getRobotToHexagonTransform().getPosition().getX();
@@ -295,11 +295,11 @@ public class LocalizationManager extends CommandBase {
         }
     }
 
-    public void forceLimelightLedsOn(boolean state) {
+    public synchronized void forceLimelightLedsOn(boolean state) {
         forceLimelightLEDOn = state;
     }
 
-    public double getDistanceToSelectedTarget() {
+    public synchronized double getDistanceToSelectedTarget() {
         Transform3D robotToRearHoleTransform = getSelectedTarget();
         if (robotToRearHoleTransform == null) return 4; // default m
         Vector3D position = robotToRearHoleTransform.getPosition();
@@ -309,11 +309,11 @@ public class LocalizationManager extends CommandBase {
 
     private boolean selectedInnerPort = false;
 
-    public Transform3D getSelectedTarget() {
+    public synchronized Transform3D getSelectedTarget() {
         return selectedInnerPort ? getRobotToRearHoleTransform() : getRobotToHexagonTransform();
     }
 
-    public void selectTarget() {
+    public synchronized void selectTarget() {
         selectedInnerPort = shouldTargetInnerPort();
     }
 
@@ -335,7 +335,7 @@ public class LocalizationManager extends CommandBase {
     }
 
     public boolean hasReachedPointGoal() {
-        return Math.abs(Math.toDegrees(getRate())) < 3 && Math.abs(Math.toDegrees(getPointErrorForSelectedGoal())) < 0.3;
+        return Math.abs(Math.toDegrees(getRate())) < 20 && Math.abs(getPointErrorForSelectedGoal()) < MathUtil.clamp(Math.atan(0.06 / getDistanceToSelectedTarget()), Math.toRadians(0.5), Math.toRadians(3));
     }
 
     public boolean hasReachedShooterGoal() {
