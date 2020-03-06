@@ -38,6 +38,8 @@ public class DriveTrain extends SubsystemBase {
             talon.configNeutralDeadband(0.01);
 
             talon.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 90, 0, 0), 50);
+            talon.enableVoltageCompensation(true);
+            talon.configVoltageCompSaturation(10);
         }
 
         for (ChickenTalonFX talon : driveMotorLefts) {
