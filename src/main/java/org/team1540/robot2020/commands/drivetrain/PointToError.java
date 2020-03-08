@@ -1,6 +1,7 @@
 package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.team1540.robot2020.LocalizationManager;
@@ -29,6 +30,7 @@ public class PointToError extends CommandBase {
 
     private Notifier notifier = new Notifier(this::run);
 
+    private SlewRateLimiter throttleRateLimiter;
 
     public PointToError(DriveTrain driveTrain, LocalizationManager localizationManager, Supplier<Double> errorSupplier, ChickenXboxController driver, boolean testingMode, boolean useThrottle) {
         this.localizationManager = localizationManager;
@@ -55,6 +57,7 @@ public class PointToError extends CommandBase {
         double IMax = SmartDashboard.getNumber("pointToTarget/IMax", 0);
         double outputMax = SmartDashboard.getNumber("pointToTarget/outputMax", 0);
         double C = SmartDashboard.getNumber("pointToTarget/C", 0);
+        throttleRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("pointDrive/throttleRateLimiter", 0));
         config = new PIDConfig(p, i, d, IMax, outputMax, C);
         setPID(config);
         notifier.startPeriodic(0.01);
@@ -88,7 +91,7 @@ public class PointToError extends CommandBase {
             leftMotors += triggerValues;
             rightMotors -= triggerValues;
         } else {
-            double throttle = useThrottle ? throttleAxis.withDeadzone(0.2).value(): 0;
+            double throttle = useThrottle ? throttleRateLimiter.calculate(throttleAxis.withDeadzone(0.15).value()) : 0;
             leftMotors += throttle;
             rightMotors += throttle;
             double actualCValue = (Math.abs(throttle) > 0.2 || localizationManager.hasReachedPointGoal()) ? 0 : config.c;
