@@ -43,7 +43,7 @@ public class PointDrive extends CommandBase {
         SmartDashboard.putNumber("pointDrive/max", 1);
         SmartDashboard.putNumber("pointDrive/min", 0);
         SmartDashboard.putNumber("pointDrive/deadzone", 0);
-        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 1.6);
+        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 2);
 
         pointController = new MiniPID(0, 0, 0);
         resetNavXButton.whenPressed(this::zeroAngle);
