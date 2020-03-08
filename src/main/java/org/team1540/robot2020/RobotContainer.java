@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
-import org.team1540.robot2020.commands.drivetrain.*;
+import org.team1540.robot2020.commands.drivetrain.AutoSixBall;
+import org.team1540.robot2020.commands.drivetrain.DriveTrain;
+import org.team1540.robot2020.commands.drivetrain.LineUpSequence;
+import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
@@ -20,6 +23,7 @@ import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.*;
 import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
+import org.team1540.robot2020.commands.shooter.ShootRapid;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
@@ -146,8 +150,8 @@ public class RobotContainer {
 
         driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
         Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);
-        CommandGroupBase shootSequence = new ShootOneBall(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
-        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.raceWith(flywheelSpinUp));
+        Command shootSequence = new ShootRapid(intake, funnel, indexer, localizationManager, localizationManager::isLinedUp);
+        driverController.getButton(LEFT_BUMPER).whileHeld(shootSequence.alongWith(flywheelSpinUp));
 
         // TODO: Delete this
         driverController.getButton(RIGHT_BUMPER).whenPressed(intakeCommand);
