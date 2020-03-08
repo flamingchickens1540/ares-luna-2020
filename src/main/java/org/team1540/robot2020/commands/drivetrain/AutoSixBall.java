@@ -1,7 +1,5 @@
 package org.team1540.robot2020.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,8 +59,8 @@ public class AutoSixBall extends SequentialCommandGroup {
                                                 new Pose2d(-2, -.6, new Rotation2d(Math.PI)),
                                                 new Pose2d(-4, -.6, new Rotation2d(Math.PI))
                                         ),
-//                                        RamseteConfig.kMaxSpeedMetersPerSecond,
-                                        1.25,
+                                        RamseteConfig.kMaxSpeedMetersPerSecond,
+//                                        ,
                                         RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                         false, localizationManager, driveTrain
                                 ),
@@ -71,11 +69,11 @@ public class AutoSixBall extends SequentialCommandGroup {
                                         new ChickenRamseteCommand(
                                                 this::getStartingPose,
                                                 () -> List.of(
-                                                        new Pose2d(-4, -.8, new Rotation2d(Math.toRadians(10))),
+                                                        new Pose2d(-4, -.81, new Rotation2d(Math.toRadians(10))),
                                                         new Pose2d(0, 0, new Rotation2d(Math.toRadians(10)))
                                                 ),
-                                                RamseteConfig.kMaxSpeedMetersPerSecond,
-//                                1.25,
+//                                                RamseteConfig.kMaxSpeedMetersPerSecond,
+                                                3,
                                                 RamseteConfig.kMaxAccelerationMetersPerSecondSquared,
                                                 false, localizationManager, driveTrain
                                         )
