@@ -139,7 +139,7 @@ public class RobotContainer {
 
         // Commands
         Command ballQueueCommand = new IndexerBallQueueSequence(indexer, funnel, true);
-        Command intakeCommand = new IntakeRun(intake, 7000).alongWith(new ScheduleCommand(ballQueueCommand));
+        Command intakeCommand = intake.commandPercent(1).alongWith(new ScheduleCommand(ballQueueCommand));
 
         // Driver
         driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
