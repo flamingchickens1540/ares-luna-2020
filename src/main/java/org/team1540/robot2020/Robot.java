@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.*;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.shouldbeinrooster.InstCommand;
 import org.team1540.robot2020.shouldbeinrooster.MotorTesting;
+
+import java.util.concurrent.locks.Condition;
 
 public class Robot extends TimedRobot {
 
@@ -54,9 +56,21 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        container.getTankDrive().end(false);
+        Command testMotorCommand = MotorTesting.getInstance().testMotorCommand;
+        if (testMotorCommand != null) {
+            testMotorCommand.schedule();
+        }
         if (configMotorsFlag) {
-            container.configMotors();
             configMotorsFlag = false;
+            new SequentialCommandGroup(
+                    new ConditionalCommand(
+                            new WaitUntilCommand(() -> MotorTesting.getInstance().testMotorCommand.isFinished()),
+                            new InstCommand(true),
+                            () -> MotorTesting.getInstance().testMotorCommand != null
+                    ),
+                    new InstCommand(container::configMotors, true)
+            ).schedule();
         }
     }
 
@@ -66,6 +80,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        container.getTankDrive().schedule();
     }
 
     @Override

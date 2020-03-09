@@ -66,8 +66,6 @@ public class DriveTrain extends SubsystemBase {
     private Encoder leftEncoder = new TalonEncoder(driveMotorLeftA);
     private Encoder rightEncoder = new TalonEncoder(driveMotorRightA);
 
-    private ChickenXboxController copilot;
-
     private final NavX navx = new NavX(Port.kMXP);
 
     private double navxOffset = 0;
@@ -75,9 +73,7 @@ public class DriveTrain extends SubsystemBase {
     private final DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     private int saturationVoltage = 12;
 
-    public DriveTrain(ChickenXboxController copilot) {
-        this.copilot = copilot;
-
+    public DriveTrain() {
         driveMotorAll = new BaseMotorController[]{driveMotorLeftA, driveMotorLeftB, driveMotorLeftC, driveMotorRightA, driveMotorRightB, driveMotorRightC};
         driveMotorMasters = new TalonSRX[]{driveMotorLeftA, driveMotorRightA};
         driveMotorFollowers = new VictorSPX[]{driveMotorLeftB, driveMotorLeftC, driveMotorRightB, driveMotorRightC};
@@ -235,6 +231,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public Command commandStop(){
-        return new InstantCommand(this::stop, this);
+        return new InstCommand(this::stop, true, this);
     }
 }

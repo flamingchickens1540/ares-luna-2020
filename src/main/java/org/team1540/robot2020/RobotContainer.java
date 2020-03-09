@@ -29,21 +29,18 @@ public class RobotContainer {
 
     private NavX navx = new NavX(SPI.Port.kMXP);
 
-    private DriveTrain driveTrain;
-    private CargoMech cargoMech;
+    private DriveTrain driveTrain = new DriveTrain();
+    private CargoMech cargoMech = new CargoMech();
 
-    private SubsystemBase[] subsystems;
+    private SubsystemBase[] subsystems = new SubsystemBase[]{
+            driveTrain,
+            cargoMech
+    };
+
+    Command tankDrive = new TankDrive(driveTrain, driver);
 
     public RobotContainer() {
         logger.info("Creating robot container...");
-
-        driveTrain = new DriveTrain(copilot);
-        cargoMech = new CargoMech();
-
-        subsystems = new SubsystemBase[]{
-                driveTrain,
-                cargoMech
-        };
 
         initDefaultCommands();
         initButtonBindings();
@@ -53,6 +50,7 @@ public class RobotContainer {
     }
 
     public void configMotors() {
+        System.out.println("Configuring Motors ------------------------------------------");
         for (SubsystemBase subsystem : subsystems) {
             subsystem.configMotors();
         }
@@ -100,9 +98,6 @@ public class RobotContainer {
             // enable brakes
             logger.info("Mechanism brakes enabled");
         });
-        Command tankDrive = new TankDrive(driveTrain, driver);
-        enabled.whenActive(tankDrive);
-        disabled.cancelWhenActive(tankDrive);
 
         disabled.whenActive(new WaitCommand(2)
             .alongWith(new InstCommand(() -> logger.debug("Disabling mechanism brakes in 2 seconds"), true))
@@ -122,5 +117,9 @@ public class RobotContainer {
 
     public Command getAutoCommand() {
         return new Autonomous(driveTrain, cargoMech, driver);
+    }
+
+    public Command getTankDrive() {
+        return tankDrive;
     }
 }

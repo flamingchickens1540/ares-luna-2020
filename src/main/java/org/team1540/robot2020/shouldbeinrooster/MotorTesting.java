@@ -3,8 +3,10 @@ package org.team1540.robot2020.shouldbeinrooster;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.team1540.rooster.util.ChickenXboxController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ public class MotorTesting {
 
     private Map<Integer, GenericMotor> motors = new HashMap<>();
     public int testIndex = 0;
+    public TestMotor testMotorCommand;
 
     public void addMotor(GenericMotor motor) {
         motors.put(motor.index, motor);
@@ -24,8 +27,9 @@ public class MotorTesting {
 //                .addEntryListener((table, key, entry, value, flags) ->
 //                        testIndex = (int) SmartDashboard.getNumber("motorTesting
 //                        /motor", 0), EntryListenerFlags.kUpdate);
-        new TestMotor(() -> motors.get(testIndex), axis).schedule();
-
+//        new TestMotor(() -> motors.get(testIndex), axis).schedule();
+        testMotorCommand = new TestMotor(new ArrayList<>(motors.values()), () -> testIndex, axis);
+        testMotorCommand.schedule();
 //        sort
 //        Set<String> keys = motors.keySet();
 //        SmartDashboard.putStringArray("motorTesting/motors", keys.toArray(new String[keys.size()]));
