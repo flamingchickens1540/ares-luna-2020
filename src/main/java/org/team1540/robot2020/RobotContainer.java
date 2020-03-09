@@ -249,6 +249,7 @@ public class RobotContainer {
             intake.setBrake(CANSparkMax.IdleMode.kBrake);
             indexer.setBrake(NeutralMode.Brake);
             climber.setBrake(NeutralMode.Brake);
+            hood.setBrake(CANSparkMax.IdleMode.kBrake);
             logger.info("Mechanism brakes enabled");
             leds.set(RevBlinken.ColorPattern.AQUA);
             climber.setRatchet(Climber.RatchetState.DISENGAGED);
@@ -264,6 +265,7 @@ public class RobotContainer {
                     intake.setBrake(CANSparkMax.IdleMode.kCoast);
                     indexer.setBrake(NeutralMode.Coast);
                     climber.setBrake(NeutralMode.Coast);
+                    hood.setBrake(CANSparkMax.IdleMode.kCoast);
                     logger.info("Mechanism brakes disabled");
                 }, true), RobotState::isEnabled)));
     }
