@@ -79,4 +79,7 @@ public class Hood extends SubsystemBase {
     public Command commandStop() {
         return new InstantCommand(this::stop, this);
     }
+    public void setBrake(CANSparkMax.IdleMode mode) {
+        hoodMotor.setIdleMode(mode);
+    }
 }
