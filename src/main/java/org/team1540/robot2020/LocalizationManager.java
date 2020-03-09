@@ -318,12 +318,12 @@ public class LocalizationManager extends CommandBase {
     }
 
     public double getShooterRPMForSelectedGoal() {
-        double norm = MathUtil.clamp(getDistanceToSelectedTarget(), DISTANCE[0], Double.MAX_VALUE);
+        double norm = MathUtil.clamp(getDistanceToSelectedTarget(), DISTANCE[0] + 0.000000001, Double.MAX_VALUE);
         return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, FLYWHEEL), 500, 5800);
     }
 
     public double getHoodTicksForSelectedGoal() {
-        double norm = MathUtil.clamp(getDistanceToSelectedTarget(), DISTANCE[0], Double.MAX_VALUE);
+        double norm = MathUtil.clamp(getDistanceToSelectedTarget(), DISTANCE[0] + 0.000000001, Double.MAX_VALUE);
         return MathUtil.clamp(LookupTableUtils.getDoubleLookupTable(norm, DISTANCE, HOOD), -292, -1) - Hood.offset;
     }
 
