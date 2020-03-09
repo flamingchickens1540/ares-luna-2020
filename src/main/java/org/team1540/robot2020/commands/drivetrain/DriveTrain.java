@@ -2,6 +2,7 @@ package org.team1540.robot2020.commands.drivetrain;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,9 +27,13 @@ public class DriveTrain extends SubsystemBase {
     private ChickenTalonFX[] driveMotorLefts = new ChickenTalonFX[]{driveMotorLeftA, driveMotorLeftB};
     private ChickenTalonFX[] driveMotorRights = new ChickenTalonFX[]{driveMotorRightA, driveMotorRightB};
 
+    private SlewRateLimiter throttleRateLimiter;
 
     public DriveTrain() {
         initMotors();
+
+        SmartDashboard.putNumber("pointDrive/throttleRateLimiter", 2);
+        throttleRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("pointDrive/throttleRateLimiter", 0));
     }
 
     private void initMotors() {
@@ -96,6 +101,10 @@ public class DriveTrain extends SubsystemBase {
     public void setPercent(double leftPercent, double rightPercent) {
         driveMotorLeftA.setPercent(leftPercent);
         driveMotorRightA.setPercent(rightPercent);
+    }
+
+    public SlewRateLimiter getThrottleRateLimiter() {
+        return throttleRateLimiter;
     }
 
     public double getDistanceLeft() {

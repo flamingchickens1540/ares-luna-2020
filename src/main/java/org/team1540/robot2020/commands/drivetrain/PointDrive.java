@@ -26,7 +26,6 @@ public class PointDrive extends CommandBase {
     private double max;
     private double min;
     private double deadzone;
-    private SlewRateLimiter throttleRateLimiter;
 
     public PointDrive(DriveTrain driveTrain, LocalizationManager localizationManager, Axis2D pointAxis, ChickenXboxController.Axis throttleAxis, JoystickButton resetNavXButton) {
         this.driveTrain = driveTrain;
@@ -57,7 +56,6 @@ public class PointDrive extends CommandBase {
         max = SmartDashboard.getNumber("pointDrive/max", 0);
         min = SmartDashboard.getNumber("pointDrive/min", 0);
         deadzone = SmartDashboard.getNumber("pointDrive/deadzone", 0);
-        throttleRateLimiter = new SlewRateLimiter(SmartDashboard.getNumber("pointDrive/throttleRateLimiter", 0));
         pointController.setPID(p, i, d);
         setGoalToCurrentAngle();
     }
@@ -81,7 +79,7 @@ public class PointDrive extends CommandBase {
         double rawPIDOutput = pointController.getOutput(error);
         double angleOutput = ControlUtils.allVelocityConstraints(rawPIDOutput, max, min, deadzone);
 
-        double throttle = throttleRateLimiter.calculate(throttleAxis.withDeadzone(0.15).value());
+        double throttle = driveTrain.getThrottleRateLimiter().calculate(throttleAxis.withDeadzone(0.15).value());
 
         double leftMotors = throttle + angleOutput;
         double rightMotors = throttle - angleOutput;
