@@ -33,7 +33,7 @@ public class Funnel extends SubsystemBase {
 
     public void setPercent(double percentLeft, double percentRight) {
         funnelLeftMotor.set(percentLeft);
-        funnelRightMotor.set(percentRight);
+//        funnelRightMotor.set(percentRight);
     }
 
     public void setPercent(double percent) {
