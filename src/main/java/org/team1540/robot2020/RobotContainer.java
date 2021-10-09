@@ -17,7 +17,6 @@ import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
-import org.team1540.robot2020.commands.hood.HoodManualControl;
 import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.*;
@@ -25,7 +24,6 @@ import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.ShootRapid;
 import org.team1540.robot2020.commands.shooter.Shooter;
-import org.team1540.robot2020.commands.shooter.ShooterManualSetpoint;
 import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
@@ -50,7 +48,6 @@ public class RobotContainer {
     Command eightBallAutonomous;
     private ChickenXboxController driverController = new ChickenXboxController(0);
     private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private ChickenXboxController distanceOffsetTestingController = new ChickenXboxController(2);
     private DriveTrain driveTrain = new DriveTrain();
     private Intake intake = new Intake();
     private Funnel funnel = new Funnel();
@@ -196,33 +193,6 @@ public class RobotContainer {
                 ),
                 new InstCommand(() -> localizationManager.ignoreLimelight(false))
         );
-        distanceOffsetTestingController.getButton(LEFT_BUMPER).whenPressed(new InstCommand(shootSequenceTest::schedule));
-
-        distanceOffsetTestingController.getButton(B).whenPressed(new IndexerManualControl(indexer,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_Y).withDeadzone(0.1)));
-
-        distanceOffsetTestingController.getButton(Y).whenPressed(new HoodZeroSequence(hood));
-
-        ShooterManualSetpoint shooterManualSetpoint = new ShooterManualSetpoint(shooter,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.LEFT_X));
-        distanceOffsetTestingController.getButton(X).toggleWhenPressed(shooterManualSetpoint);
-
-        List<Double> distanceList = new ArrayList<>();
-        List<Double> hoodList = new ArrayList<>();
-        List<Double> flywheelList = new ArrayList<>();
-        distanceOffsetTestingController.getButton(BACK).whenPressed(new InstantCommand(() -> {
-            distanceList.add(localizationManager.getCorrectedLidarDistance());
-            hoodList.add(hood.getPosition());
-            flywheelList.add(shooterManualSetpoint.getSetpoint());
-            SmartDashboard.putNumberArray("distanceOffsetTesting/DISTANCE", distanceList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("distanceOffsetTesting/HOOD", hoodList.toArray(new Double[]{}));
-            SmartDashboard.putNumberArray("distanceOffsetTesting/FLYWHEEL", flywheelList.toArray(new Double[]{}));
-        }));
-
-        distanceOffsetTestingController.getButton(START).toggleWhenPressed(new HoodManualControl(hood,
-                distanceOffsetTestingController.getAxis(ChickenXboxController.XboxAxis.RIGHT_X)));
-
-        distanceOffsetTestingController.getButton(A).toggleWhenPressed(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, true));
     }
 
     private void initDefaultCommands() {
