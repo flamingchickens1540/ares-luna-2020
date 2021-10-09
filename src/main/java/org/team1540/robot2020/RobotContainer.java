@@ -173,6 +173,13 @@ public class RobotContainer {
 
     Command getAutoCommand() {
         double selectedAuto = SmartDashboard.getNumber("AutoSelector/SelectedBallNumber", auto);
+        double currentYaw = Math.toDegrees(localizationManager.getYawRadians());
+
+        // Use 3 ball auto if the yaw is wrong
+        if (currentYaw <= 5) {
+            logger.warn("WARNING: Yaw (" + currentYaw + " deg) is wrong, falling back to 3 ball auto");
+            return autoThreeBall;
+        }
 
         if (selectedAuto == 6) {
             logger.info("Using 6 ball auto");
