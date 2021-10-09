@@ -10,18 +10,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
-import org.team1540.robot2020.commands.drivetrain.AutoSixBall;
-import org.team1540.robot2020.commands.drivetrain.DriveTrain;
-import org.team1540.robot2020.commands.drivetrain.LineUpSequence;
-import org.team1540.robot2020.commands.drivetrain.PointDrive;
+import org.team1540.robot2020.commands.drivetrain.*;
 import org.team1540.robot2020.commands.funnel.Funnel;
-import org.team1540.robot2020.commands.funnel.FunnelRun;
 import org.team1540.robot2020.commands.hood.Hood;
 import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
-import org.team1540.robot2020.commands.indexer.*;
+import org.team1540.robot2020.commands.indexer.Indexer;
+import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
 import org.team1540.robot2020.commands.intake.Intake;
-import org.team1540.robot2020.commands.intake.IntakeRun;
 import org.team1540.robot2020.commands.shooter.ShootRapid;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
@@ -29,91 +25,38 @@ import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static edu.wpi.first.wpilibj2.command.CommandGroupBase.*;
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.parallel;
 import static org.team1540.robot2020.utils.ChickenXboxController.XboxButton.*;
 
 
 public class RobotContainer {
-
     // TODO: logging debugMode variable to avoid putting things to networktables unnecessarily
     // TODO: don't use SmartDashboard, just use the network tables interface
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
-    Command threeBallAutonomous;
-    Command sixBallAutonomous;
-    Command eightBallAutonomous;
-    private ChickenXboxController driverController = new ChickenXboxController(0);
-    private ChickenXboxController copilotController = new ChickenXboxController(1);
-    private DriveTrain driveTrain = new DriveTrain();
-    private Intake intake = new Intake();
-    private Funnel funnel = new Funnel();
-    private Indexer indexer = new Indexer();
-    private Shooter shooter = new Shooter();
-    private Hood hood = new Hood();
-    private Climber climber = new Climber();
-    private RevBlinken leds = new RevBlinken(0);
 
-    private final int defaultAuto = 6; // TODO: DANGER! This only sets the smartdashboard value. Not the switch case.
-
-
-    private enum CommandSelector {
-        THREE(3), SIX(6), EIGHT(8);
-
-        @SuppressWarnings("MemberName")
-        public final int value;
-        @SuppressWarnings("PMD.UseConcurrentHashMap")
-        private static final Map<Integer, CommandSelector> map = new HashMap<>();
-
-        CommandSelector(int value) {
-            this.value = value;
-        }
-
-        static {
-            for (CommandSelector autoCommand : CommandSelector.values()) {
-                map.put(autoCommand.value, autoCommand);
-            }
-        }
-
-        public static CommandSelector of(int key) {
-            if (!map.containsKey(key)) return CommandSelector.THREE;
-            return map.get(key);
-        }
-    }
-
-    // An example selector method for the selectcommand.  Returns the selector that will select
-    // which command to run.  Can base this choice on logical conditions evaluated at runtime.
-    private CommandSelector select() {
-        int smartDashboardAutoSelection = (int) SmartDashboard.getNumber("AutoSelector/SelectedBallNumber", 3);
-        return CommandSelector.of(smartDashboardAutoSelection);
-    }
-
-    private LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
-
-    // An example selectcommand.  Will select from the three commands based on the value returned
-    // by the selector method at runtime.  Note that selectcommand works on Object(), so the
-    // selector does not have to be an enum; it could be any desired type (string, integer,
-    // boolean, double...)
-    private final Command autonomous = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//            new SelectCommand(
-//                     Maps selector values to commands
-//                    Map.ofEntries(
-//                            entry(CommandSelector.THREE, new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)),
-//                            entry(CommandSelector.SIX, new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController)),
-//                            entry(CommandSelector.EIGHT, new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController))
-//                    ),
-//                    this::select
-//            );
-//
-
-
-    private PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
+    // Valid values are 3 or 6
+    private final int auto = 6;
+    // Controllers
+    private final ChickenXboxController driverController = new ChickenXboxController(0);
+    private final ChickenXboxController copilotController = new ChickenXboxController(1);
+    // Subsystems
+    private final DriveTrain driveTrain = new DriveTrain();
+    private final Intake intake = new Intake();
+    private final Funnel funnel = new Funnel();
+    private final Indexer indexer = new Indexer();
+    private final Shooter shooter = new Shooter();
+    private final Hood hood = new Hood();
+    private final Climber climber = new Climber();
+    private final RevBlinken leds = new RevBlinken(0);
+    private final LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
+    private final PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
             driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
             driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
             driverController.getButton(ChickenXboxController.XboxButton.Y));
+
+    // Autos
+    private final Command autoSixBall = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
+    private final Command autoThreeBall = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
 
     RobotContainer() {
         logger.info("Creating robot container...");
@@ -127,10 +70,7 @@ public class RobotContainer {
         localizationManager.schedule();
         localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
-        SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", defaultAuto);
-
-//        autonomous = new AutoEightBall2(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
-//        autonomous = new AutoThreeBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController, true);
+        SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", auto);
     }
 
     private void initButtonBindings() {
@@ -167,7 +107,7 @@ public class RobotContainer {
         // Copilot
         copilotController.getButton(A).whenPressed(intakeCommand);
         copilotController.getButton(B).cancelWhenPressed(intakeCommand);
-        copilotController.getButton(X).whenPressed(new InstantCommand(() -> funnel.stop(), funnel));
+        copilotController.getButton(X).whenPressed(new InstantCommand(funnel::stop, funnel));
         copilotController.getButton(LEFT_BUMPER).whileHeld(intake.commandPercent(-1));
         copilotController.getButton(RIGHT_BUMPER).whileHeld(
                 parallel(indexer.commandPercent(-1), funnel.commandPercent(-1, -1), new InstCommand(intakeCommand::cancel))
@@ -177,27 +117,10 @@ public class RobotContainer {
             Hood.offset += copilotController.getAxis(ChickenXboxController.XboxAxis.LEFT_X).value() / 200;
             SmartDashboard.putNumber("hood/offset", Hood.offset);
         });
-
-        // Testing Controller - Distance offset tuning
-        CommandGroupBase shootSequenceTest = sequence(
-                race(
-                        new ConditionalCommand(new InstCommand(), new IndexerBallsUpOrDownToTop(indexer, 0.2), indexer::getShooterStagedSensor),
-                        new FunnelRun(funnel),
-                        new IntakeRun(intake, 7000)
-                ),
-                new InstCommand(() -> localizationManager.ignoreLimelight(true)),
-                race(
-                        new IndexerPercentToPosition(indexer, () -> indexer.getPositionMeters() + SmartDashboard.getNumber("robotContainer/shootIndexDistance", 0.11), 1),
-                        new FunnelRun(funnel),
-                        new IntakeRun(intake, 7000)
-                ),
-                new InstCommand(() -> localizationManager.ignoreLimelight(false))
-        );
     }
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
-
         driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
         intake.setDefaultCommand(intake.commandStop().perpetually());
         funnel.setDefaultCommand(funnel.commandStop().perpetually());
@@ -249,7 +172,18 @@ public class RobotContainer {
     }
 
     Command getAutoCommand() {
-        return autonomous;
+        double selectedAuto = SmartDashboard.getNumber("AutoSelector/SelectedBallNumber", auto);
+
+        if (selectedAuto == 6) {
+            logger.info("Using 6 ball auto");
+            return autoSixBall;
+        } else { // If value isn't 6, use 3
+            logger.info("Using 3 ball auto");
+            if (selectedAuto != 3) {
+                logger.warn("WARNING: Unexpected AutoSelector/SelectedBallNumber value (must be 3 or 6), falling back to 3 ball");
+            }
+            return autoThreeBall;
+        }
     }
 
     public void zeroHoodIfFlag(boolean overrideFlag) {
