@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.checkerframework.checker.units.qual.A;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
 import org.team1540.robot2020.commands.drivetrain.*;
@@ -49,10 +50,11 @@ public class RobotContainer {
     private final Climber climber = new Climber();
     private final RevBlinken leds = new RevBlinken(0);
     private final LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
-    private final PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
-            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-            driverController.getButton(ChickenXboxController.XboxButton.Y));
+//    private final PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
+//            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+//            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+//            driverController.getButton(ChickenXboxController.XboxButton.Y));
+    public final AvianDrive avianDrive = new AvianDrive(driveTrain);
 
     // Autos
     private final Command autoSixBall = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
@@ -68,7 +70,7 @@ public class RobotContainer {
 
         // TODO: Replace with a notifier that runs more often than commands
         localizationManager.schedule();
-        localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
+//        localizationManager.setOnNavxZeroCallback(pointDrive::zeroAngle);
 
         SmartDashboard.putNumber("AutoSelector/SelectedBallNumber", auto);
     }
@@ -83,7 +85,7 @@ public class RobotContainer {
         Command intakeCommand = intake.commandPercent(1).alongWith(new ScheduleCommand(ballQueueCommand));
 
         // Driver
-        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
+//        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
 
         driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
         Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);

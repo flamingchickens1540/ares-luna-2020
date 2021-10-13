@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         container.zeroHoodIfFlag(false);
+        container.avianDrive.perpetually();
     }
 
     @Override
