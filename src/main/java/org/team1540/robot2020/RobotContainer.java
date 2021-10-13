@@ -53,7 +53,6 @@ public class RobotContainer {
 //            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
 //            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
 //            driverController.getButton(ChickenXboxController.XboxButton.Y));
-    public final AvianDrive avianDrive = new AvianDrive(driveTrain);
 
     // Autos
     private final Command autoSixBall = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
@@ -122,13 +121,13 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
-        driveTrain.setDefaultCommand(new LineUpSequence(driveTrain, indexer, shooter, hood, driverController, localizationManager, true, false).perpetually());
-        intake.setDefaultCommand(intake.commandStop().perpetually());
-        funnel.setDefaultCommand(funnel.commandStop().perpetually());
-        indexer.setDefaultCommand(indexer.commandStop().perpetually());
-        shooter.setDefaultCommand(shooter.commandStop().perpetually());
-        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
-        climber.setDefaultCommand(climber.commandStop().perpetually());
+        driveTrain.setDefaultCommand(new AvianDrive(driveTrain).perpetually());
+        // intake.setDefaultCommand(intake.commandStop().perpetually());
+        // funnel.setDefaultCommand(funnel.commandStop().perpetually());
+        // indexer.setDefaultCommand(indexer.commandStop().perpetually());
+        // shooter.setDefaultCommand(shooter.commandStop().perpetually());
+        // hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
+        // climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 
     private void initModeTransitionBindings() {

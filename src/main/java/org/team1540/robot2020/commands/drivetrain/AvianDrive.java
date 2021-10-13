@@ -9,8 +9,8 @@ public class AvianDrive extends CommandBase {
     private static final Logger logger = Logger.getLogger(RobotContainer.class);
     private final DriveTrain driveTrain;
     private final Avian avian;
-    private final double turnSpeed = 0.1;
-    private final double driveSpeed = 0.1;
+    private final double turnSpeed = 0.25;
+    private final double driveSpeed = 0.4;
 
     public AvianDrive(DriveTrain driveTrain) {
         this.driveTrain = driveTrain;
@@ -21,13 +21,13 @@ public class AvianDrive extends CommandBase {
 
     private void setDriveTrain(double leftPercent, double rightPercent) {
         logger.info(leftPercent + ", " + rightPercent);
-        // driveTrain.setPercent(leftPercent, rightPercent);
+        driveTrain.setPercent(leftPercent, rightPercent);
     }
 
     @Override
     public void execute() {
         // Stop if hands aren't detected
-        if (avian.getDouble("avian/detected_hands") <= 2) {
+        if (avian.getDouble("avian/detected_hands") < 2) {
             setDriveTrain(0, 0);
             return;
         }
@@ -37,13 +37,12 @@ public class AvianDrive extends CommandBase {
             setDriveTrain(-turnSpeed, turnSpeed);
         } else if (avian.getBooleanExclusive("avian/right_pinch")) {
             setDriveTrain(turnSpeed, -turnSpeed);
-        }
-
-        // Fist to drive
-        if (avian.getBooleanExclusive("avian/left_fist")) {
+        } else if (avian.getBooleanExclusive("avian/left_fist")) {
             setDriveTrain(driveSpeed, driveSpeed);
         } else if (avian.getBooleanExclusive("avian/right_fist")) {
             setDriveTrain(-driveSpeed, -driveSpeed);
-        }
+        } else {
+			setDriveTrain(0, 0);
+		}
     }
 }
