@@ -1,48 +1,57 @@
 package org.team1540.robot2020.commands.drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.apache.log4j.Logger;
-import org.team1540.robot2020.RobotContainer;
+import org.team1540.robot2020.commands.hood.Hood;
+import org.team1540.robot2020.commands.hood.HoodZeroSequence;
+import org.team1540.robot2020.commands.indexer.Indexer;
+import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.utils.Avian;
 
 public class AvianDrive extends CommandBase {
-    private static final Logger logger = Logger.getLogger(RobotContainer.class);
     private final DriveTrain driveTrain;
-    private final Avian avian;
+    private final Hood hood;
+    private final Shooter shooter;
+    private final Indexer indexer;
+
+    private final Avian avian = new Avian();
     private final double turnSpeed = 0.25;
     private final double driveSpeed = 0.4;
 
-    public AvianDrive(DriveTrain driveTrain) {
+    public AvianDrive(DriveTrain driveTrain, Hood hood, Shooter shooter, Indexer indexer) {
         this.driveTrain = driveTrain;
-        this.avian = new Avian();
-
-        addRequirements(driveTrain);
-    }
-
-    private void setDriveTrain(double leftPercent, double rightPercent) {
-        logger.info(leftPercent + ", " + rightPercent);
-        driveTrain.setPercent(leftPercent, rightPercent);
+        this.hood = hood;
+        this.shooter = shooter;
+        this.indexer = indexer;
+        addRequirements(driveTrain, hood);
     }
 
     @Override
     public void execute() {
         // Stop if hands aren't detected
         if (avian.getDouble("avian/detected_hands") < 2) {
-            setDriveTrain(0, 0);
+            driveTrain.setPercent(0, 0);
             return;
         }
 
-        // Pinch to turn
+        // Drive states
         if (avian.getBooleanExclusive("avian/left_pinch")) {
-            setDriveTrain(-turnSpeed, turnSpeed);
+            driveTrain.setPercent(-turnSpeed, turnSpeed);
         } else if (avian.getBooleanExclusive("avian/right_pinch")) {
-            setDriveTrain(turnSpeed, -turnSpeed);
+            driveTrain.setPercent(turnSpeed, -turnSpeed);
         } else if (avian.getBooleanExclusive("avian/left_fist")) {
-            setDriveTrain(driveSpeed, driveSpeed);
+            driveTrain.setPercent(driveSpeed, driveSpeed);
         } else if (avian.getBooleanExclusive("avian/right_fist")) {
-            setDriveTrain(-driveSpeed, -driveSpeed);
-        } else {
-			setDriveTrain(0, 0);
-		}
+            driveTrain.setPercent(-driveSpeed, -driveSpeed);
+        } else if (avian.getBooleanExclusive("avian/left_middle_finger") || avian.getBooleanExclusive("avian/right_middle_finger")) {
+            driveTrain.setPercent(1, 1);
+        } else if (avian.getBoolean("avian/left_middle_finger") && avian.getBoolean("avian/right_middle_finger")) {
+            new HoodZeroSequence(hood).schedule();
+            shooter.setVelocityRPM(7000);
+            indexer.setPercent(0.5);
+        } else { // Stop if no gestures are detected
+            driveTrain.setPercent(0, 0);
+            shooter.stop();
+            indexer.setPercent(0);
+        }
     }
 }

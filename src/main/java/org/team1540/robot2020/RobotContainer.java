@@ -49,10 +49,10 @@ public class RobotContainer {
     private final Climber climber = new Climber();
     private final RevBlinken leds = new RevBlinken(0);
     private final LocalizationManager localizationManager = new LocalizationManager(driveTrain, shooter, hood, this::zeroHoodIfFlag);
-//    private final PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
-//            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
-//            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
-//            driverController.getButton(ChickenXboxController.XboxButton.Y));
+    private final PointDrive pointDrive = new PointDrive(driveTrain, localizationManager,
+            driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
+            driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
+            driverController.getButton(ChickenXboxController.XboxButton.Y));
 
     // Autos
     private final Command autoSixBall = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
@@ -83,7 +83,7 @@ public class RobotContainer {
         Command intakeCommand = intake.commandPercent(1).alongWith(new ScheduleCommand(ballQueueCommand));
 
         // Driver
-//        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
+        driverController.getAxis2D(ChickenXboxController.Hand.RIGHT).magnitude().button(0.7).whileHeld(pointDrive);
 
         driverController.getButton(START).whileHeld(driveTrain.commandStop().alongWith(hood.commandStop()));
         Command flywheelSpinUp = new ShooterSetVelocityContinuous(shooter, localizationManager::getShooterRPMForSelectedGoal);
@@ -121,13 +121,13 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
-        driveTrain.setDefaultCommand(new AvianDrive(driveTrain).perpetually());
-        // intake.setDefaultCommand(intake.commandStop().perpetually());
-        // funnel.setDefaultCommand(funnel.commandStop().perpetually());
-        // indexer.setDefaultCommand(indexer.commandStop().perpetually());
-        // shooter.setDefaultCommand(shooter.commandStop().perpetually());
-        // hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
-        // climber.setDefaultCommand(climber.commandStop().perpetually());
+        driveTrain.setDefaultCommand(new AvianDrive(driveTrain, hood, shooter, indexer).perpetually());
+        intake.setDefaultCommand(intake.commandStop().perpetually());
+        funnel.setDefaultCommand(funnel.commandStop().perpetually());
+        indexer.setDefaultCommand(indexer.commandStop().perpetually());
+        shooter.setDefaultCommand(shooter.commandStop().perpetually());
+        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
+        climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 
     private void initModeTransitionBindings() {
