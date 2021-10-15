@@ -8,12 +8,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.apache.log4j.Logger;
+import org.team1540.robot2020.commands.avian.AvianDrive;
+import org.team1540.robot2020.commands.avian.AvianShoot;
 import org.team1540.robot2020.commands.climber.Climber;
 import org.team1540.robot2020.commands.climber.ClimberSequenceNoSensor;
-import org.team1540.robot2020.commands.drivetrain.*;
+import org.team1540.robot2020.commands.drivetrain.AutoSixBall;
+import org.team1540.robot2020.commands.drivetrain.AutoThreeBall;
+import org.team1540.robot2020.commands.drivetrain.DriveTrain;
+import org.team1540.robot2020.commands.drivetrain.PointDrive;
 import org.team1540.robot2020.commands.funnel.Funnel;
 import org.team1540.robot2020.commands.hood.Hood;
-import org.team1540.robot2020.commands.hood.HoodSetPositionContinuous;
 import org.team1540.robot2020.commands.hood.HoodZeroSequence;
 import org.team1540.robot2020.commands.indexer.Indexer;
 import org.team1540.robot2020.commands.indexer.IndexerBallQueueSequence;
@@ -21,6 +25,7 @@ import org.team1540.robot2020.commands.intake.Intake;
 import org.team1540.robot2020.commands.shooter.ShootRapid;
 import org.team1540.robot2020.commands.shooter.Shooter;
 import org.team1540.robot2020.commands.shooter.ShooterSetVelocityContinuous;
+import org.team1540.robot2020.utils.Avian;
 import org.team1540.robot2020.utils.ChickenXboxController;
 import org.team1540.robot2020.utils.InstCommand;
 import org.team1540.rooster.wrappers.RevBlinken;
@@ -53,6 +58,7 @@ public class RobotContainer {
             driverController.getAxis2D(ChickenXboxController.Hand.RIGHT),
             driverController.getAxis(ChickenXboxController.XboxAxis.LEFT_X),
             driverController.getButton(ChickenXboxController.XboxButton.Y));
+    private final Avian avian = new Avian();
 
     // Autos
     private final Command autoSixBall = new AutoSixBall(driveTrain, intake, funnel, indexer, shooter, hood, climber, localizationManager, driverController);
@@ -121,13 +127,14 @@ public class RobotContainer {
 
     private void initDefaultCommands() {
         logger.info("Initializing default commands...");
-        driveTrain.setDefaultCommand(new AvianDrive(driveTrain, hood, shooter, indexer).perpetually());
-        intake.setDefaultCommand(intake.commandStop().perpetually());
-        funnel.setDefaultCommand(funnel.commandStop().perpetually());
-        indexer.setDefaultCommand(indexer.commandStop().perpetually());
-        shooter.setDefaultCommand(shooter.commandStop().perpetually());
-        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
-        climber.setDefaultCommand(climber.commandStop().perpetually());
+        driveTrain.setDefaultCommand(new AvianDrive(avian, driveTrain, intake, funnel, indexer, shooter).perpetually());
+
+//        intake.setDefaultCommand(intake.commandStop().perpetually());
+//        funnel.setDefaultCommand(funnel.commandStop().perpetually());
+//        indexer.setDefaultCommand(indexer.commandStop().perpetually());
+//        shooter.setDefaultCommand(shooter.commandStop().perpetually());
+//        hood.setDefaultCommand(new HoodSetPositionContinuous(hood, localizationManager::getHoodTicksForSelectedGoal));
+//        climber.setDefaultCommand(climber.commandStop().perpetually());
     }
 
     private void initModeTransitionBindings() {
